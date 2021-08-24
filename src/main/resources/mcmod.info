@@ -1,0 +1,13 @@
+[
+{
+    "modid": "neicustomdiagram",
+    "name": "NEI Custom Diagram",
+    "description": "A framework for creating custom diagrams for NEI.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "https://github.com/D-Cysteine/NeiCustomDiagram",
+    "authorList": ["D-Cysteine"],
+    "credits": "https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/issues/8300",
+    "dependencies": ["NotEnoughItems"]
+}
+]

@@ -1,0 +1,31 @@
+neicustomdiagram.api.stacksize=Stack size: %,d
+neicustomdiagram.api.componentindex=Component: %,d / %,d
+neicustomdiagram.api.showalldiagrams=Show all diagrams
+
+neicustomdiagram.impl.forge.fluidcontainers.groupname=Forge Fluid Containers
+neicustomdiagram.impl.forge.oredictionary.groupname=Forge Ore Dictionary
+neicustomdiagram.impl.forge.oredictionary.orenamelabel=Ore name
+
+neicustomdiagram.impl.gregtech.outputchance=Chance: %.2f%%
+
+neicustomdiagram.impl.gregtech.oredictionary.groupname=GregTech Ore Dictionary
+neicustomdiagram.impl.gregtech.oredictionary.materialnamelabel=Material name
+neicustomdiagram.impl.gregtech.oredictionary.unifyslot=Unified items
+neicustomdiagram.impl.gregtech.oredictionary.allslot=All associated items
+
+neicustomdiagram.impl.gregtech.oreprocessing.groupname=GregTech Ore Processing
+neicustomdiagram.impl.gregtech.oreprocessing.maceratorlabel=Macerator
+neicustomdiagram.impl.gregtech.oreprocessing.maceratorslot=Macerator Output
+neicustomdiagram.impl.gregtech.oreprocessing.orewasherlabel=Ore Washer
+neicustomdiagram.impl.gregtech.oreprocessing.orewasherslot=Ore Washer Output
+neicustomdiagram.impl.gregtech.oreprocessing.centrifugelabel=Centrifuge
+neicustomdiagram.impl.gregtech.oreprocessing.centrifugeslot=Centrifuge Output
+neicustomdiagram.impl.gregtech.oreprocessing.thermalcentrifugelabel=Thermal Centrifuge
+neicustomdiagram.impl.gregtech.oreprocessing.thermalcentrifugeslot=Thermal Centrifuge Output
+neicustomdiagram.impl.gregtech.oreprocessing.sifterlabel=Sifter
+neicustomdiagram.impl.gregtech.oreprocessing.sifterslot=Sifter Output
+neicustomdiagram.impl.gregtech.oreprocessing.furnacelabel=Additional Furnace Recipes
+neicustomdiagram.impl.gregtech.oreprocessing.ebflabel=Additional Electric Blast Furnace Recipes
+neicustomdiagram.impl.gregtech.oreprocessing.chemicalbathlabel=Additional Chemical Bath Recipes
+neicustomdiagram.impl.gregtech.oreprocessing.chemicalreactorlabel=Additional Chemical Reactor Recipes
+neicustomdiagram.impl.gregtech.oreprocessing.electromagneticseparatorlabel=Additional Electromagnetic Separator Recipes
