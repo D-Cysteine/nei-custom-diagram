@@ -7,20 +7,16 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class DiagramGroupInfo {
-    /** This will be prepended to all group IDs, to ensure that they are globally unique. */
-    public static final String GROUP_ID_PREFIX = "neicustomdiagram.diagramgroup.";
-
     public static DiagramGroupInfo create(
-            String groupName, String groupIdSuffix, ItemComponent icon, int diagramsPerPage,
+            String groupName, String groupId, ItemComponent icon, int diagramsPerPage,
             boolean enabledByDefault) {
         return new AutoValue_DiagramGroupInfo(
-                groupName, GROUP_ID_PREFIX + groupIdSuffix, icon, diagramsPerPage,
-                enabledByDefault);
+                groupName, groupId, icon, diagramsPerPage, enabledByDefault);
     }
 
     public static DiagramGroupInfo create(
-            String groupName, String groupIdSuffix, ItemComponent icon, int diagramsPerPage) {
-        return create(groupName, groupIdSuffix, icon, diagramsPerPage, true);
+            String groupName, String groupId, ItemComponent icon, int diagramsPerPage) {
+        return create(groupName, groupId, icon, diagramsPerPage, true);
     }
 
     /** Display description for this diagram group. */

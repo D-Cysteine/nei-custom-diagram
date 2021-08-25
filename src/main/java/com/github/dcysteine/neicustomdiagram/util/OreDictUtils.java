@@ -1,10 +1,9 @@
-package com.github.dcysteine.neicustomdiagram.impl.common;
+package com.github.dcysteine.neicustomdiagram.util;
 
 import codechicken.nei.ItemList;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.google.common.collect.Lists;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
 

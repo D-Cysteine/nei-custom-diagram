@@ -1,8 +1,12 @@
-package com.github.dcysteine.neicustomdiagram.impl.common;
+package com.github.dcysteine.neicustomdiagram.util;
 
+import com.github.dcysteine.neicustomdiagram.api.Formatter;
+import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
+import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import net.minecraft.block.Block;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
@@ -15,12 +19,20 @@ public final class FluidDictUtils {
     // Static class.
     private FluidDictUtils() {}
 
-    public static Optional<ItemComponent> fluidToItem(FluidComponent fluid) {
-        return ItemComponent.create(fluid.fluid().getBlock(), 0);
+    public static Optional<ItemComponent> fluidToItem(Component component) {
+        if (component.type() != Component.ComponentType.FLUID) {
+            return Optional.empty();
+        }
+
+        return ItemComponent.create(((FluidComponent) component).fluid().getBlock(), 0);
     }
 
-    public static Optional<FluidComponent> itemToFluid(ItemComponent item) {
-        Block block = Block.getBlockFromItem(item.item());
+    public static Optional<FluidComponent> itemToFluid(Component component) {
+        if (component.type() != Component.ComponentType.ITEM) {
+            return Optional.empty();
+        }
+
+        Block block = Block.getBlockFromItem(((ItemComponent) component).item());
         if (block == null) {
             return Optional.empty();
         }
@@ -47,7 +59,7 @@ public final class FluidDictUtils {
     public static Optional<FluidComponent> getFluidContents(Component component) {
         switch (component.type()) {
             case ITEM:
-                Optional<FluidComponent> fluidOptional = itemToFluid((ItemComponent) component);
+                Optional<FluidComponent> fluidOptional = itemToFluid(component);
                 if (fluidOptional.isPresent()) {
                     return fluidOptional;
                 }
@@ -70,6 +82,8 @@ public final class FluidDictUtils {
     /**
      * Returns all fluid containers that contain the same fluid as {@code component}.
      *
+     * <p>{@link DisplayComponent} is returned so that fluid container capacities can be shown.
+     *
      * <p>Has three modes:
      * <ul>
      *     <li>If {@code component} is a fluid, then returns a list of all fluid containers
@@ -84,18 +98,26 @@ public final class FluidDictUtils {
      *     <li>Otherwise, returns an empty list.
      * </ul>
      */
-    public static List<Component> getFluidContainers(Component component) {
+    public static List<DisplayComponent> getFluidContainers(Component component) {
         Optional<FluidComponent> fluidOptional = getFluidContents(component);
-        List<Component> results = new ArrayList<>();
+        List<DisplayComponent> results = new ArrayList<>();
 
         if (fluidOptional.isPresent()) {
-            results.add(fluidOptional.get());
+            results.add(DisplayComponent.builder(fluidOptional.get()).build());
             Fluid fluid = fluidOptional.get().fluid();
 
             for (FluidContainerRegistry.FluidContainerData data
                     : FluidContainerRegistry.getRegisteredFluidContainerData()) {
                 if (fluid == data.fluid.getFluid()) {
-                    results.add(ItemComponent.create(data.filledContainer));
+                    results.add(
+                            DisplayComponent.builder(data.filledContainer)
+                                    .setStackSize(Optional.empty())
+                                    .setAdditionalInfo(Formatter.formatInt(data.fluid.amount))
+                                    .setAdditionalTooltip(
+                                            Tooltip.create(
+                                                    Lang.UTIL.transf("capacity", data.fluid.amount),
+                                                    Tooltip.INFO_FORMATTING))
+                                    .build());
                 }
             }
         }

@@ -10,6 +10,7 @@ import com.google.auto.value.AutoValue;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
+import javax.annotation.Nullable;
 import java.util.Optional;
 
 /**
@@ -23,6 +24,9 @@ import java.util.Optional;
 public abstract class DisplayComponent {
     public abstract Component component();
     public abstract Optional<Integer> stackSize();
+
+    /** Additional information to be drawn on the component, if any. Keep this short! */
+    public abstract Optional<String> additionalInfo();
 
     /**
      * Returns a tooltip containing additional information for this particular display component;
@@ -70,6 +74,8 @@ public abstract class DisplayComponent {
                         Draw.drawStackSize(
                                 stackSize, pos,
                                 component().type() == Component.ComponentType.FLUID));
+        additionalInfo().ifPresent(
+                additionalInfo -> Draw.drawAdditionalInfo(additionalInfo, pos, true));
     }
 
     public static Builder builder(Component component) {
@@ -99,6 +105,8 @@ public abstract class DisplayComponent {
         public abstract Builder setComponent(Component component);
         public abstract Builder setStackSize(Optional<Integer> stackSize);
         public abstract Builder setStackSize(int stackSize);
+        public abstract Builder setAdditionalInfo(Optional<String> stackSize);
+        public abstract Builder setAdditionalInfo(@Nullable String stackSize);
         public abstract Builder setAdditionalTooltip(Tooltip additionalTooltip);
 
         public abstract DisplayComponent build();

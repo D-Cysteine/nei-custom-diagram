@@ -1,6 +1,7 @@
-package com.github.dcysteine.neicustomdiagram.impl.gregtech.oreprocessing;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing;
 
 import com.github.dcysteine.neicustomdiagram.api.Lang;
+import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.AllDiagramsButton;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInteractable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
@@ -42,11 +43,13 @@ class LayoutHandler {
         static final Point ELECTROMAGNETIC_SEPARATOR = Grid.GRID.grid(4, 2);
     }
 
+    private final DiagramGroupInfo info;
     private final LabelHandler labelHandler;
 
     private ImmutableList<Layout> layouts;
 
-    LayoutHandler(LabelHandler labelHandler) {
+    LayoutHandler(DiagramGroupInfo info, LabelHandler labelHandler) {
+        this.info = info;
         this.labelHandler = labelHandler;
         this.layouts = null;
     }
@@ -80,9 +83,7 @@ class LayoutHandler {
                         .setDrawFunction(Draw::drawBigSlot)
                         .build();
 
-        AllDiagramsButton allDiagramsButton =
-                new AllDiagramsButton(
-                        GregTechOreProcessing.DIAGRAM_GROUP_INFO, Grid.GRID.grid(0, 0));
+        AllDiagramsButton allDiagramsButton = new AllDiagramsButton(info, Grid.GRID.grid(0, 0));
 
         return Layout.builder()
                 .putSlot(SlotKeys.RAW_ORE, inputSlot)
