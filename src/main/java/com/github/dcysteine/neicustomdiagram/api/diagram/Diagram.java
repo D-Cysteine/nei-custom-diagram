@@ -227,9 +227,7 @@ public class Diagram {
              * @throws java.util.NoSuchElementException if this slot group is full.
              */
             public SlotGroupAutoSubBuilder insertIntoNextSlot(DisplayComponent... components) {
-                interactablesBuilder.add(
-                        new InteractiveComponentGroup(slotIterator.next(), components));
-                layouts.put(layout, true);
+                insertIntoSlot(slotIterator.next(), components);
                 return this;
             }
 
@@ -238,9 +236,7 @@ public class Diagram {
              */
             public SlotGroupAutoSubBuilder insertIntoNextSlot(
                     Iterable<DisplayComponent> components) {
-                interactablesBuilder.add(
-                        new InteractiveComponentGroup(slotIterator.next(), components));
-                layouts.put(layout, true);
+                insertIntoSlot(slotIterator.next(), components);
                 return this;
             }
 
@@ -264,12 +260,18 @@ public class Diagram {
              */
             public SlotGroupAutoSubBuilder insertEachSafe(Iterable<DisplayComponent> components) {
                 Iterator<DisplayComponent> iterator = components.iterator();
+
                 while (slotIterator.hasNext() && iterator.hasNext()) {
-                    insertIntoNextSlot(iterator.next());
+                    Slot slot = slotIterator.next();
+
+                    if (slotIterator.hasNext()) {
+                        insertIntoSlot(slot, iterator.next());
+                    } else {
+                        // This is the last slot, so put all remaining components into it.
+                        insertIntoSlot(slot, () -> iterator);
+                    }
                 }
-                if (iterator.hasNext()) {
-                    insertIntoNextSlot(() -> iterator);
-                }
+
                 return this;
             }
 
@@ -297,13 +299,29 @@ public class Diagram {
             public <T extends Iterable<DisplayComponent>> SlotGroupAutoSubBuilder
                     insertEachGroupSafe(Iterable<T> components) {
                 Iterator<T> iterator = components.iterator();
+
                 while (slotIterator.hasNext() && iterator.hasNext()) {
-                    insertIntoNextSlot(iterator.next());
+                    Slot slot = slotIterator.next();
+
+                    if (slotIterator.hasNext()) {
+                        insertIntoSlot(slot, iterator.next());
+                    } else {
+                        // This is the last slot, so put all remaining components into it.
+                        insertIntoSlot(slot, Iterables.concat((Iterable<T>) () -> iterator));
+                    }
                 }
-                if (iterator.hasNext()) {
-                    insertIntoNextSlot(Iterables.concat((Iterable<T>) () -> iterator));
-                }
+
                 return this;
+            }
+
+            private void insertIntoSlot(Slot slot, DisplayComponent... components) {
+                interactablesBuilder.add(new InteractiveComponentGroup(slot, components));
+                layouts.put(layout, true);
+            }
+
+            private void insertIntoSlot(Slot slot, Iterable<DisplayComponent> components) {
+                interactablesBuilder.add(new InteractiveComponentGroup(slot, components));
+                layouts.put(layout, true);
             }
         }
 

@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.impl.gregtech.oreprocessing;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing;
 
 import com.github.dcysteine.neicustomdiagram.api.Logger;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
@@ -11,9 +11,9 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactab
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.impl.common.ComponentTransformer;
-import com.github.dcysteine.neicustomdiagram.impl.gregtech.common.GregTechOreDictUtils;
-import com.github.dcysteine.neicustomdiagram.impl.gregtech.common.GregTechRecipeUtils;
+import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
+import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtils;
+import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechRecipeUtils;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;

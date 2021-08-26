@@ -2,6 +2,7 @@ package com.github.dcysteine.neicustomdiagram.api.draw;
 
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.guihook.GuiContainerManager;
+import com.github.dcysteine.neicustomdiagram.api.Formatter;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.TooltipLine;
 import com.google.auto.value.AutoValue;
@@ -132,21 +133,24 @@ public final class Draw {
             height /= 2;
         }
 
-        int x = pos.x() - (width / 2);
-        int y = pos.y() - (height / 2);
+        int x, y;
         if (small) {
-            x *= 2;
-            y *= 2;
+            x = 2 * pos.x() - width;
+            y = 2 * pos.y() - height;
 
             GL11.glPushMatrix();
             GL11.glScalef(0.5f, 0.5f, 0.5f);
+        } else {
+            x = pos.x() - (width / 2);
+            y = pos.y() - (height / 2);
         }
+
         GL11.glDisable(GL11.GL_LIGHTING);
         GuiDraw.drawString(text, x, y, color, shadow);
-
         // Looks like drawString() leaves color blending active, so reset it.
         GL11.glColor4f(1, 1, 1, 1);
         GL11.glEnable(GL11.GL_LIGHTING);
+
         if (small) {
             GL11.glPopMatrix();
         }
@@ -158,7 +162,7 @@ public final class Draw {
      * @param small Whether to draw half-scale text; use this for fluid stack sizes.
      */
     public static void drawStackSize(int stackSize, Point pos, boolean small) {
-        String text = String.format("%,d", stackSize);
+        String text = Formatter.formatInt(stackSize);
         int textWidth = GuiDraw.getStringWidth(text);
         int textHeight = TEXT_HEIGHT;
         if (small) {
@@ -167,10 +171,26 @@ public final class Draw {
         }
 
         Point textCenter =
-                pos.translate(
-                        (ICON_WIDTH / 2) - (textWidth / 2),
-                        (ICON_WIDTH / 2) - (textHeight / 2));
+                pos.translate((ICON_WIDTH - textWidth) / 2, (ICON_WIDTH - textHeight) / 2);
         drawText(text, textCenter, Color.WHITE, small, true);
+    }
+
+    /**
+     * Draws additional information for a component centered on the given point.
+     *
+     * <p>This will be drawn in the top-left corner of the component. Keep this short!
+     */
+    public static void drawAdditionalInfo(String text, Point pos, boolean small) {
+        int textWidth = GuiDraw.getStringWidth(text);
+        int textHeight = TEXT_HEIGHT;
+        if (small) {
+            textWidth /= 2;
+            textHeight /= 2;
+        }
+
+        Point textCenter =
+                pos.translate((textWidth - ICON_WIDTH) / 2, (textHeight - ICON_WIDTH) / 2);
+        drawText(text, textCenter, Color.YELLOW, small, true);
     }
 
     /**

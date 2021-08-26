@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.impl.common;
+package com.github.dcysteine.neicustomdiagram.util;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;

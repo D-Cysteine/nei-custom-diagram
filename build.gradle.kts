@@ -101,16 +101,6 @@ tasks.withType<Jar> {
             )
         )
     }
-
-    // Move access transformer config into META-INF
-    this.rename("(neicustomdiagram_at\\.cfg)", "META-INF/$1")
-
-    // Update META-INF/MANIFEST.MF
-    this.manifest.attributes(
-        mapOf(
-            Pair("FMLAT", "neicustomdiagram_at.cfg")
-        )
-    )
 }
 
 val sourcesJar by tasks.creating(Jar::class) {

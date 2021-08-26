@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.impl.gregtech.oredictionary;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech.oredictionary;
 
 import codechicken.lib.gui.GuiDraw;
 import com.github.dcysteine.neicustomdiagram.api.Lang;
@@ -16,8 +16,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Text;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.DynamicDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
-import com.github.dcysteine.neicustomdiagram.impl.common.ComponentTransformer;
-import com.github.dcysteine.neicustomdiagram.impl.gregtech.common.GregTechOreDictUtils;
+import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
+import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtils;
 import com.google.common.collect.Lists;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
@@ -30,23 +30,29 @@ import java.util.Optional;
 public final class GregTechOreDictionary implements DiagramGenerator {
     public static final ItemComponent ICON =
             GregTechOreDictUtils.getComponent(ItemList.Book_Written_00);
-    public static final DiagramGroupInfo DIAGRAM_GROUP_INFO =
-            DiagramGroupInfo.create(
-                    Lang.GREGTECH_ORE_DICTIONARY.trans("groupname"),
-                    "gregtech.oredictionary", ICON, 2, false);
 
     private static final String SLOT_GROUP_UNIFY = "unify";
     private static final String SLOT_GROUP_ALL = "all";
 
+    private final DiagramGroupInfo info;
+
+    public GregTechOreDictionary(String groupId) {
+        this.info =
+                DiagramGroupInfo.create(
+                        Lang.GREGTECH_ORE_DICTIONARY.trans("groupname"),
+                        groupId, ICON, 2, false);
+
+    }
+
     @Override
     public DiagramGroupInfo info() {
-        return DIAGRAM_GROUP_INFO;
+        return info;
     }
 
     @Override
     public DiagramGroup generate() {
         return new DiagramGroup(
-                DIAGRAM_GROUP_INFO,
+                info,
                 new DynamicDiagramMatcher(GregTechOreDictionary::generateDiagrams));
     }
 

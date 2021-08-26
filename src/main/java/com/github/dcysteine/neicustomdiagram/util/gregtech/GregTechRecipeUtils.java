@@ -1,5 +1,6 @@
-package com.github.dcysteine.neicustomdiagram.impl.gregtech.common;
+package com.github.dcysteine.neicustomdiagram.util.gregtech;
 
+import com.github.dcysteine.neicustomdiagram.api.Formatter;
 import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
@@ -140,10 +141,18 @@ public final class GregTechRecipeUtils {
             int chance = recipe.getOutputChance(i);
 
             if (chance < 100_00) {
+                double normalizedChance = chance / 100d;
+                // Truncate the decimal portion where possible.
+                String formattedChance =
+                        chance % 100 == 0
+                                ? Integer.toString(chance / 100)
+                                : Formatter.formatDouble(normalizedChance);
+
                 Tooltip tooltip =
                         Tooltip.create(
-                                Lang.GREGTECH.transf("outputchance", chance / 100d),
+                                Lang.GREGTECH.transf("outputchance", normalizedChance),
                                 Tooltip.INFO_FORMATTING);
+                builder.setAdditionalInfo(formattedChance + "%");
                 builder.setAdditionalTooltip(tooltip);
             }
 

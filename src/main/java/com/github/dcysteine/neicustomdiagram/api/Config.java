@@ -1,6 +1,5 @@
 package com.github.dcysteine.neicustomdiagram.api;
 
-import com.github.dcysteine.neicustomdiagram.NeiCustomDiagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import net.minecraftforge.common.config.Configuration;
@@ -47,15 +46,16 @@ public final class Config {
     // Static class.
     private Config() {}
 
-    /** This method is only intended to be called during mod loading. */
+    /** This method is only intended to be called during mod initialization. */
     public static void initialize() {
         config = new Configuration(CONFIG_FILE);
 
         // Load all options, so that they get saved if they're missing from the config.
         Arrays.stream(Options.values()).forEach(Options::get);
+        Registry.generators().forEach(generator -> getDiagramEnabled(generator.info()));
     }
 
-    /** This method is only intended to be called during mod loading. */
+    /** This method is only intended to be called during mod initialization. */
     public static void saveConfig() {
         if (config.hasChanged()) {
             config.save();

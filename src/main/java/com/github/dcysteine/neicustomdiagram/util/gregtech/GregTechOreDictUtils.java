@@ -1,7 +1,5 @@
-package com.github.dcysteine.neicustomdiagram.impl.gregtech.common;
+package com.github.dcysteine.neicustomdiagram.util.gregtech;
 
-import com.github.bartimaeusnek.bartworks.system.material.Werkstoff;
-import com.github.bartimaeusnek.bartworks.system.material.WerkstoffLoader;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import gregtech.api.enums.ItemList;
@@ -33,18 +31,6 @@ public final class GregTechOreDictUtils {
     public static List<Component> getAllComponents(OrePrefixes prefix, Materials material) {
         List<ItemStack> itemStacks = GT_OreDictUnificator.getOres(prefix, material);
         return itemStacks.stream().map(ItemComponent::create).collect(Collectors.toList());
-    }
-
-    /** BartWorks method. */
-    public static Optional<ItemComponent> getComponent(OrePrefixes prefix, Werkstoff werkstoff) {
-        if (!werkstoff.hasGenerationFeature(prefix)) {
-            return Optional.empty();
-        }
-
-        Optional<ItemStack> itemStackOptional =
-                Optional.ofNullable(
-                        WerkstoffLoader.getCorrespondingItemStackUnsafe(prefix, werkstoff, 1));
-        return itemStackOptional.map(ItemComponent::create);
     }
 
     /**

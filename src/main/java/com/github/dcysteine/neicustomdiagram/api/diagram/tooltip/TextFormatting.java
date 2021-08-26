@@ -1,11 +1,8 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.tooltip;
 
 import com.google.auto.value.AutoValue;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import net.minecraft.util.EnumChatFormatting;
-
-import java.util.Arrays;
 
 @AutoValue
 public abstract class TextFormatting {

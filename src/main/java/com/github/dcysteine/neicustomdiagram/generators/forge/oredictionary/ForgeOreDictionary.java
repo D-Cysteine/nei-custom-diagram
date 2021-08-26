@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.impl.forge.oredictionary;
+package com.github.dcysteine.neicustomdiagram.generators.forge.oredictionary;
 
 import codechicken.lib.gui.GuiDraw;
 import com.github.dcysteine.neicustomdiagram.api.Lang;
@@ -17,8 +17,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Text;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.DynamicDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
-import com.github.dcysteine.neicustomdiagram.impl.common.ComponentTransformer;
-import com.github.dcysteine.neicustomdiagram.impl.common.OreDictUtils;
+import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
+import com.github.dcysteine.neicustomdiagram.util.OreDictUtils;
 import net.minecraft.item.Item;
 
 import java.util.Collection;
@@ -28,23 +28,27 @@ import java.util.stream.Collectors;
 public final class ForgeOreDictionary implements DiagramGenerator {
     public static final ItemComponent ICON =
             ItemComponent.create((Item) Item.itemRegistry.getObject("book"), 0);
-    public static final DiagramGroupInfo DIAGRAM_GROUP_INFO =
-            DiagramGroupInfo.create(
-                    Lang.FORGE_ORE_DICTIONARY.trans("groupname"),
-                    "forge.oredictionary", ICON, 2, false);
 
     private static final String SLOT_GROUP_KEY = "key";
 
+    private final DiagramGroupInfo info;
+
+    public ForgeOreDictionary(String groupId) {
+        this.info =
+                DiagramGroupInfo.create(
+                        Lang.FORGE_ORE_DICTIONARY.trans("groupname"),
+                        groupId, ICON, 2, false);
+    }
+
     @Override
     public DiagramGroupInfo info() {
-        return DIAGRAM_GROUP_INFO;
+        return info;
     }
 
     @Override
     public DiagramGroup generate() {
         return new DiagramGroup(
-                DIAGRAM_GROUP_INFO,
-                new DynamicDiagramMatcher(ForgeOreDictionary::generateDiagrams));
+                info, new DynamicDiagramMatcher(ForgeOreDictionary::generateDiagrams));
     }
 
     private static Collection<Diagram> generateDiagrams(

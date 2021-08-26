@@ -11,6 +11,7 @@ import codechicken.nei.recipe.GuiRecipe;
 import codechicken.nei.recipe.ICraftingHandler;
 import codechicken.nei.recipe.IUsageHandler;
 import com.github.dcysteine.neicustomdiagram.api.Config;
+import com.github.dcysteine.neicustomdiagram.api.Reflection;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
@@ -117,7 +118,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     public void onUpdate() {
         if (!NEIClientUtils.shiftKey()) {
             if (Config.Options.CTRL_FAST_FORWARD.get() && NEIClientUtils.controlKey()) {
-                ticker.tick(20);
+                ticker.tick(Ticker.TICKS_PER_CYCLE);
             } else {
                 ticker.tick();
             }
@@ -158,8 +159,8 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         java.awt.Point mouse = GuiDraw.getMousePosition();
         java.awt.Point offset = gui.getRecipePosition(recipe);
 
-        int x = mouse.x - (gui.guiLeft + offset.x);
-        int y = mouse.y - (gui.guiTop + offset.y);
+        int x = mouse.x - (Reflection.GUI_LEFT.getInt(gui) + offset.x);
+        int y = mouse.y - (Reflection.GUI_TOP.getInt(gui) + offset.y);
         return Point.create(x, y);
     }
 

@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.impl.gregtech.oreprocessing;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing;
 
 import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
@@ -6,7 +6,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInte
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.impl.gregtech.common.GregTechOreDictUtils;
+import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtils;
 import gregtech.api.enums.ItemList;
 
 import java.util.EnumMap;
