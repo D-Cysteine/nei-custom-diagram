@@ -1,5 +1,8 @@
 package com.github.dcysteine.neicustomdiagram.api.draw;
 
+import codechicken.nei.NEIClientUtils;
+import com.github.dcysteine.neicustomdiagram.api.Config;
+
 /** Class that keeps track of the tick count, for drawing animations. */
 public final class Ticker {
     /**
@@ -16,8 +19,12 @@ public final class Ticker {
         ticks = 0;
     }
 
-    public void tick(int count) {
-        ticks += count;
+    public void tick() {
+        if (Config.Options.CTRL_FAST_FORWARD.get() && NEIClientUtils.controlKey()) {
+            ticks += Ticker.TICKS_PER_CYCLE;
+        } else {
+            ticks++;
+        }
 
         // Just in case we somehow overflow.
         //
@@ -27,10 +34,6 @@ public final class Ticker {
         if (ticks < 0) {
             ticks = 0;
         }
-    }
-
-    public void tick() {
-        tick(1);
     }
 
     public int ticks() {

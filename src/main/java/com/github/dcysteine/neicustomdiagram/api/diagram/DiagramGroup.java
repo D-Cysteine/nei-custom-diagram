@@ -117,11 +117,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     @Override
     public void onUpdate() {
         if (!NEIClientUtils.shiftKey()) {
-            if (Config.Options.CTRL_FAST_FORWARD.get() && NEIClientUtils.controlKey()) {
-                ticker.tick(Ticker.TICKS_PER_CYCLE);
-            } else {
-                ticker.tick();
-            }
+            ticker.tick();
         }
     }
 

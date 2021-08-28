@@ -14,10 +14,11 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Text;
-import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.DynamicDiagramMatcher;
+import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtils;
+import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFormatting;
+import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
 import com.google.common.collect.Lists;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
@@ -27,9 +28,15 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Generates diagrams showing GregTech ore dictionary data for any item.
+ *
+ * <p>This diagram generator generates its diagrams dynamically, and so does not support showing all
+ * diagrams.
+ */
 public final class GregTechOreDictionary implements DiagramGenerator {
     public static final ItemComponent ICON =
-            GregTechOreDictUtils.getComponent(ItemList.Book_Written_00);
+            GregTechOreDictUtil.getComponent(ItemList.Book_Written_01);
 
     private static final String SLOT_GROUP_UNIFY = "unify";
     private static final String SLOT_GROUP_ALL = "all";
@@ -53,24 +60,24 @@ public final class GregTechOreDictionary implements DiagramGenerator {
     public DiagramGroup generate() {
         return new DiagramGroup(
                 info,
-                new DynamicDiagramMatcher(GregTechOreDictionary::generateDiagrams));
+                new CustomDiagramMatcher(GregTechOreDictionary::generateDiagrams));
     }
 
     private static Collection<Diagram> generateDiagrams(
             Interactable.RecipeType recipeType, Component component) {
-        List<Component> allComponents = GregTechOreDictUtils.getAssociatedComponents(component);
-        Optional<ItemData> itemDataOptional = GregTechOreDictUtils.getItemData(component);
+        List<Component> allComponents = GregTechOreDictUtil.getAssociatedComponents(component);
+        Optional<ItemData> itemDataOptional = GregTechOreDictUtil.getItemData(component);
         if (allComponents.size() <= 1 && !itemDataOptional.isPresent()) {
             // Don't bother returning a diagram that contains just the input element.
             return Lists.newArrayList();
         }
-        List<Component> unifyComponents = GregTechOreDictUtils.reverseUnify(component);
+        List<Component> unifyComponents = GregTechOreDictUtil.reverseUnify(component);
 
         Diagram.Builder builder = Diagram.builder().addLayout(buildLayout(itemDataOptional));
         builder.autoInsertIntoSlotGroup(SLOT_GROUP_UNIFY)
-                .insertEachSafe(ComponentTransformer.transformCollectionToDisplay(unifyComponents));
+                .insertEachSafe(ComponentTransformer.transformToDisplay(unifyComponents));
         builder.autoInsertIntoSlotGroup(SLOT_GROUP_ALL)
-                .insertEachSafe(ComponentTransformer.transformCollectionToDisplay(allComponents));
+                .insertEachSafe(ComponentTransformer.transformToDisplay(allComponents));
 
         return Lists.newArrayList(builder.build());
     }
@@ -79,7 +86,7 @@ public final class GregTechOreDictionary implements DiagramGenerator {
         Layout.Builder builder = Layout.builder()
                 .putSlotGroup(
                         SLOT_GROUP_UNIFY,
-                        SlotGroup.builder(2, 6, Grid.GRID.grid(1, 2), Grid.Direction.S)
+                        SlotGroup.builder(2, 6, Grid.GRID.grid(1, 3), Grid.Direction.S)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_ORE_DICTIONARY.trans("unifyslot"),
@@ -87,7 +94,7 @@ public final class GregTechOreDictionary implements DiagramGenerator {
                                 .build())
                 .putSlotGroup(
                         SLOT_GROUP_ALL,
-                        SlotGroup.builder(6, 6, Grid.GRID.grid(4, 2), Grid.Direction.SE)
+                        SlotGroup.builder(6, 6, Grid.GRID.grid(4, 3), Grid.Direction.SE)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_ORE_DICTIONARY.trans("allslot"),
@@ -96,8 +103,9 @@ public final class GregTechOreDictionary implements DiagramGenerator {
 
         if (itemDataOptional.isPresent() && itemDataOptional.get().mMaterial != null) {
             Materials material = itemDataOptional.get().mMaterial.mMaterial;
-            String materialName = material.mLocalizedName;
-            boolean small = GuiDraw.getStringWidth(materialName) > Grid.TOTAL_WIDTH - 8;
+            String materialName = GregTechFormatting.getMaterialDescription(material);
+            String prefixName = itemDataOptional.get().mPrefix.mRegularLocalName;
+            boolean small = GuiDraw.getStringWidth(materialName) > Grid.TOTAL_WIDTH - 4;
 
             Text materialNameText =
                     Text.builder(materialName, Grid.GRID.grid(6, 0), Grid.Direction.C)
@@ -111,7 +119,17 @@ public final class GregTechOreDictionary implements DiagramGenerator {
                                             Tooltip.SLOT_FORMATTING))
                             .build();
 
-            builder.addInteractable(materialNameLabel);
+            Text prefixNameText =
+                    Text.builder(prefixName, Grid.GRID.grid(6, 1), Grid.Direction.C).build();
+            Interactable prefixNameLabel =
+                    CustomInteractable.builder(prefixNameText)
+                            .setTooltip(
+                                    Tooltip.create(
+                                            Lang.GREGTECH_ORE_DICTIONARY.trans("prefixnamelabel"),
+                                            Tooltip.SLOT_FORMATTING))
+                            .build();
+
+            builder.addInteractable(materialNameLabel).addInteractable(prefixNameLabel);
         }
 
         return builder.build();

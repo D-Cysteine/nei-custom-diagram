@@ -6,6 +6,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.generators.forge.fluidcontainers.ForgeFluidContainers;
 import com.github.dcysteine.neicustomdiagram.generators.forge.oredictionary.ForgeOreDictionary;
+import com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts.GregTechMaterialParts;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech.oredictionary.GregTechOreDictionary;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing.GregTechOreProcessing;
 import com.google.auto.value.AutoValue;
@@ -30,6 +31,7 @@ public final class Registry {
         // Add your diagram generator here!
         addGenerator("forge.fluidcontainers", ForgeFluidContainers::new);
         addGenerator("forge.oredictionary", ForgeOreDictionary::new);
+        addGenerator("gregtech.materialparts", GregTechMaterialParts::new, ModIds.GREGTECH);
         addGenerator("gregtech.oredictionary", GregTechOreDictionary::new, ModIds.GREGTECH);
         addGenerator("gregtech.oreprocessing", GregTechOreProcessing::new, ModIds.GREGTECH);
     }

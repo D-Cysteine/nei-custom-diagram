@@ -101,6 +101,8 @@ tasks.withType<Jar> {
             )
         )
     }
+
+    this.archiveBaseName.set("NEICustomDiagram")
 }
 
 val sourcesJar by tasks.creating(Jar::class) {

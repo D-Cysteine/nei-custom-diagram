@@ -1,6 +1,7 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.interactable;
 
 import com.github.dcysteine.neicustomdiagram.api.Lang;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Slot;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
@@ -9,6 +10,10 @@ import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import net.minecraft.client.Minecraft;
+import net.minecraft.item.ItemStack;
+
+import java.util.List;
 
 /**
  * An interactive component group.
@@ -104,9 +109,26 @@ public class InteractiveComponentGroup implements Interactable {
     public void drawTooltip(Ticker ticker, Point mousePos) {
         DisplayComponent component = currentComponent(ticker);
 
+        Tooltip itemStackTooltip = Tooltip.EMPTY_TOOLTIP;
+        if (component.type() == Component.ComponentType.ITEM) {
+            ItemStack stack = (ItemStack) component.stack();
+
+            @SuppressWarnings("unchecked")
+            List<String> lines =
+                    stack.getTooltip(
+                            Minecraft.getMinecraft().thePlayer,
+                            Minecraft.getMinecraft().gameSettings.advancedItemTooltips);
+
+            itemStackTooltip =
+                    Tooltip.builder()
+                            .setFormatting(Tooltip.TRIVIAL_FORMATTING)
+                            .addAllTextLines(lines.subList(1, lines.size()))
+                            .build();
+        }
+
         Tooltip.concat(
                         component.descriptionTooltip(), indexTooltip(ticker),
-                        slotTooltip, component.additionalTooltip())
+                        slotTooltip, component.additionalTooltip(), itemStackTooltip)
                 .draw(mousePos);
     }
 }

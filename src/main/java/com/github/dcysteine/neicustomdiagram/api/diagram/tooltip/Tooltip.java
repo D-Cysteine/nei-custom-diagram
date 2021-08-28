@@ -20,7 +20,11 @@ public abstract class Tooltip {
             TextFormatting.create(false, EnumChatFormatting.AQUA);
     public static final TextFormatting INFO_FORMATTING =
             TextFormatting.create(false, EnumChatFormatting.YELLOW);
-    public static final TextFormatting CUSTOM_FORMATTING =
+    public static final TextFormatting URGENT_FORMATTING =
+            TextFormatting.create(false, EnumChatFormatting.RED);
+    public static final TextFormatting TRIVIAL_FORMATTING =
+            TextFormatting.create(false, EnumChatFormatting.GRAY);
+    public static final TextFormatting SPECIAL_FORMATTING =
             TextFormatting.create(false, EnumChatFormatting.LIGHT_PURPLE);
 
     /** The default vertical space between tooltip lines. */

@@ -15,19 +15,24 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Text;
-import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.DynamicDiagramMatcher;
+import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
-import com.github.dcysteine.neicustomdiagram.util.OreDictUtils;
-import net.minecraft.item.Item;
+import com.github.dcysteine.neicustomdiagram.util.OreDictUtil;
+import net.minecraft.init.Items;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Generates diagrams showing Forge ore dictionary data for any item.
+ *
+ * <p>This diagram generator generates its diagrams dynamically, and so does not support showing all
+ * diagrams.
+ */
 public final class ForgeOreDictionary implements DiagramGenerator {
-    public static final ItemComponent ICON =
-            ItemComponent.create((Item) Item.itemRegistry.getObject("book"), 0);
+    public static final ItemComponent ICON = ItemComponent.create(Items.book, 0);
 
     private static final String SLOT_GROUP_KEY = "key";
 
@@ -48,22 +53,22 @@ public final class ForgeOreDictionary implements DiagramGenerator {
     @Override
     public DiagramGroup generate() {
         return new DiagramGroup(
-                info, new DynamicDiagramMatcher(ForgeOreDictionary::generateDiagrams));
+                info, new CustomDiagramMatcher(ForgeOreDictionary::generateDiagrams));
     }
 
     private static Collection<Diagram> generateDiagrams(
             Interactable.RecipeType recipeType, Component component) {
-        return OreDictUtils.getOreNames(component).stream()
+        return OreDictUtil.getOreNames(component).stream()
                 .map(ForgeOreDictionary::generateDiagram)
                 .collect(Collectors.toList());
     }
 
     private static Diagram generateDiagram(String oreName) {
-        List<Component> components = OreDictUtils.getComponents(oreName);
+        List<Component> components = OreDictUtil.getComponents(oreName);
         List<List<DisplayComponent>> displayComponentPermutations =
                 components.stream()
-                        .map(OreDictUtils::getPermutations)
-                        .map(ComponentTransformer::transformCollectionToDisplay)
+                        .map(OreDictUtil::getPermutations)
+                        .map(ComponentTransformer::transformToDisplay)
                         .collect(Collectors.toList());
 
         Diagram.Builder builder = Diagram.builder().addLayout(buildLayout(oreName));
@@ -74,9 +79,9 @@ public final class ForgeOreDictionary implements DiagramGenerator {
     }
 
     private static Layout buildLayout(String oreName) {
-        boolean small = GuiDraw.getStringWidth(oreName) > Grid.TOTAL_WIDTH - 8;
+        boolean small = GuiDraw.getStringWidth(oreName) > Grid.TOTAL_WIDTH - 4;
         Text oreNameText =
-                Text.builder(oreName, Grid.GRID.grid(6, 0), Grid.Direction.C)
+                Text.builder(oreName, Grid.GRID.grid(6, 0), Grid.Direction.N)
                         .setSmall(small)
                         .build();
         Interactable oreNameLabel =
@@ -91,7 +96,7 @@ public final class ForgeOreDictionary implements DiagramGenerator {
                 .addInteractable(oreNameLabel)
                 .putSlotGroup(
                         SLOT_GROUP_KEY,
-                        SlotGroup.builder(6, 6, Grid.GRID.grid(6, 2), Grid.Direction.S)
+                        SlotGroup.builder(9, 8, Grid.GRID.grid(6, 1), Grid.Direction.S)
                                 .build())
                 .build();
     }

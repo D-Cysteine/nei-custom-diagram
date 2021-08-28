@@ -8,9 +8,9 @@ import net.minecraft.item.ItemStack;
 
 import java.util.Optional;
 
-public final class BartWorksOreDictUtils {
+public final class BartWorksOreDictUtil {
     // Static class.
-    private BartWorksOreDictUtils() {}
+    private BartWorksOreDictUtil() {}
 
     public static Optional<ItemComponent> getComponent(OrePrefixes prefix, Werkstoff werkstoff) {
         if (!werkstoff.hasGenerationFeature(prefix)) {

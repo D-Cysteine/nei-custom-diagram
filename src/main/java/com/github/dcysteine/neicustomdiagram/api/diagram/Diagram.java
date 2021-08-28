@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class Diagram {
     protected final Layout layout;
@@ -143,6 +145,10 @@ public class Diagram {
          *     layout in this builder.
          */
         public Builder insertIntoSlot(String key, DisplayComponent... components) {
+            if (components.length == 0) {
+                return this;
+            }
+
             Layout layout = findLayoutContainingSlot(key);
             interactablesBuilder.add(
                     new InteractiveComponentGroup(layout.slot(key).get(), components));
@@ -157,6 +163,10 @@ public class Diagram {
          *     layout in this builder.
          */
         public Builder insertIntoSlot(String key, Iterable<DisplayComponent> components) {
+            if (Iterables.isEmpty(components)) {
+                return this;
+            }
+
             Layout layout = findLayoutContainingSlot(key);
             interactablesBuilder.add(
                     new InteractiveComponentGroup(layout.slot(key).get(), components));
@@ -227,6 +237,10 @@ public class Diagram {
              * @throws java.util.NoSuchElementException if this slot group is full.
              */
             public SlotGroupAutoSubBuilder insertIntoNextSlot(DisplayComponent... components) {
+                if (components.length == 0) {
+                    return this;
+                }
+
                 insertIntoSlot(slotIterator.next(), components);
                 return this;
             }
@@ -236,6 +250,10 @@ public class Diagram {
              */
             public SlotGroupAutoSubBuilder insertIntoNextSlot(
                     Iterable<DisplayComponent> components) {
+                if (Iterables.isEmpty(components)) {
+                    return this;
+                }
+
                 insertIntoSlot(slotIterator.next(), components);
                 return this;
             }
@@ -298,7 +316,10 @@ public class Diagram {
              */
             public <T extends Iterable<DisplayComponent>> SlotGroupAutoSubBuilder
                     insertEachGroupSafe(Iterable<T> components) {
-                Iterator<T> iterator = components.iterator();
+                Iterator<T> iterator =
+                        StreamSupport.stream(components.spliterator(), false)
+                                .filter(iter -> !Iterables.isEmpty(iter))
+                                .collect(Collectors.toList()).iterator();
 
                 while (slotIterator.hasNext() && iterator.hasNext()) {
                     Slot slot = slotIterator.next();

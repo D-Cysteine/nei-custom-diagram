@@ -12,7 +12,10 @@ public final class Lang {
     public static final Lang FORGE_ORE_DICTIONARY =
             new Lang("neicustomdiagram.generators.forge.oredictionary.");
 
-    public static final Lang GREGTECH = new Lang("neicustomdiagram.generators.gregtech.");
+    public static final Lang GREGTECH_UTIL =
+            new Lang("neicustomdiagram.generators.gregtech.util.");
+    public static final Lang GREGTECH_MATERIAL_PARTS =
+            new Lang("neicustomdiagram.generators.gregtech.materialparts.");
     public static final Lang GREGTECH_ORE_DICTIONARY =
             new Lang("neicustomdiagram.generators.gregtech.oredictionary.");
     public static final Lang GREGTECH_ORE_PROCESSING =

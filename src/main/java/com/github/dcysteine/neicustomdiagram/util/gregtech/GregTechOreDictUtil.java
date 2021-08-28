@@ -14,9 +14,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public final class GregTechOreDictUtils {
+public final class GregTechOreDictUtil {
     // Static class.
-    private GregTechOreDictUtils() {}
+    private GregTechOreDictUtil() {}
 
     public static ItemComponent getComponent(ItemList item) {
         return ItemComponent.create(item.get(1));
@@ -60,6 +60,11 @@ public final class GregTechOreDictUtils {
         return results;
     }
 
+    /**
+     * GregTech doesn't handle getting item data for fluids or its own fluid display items.
+     * We'll work around this by trying to place such fluids into a cell, which we can then get item
+     * data for.
+     */
     public static Optional<ItemData> getItemData(Component component) {
         if (component.type() != Component.ComponentType.ITEM) {
             return Optional.empty();
@@ -76,9 +81,9 @@ public final class GregTechOreDictUtils {
      * <p>Use this method when matching diagrams by component.
      */
     public static List<Component> getAssociatedComponents(Component component) {
-        Optional<ItemData> itemDataOptional = getItemData(component);
         List<Component> results = new ArrayList<>(reverseUnify(component));
 
+        Optional<ItemData> itemDataOptional = getItemData(component);
         if (itemDataOptional.isPresent()) {
             ItemData itemData = itemDataOptional.get();
             itemData.mPrefix.mFamiliarPrefixes.forEach(

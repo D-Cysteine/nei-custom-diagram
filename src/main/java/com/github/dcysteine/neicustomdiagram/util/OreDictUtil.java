@@ -12,9 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class OreDictUtils {
+public final class OreDictUtil {
     // Static class.
-    private OreDictUtils() {}
+    private OreDictUtil() {}
 
     public static List<String> getOreNames(Component component) {
         if (component.type() != Component.ComponentType.ITEM) {

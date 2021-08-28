@@ -10,12 +10,12 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagramMatcher;
-import com.github.dcysteine.neicustomdiagram.util.bartworks.BartWorksOreDictUtils;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtils;
+import com.github.dcysteine.neicustomdiagram.util.bartworks.BartWorksOreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
-import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,8 +24,8 @@ import java.util.Optional;
 /** Generates ore processing diagrams for GregTech ores. */
 public final class GregTechOreProcessing implements DiagramGenerator {
     public static final ItemComponent ICON =
-            GregTechOreDictUtils.getComponent(OrePrefixes.ore, Materials.Aluminium)
-                    .orElse(ItemComponent.create(Block.getBlockFromName("iron_ore"), 0).get());
+            GregTechOreDictUtil.getComponent(OrePrefixes.ore, Materials.Beryllium)
+                    .orElse(ItemComponent.create(Blocks.iron_ore, 0).get());
 
     private static final ImmutableList<OrePrefixes> OTHER_ORE_PREFIXES = ImmutableList.of(
             OrePrefixes.oreBlackgranite, OrePrefixes.oreRedgranite, OrePrefixes.oreMarble,
@@ -47,10 +47,12 @@ public final class GregTechOreProcessing implements DiagramGenerator {
         this.layoutHandler = new LayoutHandler(this.info, this.labelHandler);
     }
 
+    @Override
     public DiagramGroupInfo info() {
         return info;
     }
 
+    @Override
     public DiagramGroup generate() {
         labelHandler.initialize();
         layoutHandler.initialize();
@@ -65,7 +67,7 @@ public final class GregTechOreProcessing implements DiagramGenerator {
             }
 
             List<Component> rawOres =
-                    GregTechOreDictUtils.getAllComponents(OrePrefixes.ore, material);
+                    GregTechOreDictUtil.getAllComponents(OrePrefixes.ore, material);
             if (rawOres.isEmpty()) {
                 continue;
             }
@@ -73,7 +75,7 @@ public final class GregTechOreProcessing implements DiagramGenerator {
             OTHER_ORE_PREFIXES.forEach(
                     prefix ->
                             rawOres.addAll(
-                                    GregTechOreDictUtils.getAllComponents(prefix, material)));
+                                    GregTechOreDictUtil.getAllComponents(prefix, material)));
 
             buildDiagram(matcherBuilder, rawOres);
         }
@@ -81,7 +83,7 @@ public final class GregTechOreProcessing implements DiagramGenerator {
         if (Registry.ModIds.isModLoaded(Registry.ModIds.BARTWORKS)) {
             for (Werkstoff werkstoff : Werkstoff.werkstoffHashSet) {
                 Optional<ItemComponent> rawOre =
-                        BartWorksOreDictUtils.getComponent(OrePrefixes.ore, werkstoff);
+                        BartWorksOreDictUtil.getComponent(OrePrefixes.ore, werkstoff);
                 if (!rawOre.isPresent()) {
                     continue;
                 }
@@ -91,12 +93,14 @@ public final class GregTechOreProcessing implements DiagramGenerator {
 
                 OTHER_ORE_PREFIXES.forEach(
                         prefix ->
-                                BartWorksOreDictUtils.getComponent(prefix, werkstoff)
+                                BartWorksOreDictUtil.getComponent(prefix, werkstoff)
                                         .ifPresent(rawOres::add));
 
                 buildDiagram(matcherBuilder, rawOres);
             }
         }
+
+        // TODO maybe add GT++ ores?
 
         return new DiagramGroup(info, matcherBuilder.build());
     }
