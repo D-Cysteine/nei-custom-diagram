@@ -130,7 +130,7 @@ public abstract class SlotGroup implements Drawable {
             ImmutableList.Builder<Slot> slotsBuilder = ImmutableList.builder();
 
             int offsetX = (direction.xFactor - 1) * (width - 1) * slotWidth / 2;
-            int offsetY = (direction.yFactor - 1) * (width - 1) * slotWidth / 2;
+            int offsetY = (direction.yFactor - 1) * (height - 1) * slotWidth / 2;
             Point topLeft = position.translate(offsetX, offsetY);
 
             // Iterate left-to-right, then top-to-bottom.

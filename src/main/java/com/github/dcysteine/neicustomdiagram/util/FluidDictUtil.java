@@ -8,6 +8,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponen
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import net.minecraft.block.Block;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 
@@ -15,9 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public final class FluidDictUtils {
+public final class FluidDictUtil {
     // Static class.
-    private FluidDictUtils() {}
+    private FluidDictUtil() {}
 
     public static Optional<ItemComponent> fluidToItem(Component component) {
         if (component.type() != Component.ComponentType.FLUID) {
@@ -38,6 +39,25 @@ public final class FluidDictUtils {
         }
 
         return FluidComponent.create(block);
+    }
+
+    /**
+     * Returns a {@link DisplayComponent} for the given fluid container, complete with capacity
+     * information.
+     *
+     * <p>This method doesn't check that {@code container} actually is a fluid container; you will
+     * just get capacity {@code 0} if it isn't.
+     */
+    public static DisplayComponent displayFluidContainer(ItemStack container) {
+        int capacity = FluidContainerRegistry.getContainerCapacity(container);
+        return DisplayComponent.builder(container)
+                .setStackSize(Optional.empty())
+                .setAdditionalInfo(Formatter.formatInt(capacity))
+                .setAdditionalTooltip(
+                        Tooltip.create(
+                                Lang.UTIL.transf("capacity", capacity),
+                                Tooltip.INFO_FORMATTING))
+                .build();
     }
 
     /**
@@ -109,15 +129,7 @@ public final class FluidDictUtils {
             for (FluidContainerRegistry.FluidContainerData data
                     : FluidContainerRegistry.getRegisteredFluidContainerData()) {
                 if (fluid == data.fluid.getFluid()) {
-                    results.add(
-                            DisplayComponent.builder(data.filledContainer)
-                                    .setStackSize(Optional.empty())
-                                    .setAdditionalInfo(Formatter.formatInt(data.fluid.amount))
-                                    .setAdditionalTooltip(
-                                            Tooltip.create(
-                                                    Lang.UTIL.transf("capacity", data.fluid.amount),
-                                                    Tooltip.INFO_FORMATTING))
-                                    .build());
+                    results.add(displayFluidContainer(data.filledContainer));
                 }
             }
         }

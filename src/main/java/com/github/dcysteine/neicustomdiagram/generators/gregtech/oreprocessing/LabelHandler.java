@@ -6,7 +6,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInte
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtils;
+import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
 import gregtech.api.enums.ItemList;
 
 import java.util.EnumMap;
@@ -44,7 +44,7 @@ class LabelHandler {
     /** This method must be called before any other methods are called. */
     void initialize() {
         for (ItemLabel itemLabel : ItemLabel.values()) {
-            componentMap.put(itemLabel, GregTechOreDictUtils.getComponent(itemLabel.item));
+            componentMap.put(itemLabel, GregTechOreDictUtil.getComponent(itemLabel.item));
         }
     }
 

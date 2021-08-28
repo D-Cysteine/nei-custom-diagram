@@ -147,9 +147,10 @@ public final class Draw {
 
         GL11.glDisable(GL11.GL_LIGHTING);
         GuiDraw.drawString(text, x, y, color, shadow);
+        GL11.glEnable(GL11.GL_LIGHTING);
+
         // Looks like drawString() leaves color blending active, so reset it.
         GL11.glColor4f(1, 1, 1, 1);
-        GL11.glEnable(GL11.GL_LIGHTING);
 
         if (small) {
             GL11.glPopMatrix();
@@ -272,6 +273,9 @@ public final class Draw {
         GuiContainerManager.drawItem(
                 pos.x() - ICON_WIDTH / 2, pos.y() - ICON_WIDTH / 2, itemStack);
         GL11.glEnable(GL11.GL_LIGHTING);
+
+        // Looks like drawItem() leaves color blending active, so reset it.
+        GL11.glColor4f(1, 1, 1, 1);
     }
 
     /** Draws a fluid centered on the given point. */
@@ -281,16 +285,20 @@ public final class Draw {
             return;
         }
 
+        // Some fluids don't set their icon color, so we have to blend in the color ourselves.
         int color = fluid.getColor();
         GL11.glColor3ub(
                 (byte) ((color & 0xFF0000) >> 16),
                 (byte) ((color & 0x00FF00) >> 8),
                 (byte) (color & 0x0000FF));
 
+        GL11.glDisable(GL11.GL_LIGHTING);
         GuiDraw.changeTexture(TextureMap.locationBlocksTexture);
         GuiDraw.gui.drawTexturedModelRectFromIcon(
                 pos.x() - ICON_WIDTH / 2, pos.y() - ICON_WIDTH / 2, icon, ICON_WIDTH, ICON_WIDTH);
+        GL11.glEnable(GL11.GL_LIGHTING);
 
+        // Reset color blending.
         GL11.glColor4f(1, 1, 1, 1);
     }
 

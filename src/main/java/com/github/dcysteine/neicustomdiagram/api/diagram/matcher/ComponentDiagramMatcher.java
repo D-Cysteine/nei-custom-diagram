@@ -11,7 +11,7 @@ import java.util.EnumMap;
 import java.util.stream.Collectors;
 
 /**
- * Abstract implementation of {@link DiagramMatcher} that looks up diagrams by their components.
+ * Implementation of {@link DiagramMatcher} that looks up diagrams by their components.
  *
  * <p>This implementation has fast lookup regardless of the number of diagrams, but is
  * memory-intensive. This implementation is a good choice if:

@@ -22,8 +22,7 @@ public final class Config {
     public enum Options {
         CTRL_FAST_FORWARD(
                 "ctrl_fast_forward", false,
-                "Enables fast-forwarding through component groups by holding down <Ctrl>."
-                        + " Epilepsy warning!");
+                "Enables fast-forwarding through component groups by holding down <Ctrl>.");
 
         private final String key;
         private final boolean defaultValue;

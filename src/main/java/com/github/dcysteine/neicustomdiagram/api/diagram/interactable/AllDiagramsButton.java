@@ -12,7 +12,7 @@ public class AllDiagramsButton extends CustomInteractable {
     public AllDiagramsButton(DiagramGroupInfo info, Point pos) {
         super(
                 ComponentLabel.create(info.icon(), pos),
-                Tooltip.create(Lang.API.trans("showalldiagrams"), Tooltip.CUSTOM_FORMATTING),
+                Tooltip.create(Lang.API.trans("showalldiagrams"), Tooltip.SPECIAL_FORMATTING),
                 CustomInteractable.buildInteractionLambda(info.groupId()),
                 Draw::drawRaisedSlot,
                 p -> Draw.drawOverlay(p, Draw.Color.OVERLAY_BLUE));

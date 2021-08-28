@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public final class GregTechRecipeUtils {
+public final class GregTechRecipeUtil {
     // Static class.
-    private GregTechRecipeUtils() {}
+    private GregTechRecipeUtil() {}
 
     /** Compares ignoring stack size. */
     public static List<GT_Recipe> findRecipeByInput(
@@ -150,7 +150,7 @@ public final class GregTechRecipeUtils {
 
                 Tooltip tooltip =
                         Tooltip.create(
-                                Lang.GREGTECH.transf("outputchance", normalizedChance),
+                                Lang.GREGTECH_UTIL.transf("outputchance", normalizedChance),
                                 Tooltip.INFO_FORMATTING);
                 builder.setAdditionalInfo(formattedChance + "%");
                 builder.setAdditionalTooltip(tooltip);

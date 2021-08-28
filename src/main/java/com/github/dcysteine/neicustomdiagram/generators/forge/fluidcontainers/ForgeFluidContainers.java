@@ -14,21 +14,25 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactab
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
-import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.DynamicDiagramMatcher;
+import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
-import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
-import com.github.dcysteine.neicustomdiagram.util.FluidDictUtils;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtils;
+import com.github.dcysteine.neicustomdiagram.util.FluidDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtil;
 import com.google.common.collect.Lists;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Generates diagrams showing all Forge-registered fluid containers for a given fluid.
+ *
+ * <p>This diagram generator generates its diagrams dynamically, and so does not support showing all
+ * diagrams.
+ */
 public final class ForgeFluidContainers implements DiagramGenerator {
-    public static final ItemComponent ICON =
-            ItemComponent.create((Item) Item.itemRegistry.getObject("water_bucket"), 0);
+    public static final ItemComponent ICON = ItemComponent.create(Items.water_bucket, 0);
 
     private static final String SLOT_GROUP_FLUIDS = "fluids";
     private static final String SLOT_GROUP_CONTAINERS = "containers";
@@ -52,22 +56,22 @@ public final class ForgeFluidContainers implements DiagramGenerator {
     public DiagramGroup generate() {
         layout = buildLayout();
         return new DiagramGroup(
-                info, new DynamicDiagramMatcher(this::generateDiagrams));
+                info, new CustomDiagramMatcher(this::generateDiagrams));
     }
 
     private Collection<Diagram> generateDiagrams(
             Interactable.RecipeType recipeType, Component component) {
-        Optional<FluidComponent> fluidOptional = FluidDictUtils.getFluidContents(component);
+        Optional<FluidComponent> fluidOptional = FluidDictUtil.getFluidContents(component);
         if (!fluidOptional.isPresent() && Registry.ModIds.isModLoaded(Registry.ModIds.GREGTECH)) {
             // Try looking up GregTech fluid display stack.
-            fluidOptional = GregTechFluidDictUtils.displayItemToFluid(component);
+            fluidOptional = GregTechFluidDictUtil.displayItemToFluid(component);
         }
         if (!fluidOptional.isPresent()) {
             return Lists.newArrayList();
         }
 
         FluidComponent fluid = fluidOptional.get();
-        List<DisplayComponent> fluidContainers = FluidDictUtils.getFluidContainers(fluid);
+        List<DisplayComponent> fluidContainers = FluidDictUtil.getFluidContainers(fluid);
         // Remove the first element, which is the fluid.
         fluidContainers = fluidContainers.subList(1, fluidContainers.size());
 
@@ -84,7 +88,7 @@ public final class ForgeFluidContainers implements DiagramGenerator {
                                         Tooltip.SLOT_FORMATTING))
                         .build());
 
-        Optional<ItemComponent> blockOptional = FluidDictUtils.fluidToItem(fluid);
+        Optional<ItemComponent> blockOptional = FluidDictUtil.fluidToItem(fluid);
         blockOptional.ifPresent(
                 block ->
                         fluidsBuilder.insertIntoNextSlot(
@@ -98,7 +102,7 @@ public final class ForgeFluidContainers implements DiagramGenerator {
 
         if (Registry.ModIds.isModLoaded(Registry.ModIds.GREGTECH)) {
             Optional<ItemComponent> displayItemOptional =
-                    GregTechFluidDictUtils.fluidToDisplayItem(fluid);
+                    GregTechFluidDictUtil.fluidToDisplayItem(fluid);
             displayItemOptional.ifPresent(
                     displayItem ->
                             fluidsBuilder.insertIntoNextSlot(
@@ -118,11 +122,11 @@ public final class ForgeFluidContainers implements DiagramGenerator {
         return Layout.builder()
                 .putSlotGroup(
                         SLOT_GROUP_FLUIDS,
-                        SlotGroup.builder(1, 6, Grid.GRID.grid(1, 2), Grid.Direction.S)
+                        SlotGroup.builder(1, 6, Grid.GRID.grid(1, 0), Grid.Direction.S)
                                 .build())
                 .putSlotGroup(
                         SLOT_GROUP_CONTAINERS,
-                        SlotGroup.builder(6, 6, Grid.GRID.grid(3, 2), Grid.Direction.SE)
+                        SlotGroup.builder(6, 6, Grid.GRID.grid(3, 0), Grid.Direction.SE)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.FORGE_FLUID_CONTAINERS.trans("containersslot"),

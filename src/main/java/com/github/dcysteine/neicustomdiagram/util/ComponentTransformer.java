@@ -29,15 +29,14 @@ public final class ComponentTransformer {
         return displayComponent.component();
     }
 
-    public static List<DisplayComponent> transformCollectionToDisplay(
-            Collection<Component> components) {
+    public static List<DisplayComponent> transformToDisplay(Collection<Component> components) {
         return components.stream()
                 .map(ComponentTransformer::transformToDisplay)
                 .collect(Collectors.toList());
     }
 
     /** The returned list will have duplicate {@link Component}s removed. */
-    public static List<Component> transformCollectionFromDisplay(
+    public static List<Component> transformFromDisplay(
             Collection<DisplayComponent> displayComponents) {
         return displayComponents.stream()
                 .map(ComponentTransformer::transformFromDisplay)

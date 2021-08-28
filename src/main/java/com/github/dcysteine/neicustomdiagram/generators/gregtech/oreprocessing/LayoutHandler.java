@@ -33,6 +33,7 @@ class LayoutHandler {
                 "crushed-ore-thermal-centrifuge-macerate";
         static final String PURIFIED_ORE_THERMAL_CENTRIFUGE_MACERATE =
                 "purified-ore-thermal-centrifuge-macerate";
+        static final String ADDITIONAL_RECIPE_OUTPUTS = "additional-recipe-outputs";
     }
 
     static final class AdditionalRecipeLabelPositions {
@@ -69,6 +70,7 @@ class LayoutHandler {
         layoutsBuilder.add(buildPurifiedDustCentrifugeLayout());
         layoutsBuilder.add(buildCrushedOreThermalCentrifugeMacerateLayout());
         layoutsBuilder.add(buildPurifiedOreThermalCentrifugeMacerateLayout());
+        layoutsBuilder.add(buildAdditionalRecipeOutputsLayout());
         layouts = layoutsBuilder.build();
     }
 
@@ -375,6 +377,21 @@ class LayoutHandler {
                 .addLines(lines)
                 .addInteractable(label)
                 .putSlotGroup(SlotGroupKeys.PURIFIED_ORE_THERMAL_CENTRIFUGE_MACERATE, outputSlots)
+                .build();
+    }
+
+    private Layout buildAdditionalRecipeOutputsLayout() {
+        SlotGroup outputSlots =
+                SlotGroup.builder(9, 2, Grid.GRID.grid(6, 24), Grid.Direction.S)
+                        .setDefaultTooltip(
+                                Tooltip.create(
+                                        Lang.GREGTECH_ORE_PROCESSING.trans(
+                                                "additionalrecipeoutputsslot"),
+                                        Tooltip.SLOT_FORMATTING))
+                        .build();
+
+        return Layout.builder()
+                .putSlotGroup(SlotGroupKeys.ADDITIONAL_RECIPE_OUTPUTS, outputSlots)
                 .build();
     }
 }
