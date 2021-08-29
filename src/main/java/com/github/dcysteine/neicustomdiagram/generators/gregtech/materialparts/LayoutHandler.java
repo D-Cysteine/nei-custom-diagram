@@ -124,7 +124,7 @@ class LayoutHandler {
         return Layout.builder()
                 .putSlotGroup(
                         SlotGroupKeys.RELATED_MATERIALS,
-                        SlotGroup.builder(4, 1, Grid.GRID.grid(12, 0), Grid.Direction.W)
+                        SlotGroup.builder(3, 1, Grid.GRID.grid(12, 0), Grid.Direction.W)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_MATERIAL_PARTS.trans(

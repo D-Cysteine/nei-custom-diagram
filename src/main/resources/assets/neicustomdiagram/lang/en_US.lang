@@ -21,6 +21,7 @@ neicustomdiagram.generators.gregtech.materialparts.materialinfohot=DANGER! HOT!
 neicustomdiagram.generators.gregtech.materialparts.materialinfocold=DANGER! COLD!
 neicustomdiagram.generators.gregtech.materialparts.blastfurnaceinfo=Blast furnace required!
 neicustomdiagram.generators.gregtech.materialparts.blastfurnaceinfotemp=Blast furnace temp: %,dK
+neicustomdiagram.generators.gregtech.materialparts.blastfurnaceinfocoils=Usable coils:
 neicustomdiagram.generators.gregtech.materialparts.materiallabel=Material: %s
 neicustomdiagram.generators.gregtech.materialparts.relatedmaterialsslot=Related materials
 neicustomdiagram.generators.gregtech.materialparts.prefixlabel=Ore prefix: %s
