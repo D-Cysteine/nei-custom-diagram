@@ -105,10 +105,14 @@ class DiagramFactory {
     }
 
     private final LayoutHandler layoutHandler;
+    private final HeatingCoilHandler heatingCoilHandler;
     private final RelatedMaterialsHandler relatedMaterialsHandler;
 
-    DiagramFactory(LayoutHandler layoutHandler, RelatedMaterialsHandler relatedMaterialsHandler) {
+    DiagramFactory(
+            LayoutHandler layoutHandler, HeatingCoilHandler heatingCoilHandler,
+            RelatedMaterialsHandler relatedMaterialsHandler) {
         this.layoutHandler = layoutHandler;
+        this.heatingCoilHandler = heatingCoilHandler;
         this.relatedMaterialsHandler = relatedMaterialsHandler;
     }
 
@@ -218,31 +222,35 @@ class DiagramFactory {
         }
 
         return CustomInteractable.builder(MATERIAL_INFO_ICON)
-                .setDrawBackground(Draw::drawRaisedSlot)
-                .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Color.OVERLAY_WHITE))
                 .setTooltip(tooltipBuilder.build())
                 .build();
     }
 
-    private static Optional<Interactable> buildBlastFurnaceInfoButton(Materials material) {
+    private Optional<Interactable> buildBlastFurnaceInfoButton(Materials material) {
         if (!material.mBlastFurnaceRequired) {
             return Optional.empty();
         }
 
-        String line;
+        Tooltip.Builder tooltipBuilder = Tooltip.builder().setFormatting(Tooltip.INFO_FORMATTING);
         if (material.mBlastFurnaceTemp > 0) {
-            line =
-                    Lang.GREGTECH_MATERIAL_PARTS.transf(
-                            "blastfurnaceinfotemp", material.mBlastFurnaceTemp);
+            tooltipBuilder.addTextLine(
+                            Lang.GREGTECH_MATERIAL_PARTS.transf(
+                                    "blastfurnaceinfotemp", material.mBlastFurnaceTemp))
+                    .addSpacing()
+                    .setFormatting(Tooltip.SLOT_FORMATTING)
+                    .addTextLine(
+                            Lang.GREGTECH_MATERIAL_PARTS.trans("blastfurnaceinfocoils"))
+                    .setFormatting(Tooltip.DEFAULT_FORMATTING);
+
+            heatingCoilHandler.getHeatingCoils(material.mBlastFurnaceTemp)
+                    .forEach(tooltipBuilder::addComponent);
         } else {
-            line = Lang.GREGTECH_MATERIAL_PARTS.trans("blastfurnaceinfo");
+            tooltipBuilder.addTextLine(Lang.GREGTECH_MATERIAL_PARTS.trans("blastfurnaceinfo"));
         }
 
         return Optional.of(
                 CustomInteractable.builder(BLAST_FURNACE_INFO_ICON)
-                        .setDrawBackground(Draw::drawRaisedSlot)
-                        .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Color.OVERLAY_WHITE))
-                        .setTooltip(Tooltip.create(line, Tooltip.INFO_FORMATTING))
+                        .setTooltip(tooltipBuilder.build())
                         .build());
     }
 

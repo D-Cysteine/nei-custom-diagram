@@ -33,10 +33,10 @@ class RelatedMaterialsHandler {
 
     /**
      * There are some materials that have related materials set, but don't actually have any ore
-     * prefixes registered. Skip these since we can't show anything useful for them.
+     * prefixes registered or are dummy materials.
      */
     private static final ImmutableSet<Materials> EXCLUDED_MATERIALS =
-            ImmutableSet.of(Materials.Peanutwood);
+            ImmutableSet.of(Materials.AnyCopper, Materials.AnyIron, Materials.Peanutwood);
 
     /**
      * Set multimap of material to complete set of related materials.

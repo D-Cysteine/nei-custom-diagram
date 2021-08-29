@@ -29,6 +29,7 @@ public final class GregTechMaterialParts implements DiagramGenerator {
     private final DiagramGroupInfo info;
 
     private final LayoutHandler layoutHandler;
+    private final HeatingCoilHandler heatingCoilHandler;
     private final RelatedMaterialsHandler relatedMaterialsHandler;
     private final DiagramFactory diagramFactory;
 
@@ -41,8 +42,10 @@ public final class GregTechMaterialParts implements DiagramGenerator {
                         groupId, ICON, 1);
 
         this.layoutHandler = new LayoutHandler(this.info);
+        this.heatingCoilHandler = new HeatingCoilHandler();
         this.relatedMaterialsHandler = new RelatedMaterialsHandler();
-        this.diagramFactory = new DiagramFactory(this.layoutHandler, this.relatedMaterialsHandler);
+        this.diagramFactory = new DiagramFactory(
+                this.layoutHandler, this.heatingCoilHandler, this.relatedMaterialsHandler);
 
         this.materialsMap = null;
     }
@@ -55,6 +58,7 @@ public final class GregTechMaterialParts implements DiagramGenerator {
     @Override
     public DiagramGroup generate() {
         layoutHandler.initialize();
+        heatingCoilHandler.initialize();
         relatedMaterialsHandler.initialize();
 
         ImmutableBiMap.Builder<Materials, Diagram> materialsMapBuilder = ImmutableBiMap.builder();
