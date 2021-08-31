@@ -1,8 +1,8 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.interactable;
 
+import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.draw.BoundedDrawable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -28,7 +28,7 @@ public interface Interactable extends BoundedDrawable {
                 ImmutableList.of(CRAFTING, USAGE);
     }
 
-    default void interact(Ticker ticker, RecipeType recipeType) {
+    default void interact(DiagramState diagramState, RecipeType recipeType) {
         // Default implementation is to do nothing.
     }
 
@@ -38,7 +38,7 @@ public interface Interactable extends BoundedDrawable {
      * <p>Not all interactables are going to want to draw an overlay; in particular, interactables
      * with odd bounding boxes, like text, probably won't want to override this.
      */
-    default void drawOverlay(Ticker ticker) {
+    default void drawOverlay(DiagramState diagramState) {
         // Default implementation is to do nothing.
     }
 
@@ -47,7 +47,7 @@ public interface Interactable extends BoundedDrawable {
      *
      * <p>This is due to how the handle tooltip method gets called.
      */
-    default void drawTooltip(Ticker ticker, Point mousePos) {
+    default void drawTooltip(DiagramState diagramState, Point mousePos) {
         // Default implementation is to do nothing.
     }
 

@@ -5,7 +5,6 @@ import com.github.dcysteine.neicustomdiagram.api.Config;
 import com.github.dcysteine.neicustomdiagram.api.Logger;
 import com.github.dcysteine.neicustomdiagram.api.Reflection;
 import com.github.dcysteine.neicustomdiagram.api.Registry;
-import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -58,7 +57,9 @@ public final class NeiCustomDiagram {
         Logger.MOD.info("Mod post-load starting...");
 
         // TODO might be nice to hook into BetterLoadingScreen.
+        //  Though presently we load so fast that it really doesn't matter.
         Registry.generateDiagramGroups();
+        Registry.cleanUp();
 
         Logger.MOD.info("Mod post-load complete!");
     }
@@ -67,8 +68,7 @@ public final class NeiCustomDiagram {
     public void registerHandlers(NEIRegisterHandlerInfosEvent event) {
         Logger.MOD.info("Registering handlers for diagram groups...");
 
-        for (DiagramGenerator generator : Registry.generators()) {
-            DiagramGroupInfo info = generator.info();
+        for (DiagramGroupInfo info : Registry.info()) {
             if (Config.getDiagramEnabled(info)) {
                 event.registerHandlerInfo(info.groupId(), MOD_NAME, MOD_ID, info::buildHandlerInfo);
                 Logger.MOD.info("Registered handler for diagram group [{}]!", info.groupId());

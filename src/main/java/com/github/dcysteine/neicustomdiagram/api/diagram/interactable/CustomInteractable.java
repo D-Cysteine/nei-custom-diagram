@@ -2,12 +2,12 @@ package com.github.dcysteine.neicustomdiagram.api.diagram.interactable;
 
 import codechicken.nei.recipe.GuiCraftingRecipe;
 import codechicken.nei.recipe.GuiUsageRecipe;
+import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.BoundedDrawable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 
 import java.util.function.Consumer;
 
@@ -65,23 +65,23 @@ public class CustomInteractable implements Interactable {
     }
 
     @Override
-    public void interact(Ticker ticker, RecipeType recipeType) {
+    public void interact(DiagramState diagramState, RecipeType recipeType) {
         interact.accept(recipeType);
     }
 
     @Override
-    public void draw(Ticker ticker) {
+    public void draw(DiagramState diagramState) {
         drawBackground.accept(position());
-        drawable.draw(ticker);
+        drawable.draw(diagramState);
     }
 
     @Override
-    public void drawOverlay(Ticker ticker) {
+    public void drawOverlay(DiagramState diagramState) {
         drawOverlay.accept(position());
     }
 
     @Override
-    public void drawTooltip(Ticker ticker, Point mousePos) {
+    public void drawTooltip(DiagramState diagramState, Point mousePos) {
         tooltip.draw(mousePos);
     }
 

@@ -64,7 +64,7 @@ public final class ForgeOreDictionary implements DiagramGenerator {
     }
 
     private static Diagram generateDiagram(String oreName) {
-        List<Component> components = OreDictUtil.getComponents(oreName);
+        List<ItemComponent> components = OreDictUtil.getComponents(oreName);
         List<List<DisplayComponent>> displayComponentPermutations =
                 components.stream()
                         .map(OreDictUtil::getPermutations)

@@ -1,11 +1,12 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 
 import codechicken.lib.gui.GuiDraw;
+import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.draw.BoundedDrawable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.toprettystring.ToPrettyString;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 
@@ -51,9 +52,12 @@ public abstract class Text implements BoundedDrawable {
     }
 
     @Override
-    public void draw(Ticker ticker) {
+    public void draw(DiagramState diagramState) {
         Draw.drawText(text(), position(), color(), small(), shadow());
     }
+
+    @ToPrettyString
+    public abstract String toPrettyString();
 
     /**
      * Returns a new single-line text builder.

@@ -10,14 +10,12 @@ import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.recipe.GuiRecipe;
 import codechicken.nei.recipe.ICraftingHandler;
 import codechicken.nei.recipe.IUsageHandler;
-import com.github.dcysteine.neicustomdiagram.api.Config;
 import com.github.dcysteine.neicustomdiagram.api.Reflection;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.DiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
@@ -28,31 +26,41 @@ import org.lwjgl.opengl.GL11;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     protected final DiagramGroupInfo info;
     protected final DiagramMatcher matcher;
+    protected final Supplier<DiagramState> diagramStateSupplier;
 
     /**
      * Diagrams to display in NEI.
      */
+    protected final DiagramState diagramState;
     protected final ImmutableList<Diagram> diagrams;
-    protected final Ticker ticker;
 
-    public DiagramGroup(DiagramGroupInfo info, DiagramMatcher matcher) {
+    public DiagramGroup(
+            DiagramGroupInfo info, DiagramMatcher matcher,
+            Supplier<DiagramState> diagramStateSupplier) {
         this.info = info;
         this.matcher = matcher;
+        this.diagramStateSupplier = diagramStateSupplier;
 
+        this.diagramState = diagramStateSupplier.get();
         this.diagrams = ImmutableList.of();
-        this.ticker = new Ticker();
+    }
+
+    public DiagramGroup(DiagramGroupInfo info, DiagramMatcher matcher) {
+        this(info, matcher, DiagramState::new);
     }
 
     public DiagramGroup(DiagramGroup parent, Iterable<Diagram> diagrams) {
         this.info = parent.info;
         this.matcher = parent.matcher;
+        this.diagramStateSupplier = parent.diagramStateSupplier;
 
+        this.diagramState = this.diagramStateSupplier.get();
         this.diagrams = ImmutableList.copyOf(diagrams);
-        this.ticker = new Ticker();
     }
 
     public DiagramGroupInfo info() {
@@ -92,12 +100,14 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         switch (id) {
             case "item":
                 ItemStack itemStack = (ItemStack) stacks[0];
-                return newInstance(matcher.match(recipeType, ItemComponent.create(itemStack)));
+                return newInstance(
+                        matcher.match(recipeType, ItemComponent.createWithNbt(itemStack)));
 
             case "liquid":
             case "fluid":
                 FluidStack fluidStack = (FluidStack) stacks[0];
-                return newInstance(matcher.match(recipeType, FluidComponent.create(fluidStack)));
+                return newInstance(
+                        matcher.match(recipeType, FluidComponent.createWithNbt(fluidStack)));
         }
 
         return newInstance(ImmutableList.of());
@@ -117,33 +127,33 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     @Override
     public void onUpdate() {
         if (!NEIClientUtils.shiftKey()) {
-            ticker.tick();
+            diagramState.tick();
         }
     }
 
     @Override
     public void drawBackground(int recipe) {
         GL11.glColor4f(1, 1, 1, 1);
-        diagrams.get(recipe).drawBackground(ticker);
+        diagrams.get(recipe).drawBackground(diagramState);
     }
 
     @Override
     public void drawForeground(int recipe) {
         GL11.glColor4f(1, 1, 1, 1);
-        diagrams.get(recipe).drawForeground(ticker);
+        diagrams.get(recipe).drawForeground(diagramState);
 
         GuiContainer window = GuiContainerManager.getManager().window;
         if (window instanceof GuiRecipe) {
             Point mousePos = computeMousePosition((GuiRecipe) window, recipe);
             Optional<Interactable> interactable = findHoveredInteractable(mousePos, recipe);
-            interactable.ifPresent(i -> i.drawOverlay(ticker));
+            interactable.ifPresent(i -> i.drawOverlay(diagramState));
         }
     }
 
     public void drawTooltip(GuiRecipe gui, int recipe) {
         Point mousePos = computeMousePosition(gui, recipe);
         Optional<Interactable> interactable = findHoveredInteractable(mousePos, recipe);
-        interactable.ifPresent(i -> i.drawTooltip(ticker, absoluteMousePosition()));
+        interactable.ifPresent(i -> i.drawTooltip(diagramState, absoluteMousePosition()));
     }
 
     protected Point absoluteMousePosition() {
@@ -161,7 +171,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     }
 
     protected Optional<Interactable> findHoveredInteractable(Point mousePos, int recipe) {
-        for (Interactable interactable : diagrams.get(recipe).interactables()) {
+        for (Interactable interactable : diagrams.get(recipe).interactables(diagramState)) {
             if (interactable.checkBoundingBox(mousePos)) {
                 return Optional.of(interactable);
             }
@@ -175,7 +185,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         Optional<Interactable> interactable = findHoveredInteractable(mousePos, recipe);
 
         if (interactable.isPresent()) {
-            interactable.get().interact(ticker, recipeType);
+            interactable.get().interact(diagramState, recipeType);
             return true;
         } else {
             return false;

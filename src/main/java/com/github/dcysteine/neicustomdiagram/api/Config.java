@@ -23,6 +23,8 @@ public final class Config {
         CTRL_FAST_FORWARD(
                 "ctrl_fast_forward", false,
                 "Enables fast-forwarding through component groups by holding down <Ctrl>.");
+        // TODO add config option to show / hide item IDs / damage?
+        // TODO add config option for smaller resolutions? Will probably need to modify layouts...
 
         private final String key;
         private final boolean defaultValue;
@@ -51,7 +53,7 @@ public final class Config {
 
         // Load all options, so that they get saved if they're missing from the config.
         Arrays.stream(Options.values()).forEach(Options::get);
-        Registry.generators().forEach(generator -> getDiagramEnabled(generator.info()));
+        Registry.info().forEach(Config::getDiagramEnabled);
     }
 
     /** This method is only intended to be called during mod initialization. */

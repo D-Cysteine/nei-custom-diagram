@@ -1,10 +1,15 @@
-package com.github.dcysteine.neicustomdiagram.api.draw;
+package com.github.dcysteine.neicustomdiagram.api.diagram;
 
 import codechicken.nei.NEIClientUtils;
 import com.github.dcysteine.neicustomdiagram.api.Config;
 
-/** Class that keeps track of the tick count, for drawing animations. */
-public final class Ticker {
+/**
+ * Class that keeps track of any mutable state for diagrams.
+ *
+ * <p>The base implementation just keeps track of the tick count, for cycling through groups of
+ * components or animations. However, this class can be extended to include custom state.
+ */
+public class DiagramState {
     /**
      * Defines the length of a cycle, in ticks.
      *
@@ -15,13 +20,13 @@ public final class Ticker {
 
     private int ticks;
 
-    public Ticker() {
+    public DiagramState() {
         ticks = 0;
     }
 
     public void tick() {
         if (Config.Options.CTRL_FAST_FORWARD.get() && NEIClientUtils.controlKey()) {
-            ticks += Ticker.TICKS_PER_CYCLE;
+            ticks += DiagramState.TICKS_PER_CYCLE;
         } else {
             ticks++;
         }

@@ -2,7 +2,6 @@ package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts;
 
 import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
-import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
@@ -10,7 +9,6 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInte
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
-import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFormatting;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
@@ -65,9 +63,10 @@ class DiagramFactory {
         ROUND(LayoutHandler.SlotKeys.ROUND, OrePrefixes.round),
         SPRINGS(LayoutHandler.SlotGroupKeys.SPRINGS, OrePrefixes.spring, OrePrefixes.springSmall),
         GEARS(LayoutHandler.SlotGroupKeys.GEARS, OrePrefixes.gearGt, OrePrefixes.gearGtSmall),
+        ALLOY_PLATE(LayoutHandler.SlotKeys.ALLOY_PLATE, OrePrefixes.plateAlloy),
         CASING(LayoutHandler.SlotKeys.CASING, OrePrefixes.itemCasing),
+        ROTORS(LayoutHandler.SlotKeys.ROTOR, OrePrefixes.rotor),
         FRAME_BOX(LayoutHandler.SlotKeys.FRAME_BOX, OrePrefixes.frameGt),
-        ROTORS(LayoutHandler.SlotGroupKeys.ROTORS, OrePrefixes.rotor, OrePrefixes.turbineBlade),
 
         WIRES(LayoutHandler.SlotGroupKeys.WIRES,
                 OrePrefixes.wireGt01, OrePrefixes.wireGt02, OrePrefixes.wireGt04,
@@ -83,8 +82,7 @@ class DiagramFactory {
         SPECIAL_PIPES(LayoutHandler.SlotGroupKeys.SPECIAL_PIPES,
                 OrePrefixes.pipeQuadruple, OrePrefixes.pipeNonuple, OrePrefixes.pipeRestrictiveTiny,
                 OrePrefixes.pipeRestrictiveSmall, OrePrefixes.pipeRestrictiveMedium,
-                OrePrefixes.pipeRestrictiveLarge, OrePrefixes.pipeRestrictiveHuge),
-        ;
+                OrePrefixes.pipeRestrictiveLarge, OrePrefixes.pipeRestrictiveHuge);
 
         private final String slotKey;
         private final ImmutableList<OrePrefixes> prefixes;
@@ -262,15 +260,10 @@ class DiagramFactory {
         }
         FluidComponent fluidComponent = FluidComponent.create(fluid);
 
-        // Try to use the GregTech fluid display item, since it's more convenient when looking up
-        // recipes.
-        Component component =
-                GregTechFluidDictUtil.fluidToDisplayItem(fluidComponent)
-                        .map(Component.class::cast)
-                        .orElse(fluidComponent);
-
+        // Try to use a GregTech filled cell or fluid display item, since it's more convenient when
+        // looking up recipes.
         slotBuilder.insertIntoNextSlot(
-                DisplayComponent.builder(component)
+                DisplayComponent.builder(GregTechFluidDictUtil.getCellOrDisplayItem(fluidComponent))
                         .setAdditionalTooltip(
                                 Tooltip.create(
                                         Lang.GREGTECH_MATERIAL_PARTS.transf(

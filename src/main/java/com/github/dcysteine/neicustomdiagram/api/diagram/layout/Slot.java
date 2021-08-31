@@ -1,11 +1,12 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 
+import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.toprettystring.ToPrettyString;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -25,7 +26,7 @@ public abstract class Slot implements Interactable {
     public abstract int slotWidth();
 
     public abstract Tooltip tooltip();
-    public abstract BiConsumer<Ticker, Point> drawFunction();
+    public abstract BiConsumer<DiagramState, Point> drawFunction();
 
     @Override
     public int width() {
@@ -38,19 +39,22 @@ public abstract class Slot implements Interactable {
     }
 
     @Override
-    public void draw(Ticker ticker) {
-        drawFunction().accept(ticker, position());
+    public void draw(DiagramState diagramState) {
+        drawFunction().accept(diagramState, position());
     }
 
     @Override
-    public void drawOverlay(Ticker ticker) {
+    public void drawOverlay(DiagramState diagramState) {
         Draw.drawOverlay(position(), Draw.Color.OVERLAY_WHITE);
     }
 
     @Override
-    public void drawTooltip(Ticker ticker, Point mousePos) {
+    public void drawTooltip(DiagramState diagramState, Point mousePos) {
         tooltip().draw(mousePos);
     }
+
+    @ToPrettyString
+    public abstract String toPrettyString();
 
     public static Builder builder(Point pos) {
         return new AutoValue_Slot.Builder()
@@ -67,7 +71,7 @@ public abstract class Slot implements Interactable {
         public abstract Builder setPosition(Point pos);
         public abstract Builder setSlotWidth(int slotWidth);
         public abstract Builder setTooltip(Tooltip tooltip);
-        public abstract Builder setDrawFunction(BiConsumer<Ticker, Point> fun);
+        public abstract Builder setDrawFunction(BiConsumer<DiagramState, Point> fun);
 
         public Builder setDrawFunction(Consumer<Point> fun) {
             setDrawFunction((ticker, point) -> fun.accept(point));

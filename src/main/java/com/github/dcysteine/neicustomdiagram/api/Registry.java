@@ -7,6 +7,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.generators.forge.fluidcontainers.ForgeFluidContainers;
 import com.github.dcysteine.neicustomdiagram.generators.forge.oredictionary.ForgeOreDictionary;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts.GregTechMaterialParts;
+import com.github.dcysteine.neicustomdiagram.generators.gregtech.materialtools.GregTechMaterialTools;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech.oredictionary.GregTechOreDictionary;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing.GregTechOreProcessing;
 import com.google.auto.value.AutoValue;
@@ -26,12 +27,14 @@ public final class Registry {
 
     private static final List<RegistryEntry> entries = new ArrayList<>();
     private static final List<DiagramGenerator> generators = new ArrayList<>();
+    private static ImmutableList<DiagramGroupInfo> info = null;
 
     static {
         // Add your diagram generator here!
         addGenerator("forge.fluidcontainers", ForgeFluidContainers::new);
         addGenerator("forge.oredictionary", ForgeOreDictionary::new);
         addGenerator("gregtech.materialparts", GregTechMaterialParts::new, ModIds.GREGTECH);
+        addGenerator("gregtech.materialtools", GregTechMaterialTools::new, ModIds.GREGTECH);
         addGenerator("gregtech.oredictionary", GregTechOreDictionary::new, ModIds.GREGTECH);
         addGenerator("gregtech.oreprocessing", GregTechOreProcessing::new, ModIds.GREGTECH);
     }
@@ -87,6 +90,7 @@ public final class Registry {
     public static void initialize() {
         Logger.MOD.info("Initializing diagram groups...");
 
+        ImmutableList.Builder<DiagramGroupInfo> infoBuilder = ImmutableList.builder();
         for (RegistryEntry entry : entries) {
             List<String> missingDependencies = entry.missingDependencies();
             if (!missingDependencies.isEmpty()) {
@@ -96,19 +100,18 @@ public final class Registry {
                 continue;
             }
 
-            generators.add(entry.get());
+            DiagramGenerator generator = entry.get();
+            infoBuilder.add(generator.info());
+            generators.add(generator);
             Logger.MOD.info("Initialized diagram group [{}]!", entry.groupId());
         }
+        info = infoBuilder.build();
 
         Logger.MOD.info("Initialization complete!");
     }
 
-    /**
-     * We use this method as an accessor so that we can guarantee that callers cannot mutate
-     * {@link #entries}.
-     */
-    public static ImmutableList<DiagramGenerator> generators() {
-        return ImmutableList.copyOf(generators);
+    public static ImmutableList<DiagramGroupInfo> info() {
+        return info;
     }
 
     public static void generateDiagramGroups() {
@@ -129,5 +132,20 @@ public final class Registry {
         }
 
         Logger.MOD.info("Generation complete!");
+    }
+
+    /**
+     * Call this after diagram generation to clear out static references so that objects can get
+     * garbage-collected.
+     *
+     * <p>In particular, diagram generators can have quite heavy memory usage, and are no longer
+     * used after diagram generation. This method will clear references to them so that they can be
+     * garbage-collected.
+     */
+    public static void cleanUp() {
+        entries.clear();
+        generators.clear();
+        // info() is not cleared because it is used asynchronously by NEIRegisterHandlerInfosEvent,
+        // and that could potentially (though unlikely) happen after cleanUp() is called.
     }
 }

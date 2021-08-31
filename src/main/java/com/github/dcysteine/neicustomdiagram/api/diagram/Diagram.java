@@ -6,7 +6,6 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactiv
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Slot;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
-import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -22,22 +21,22 @@ public class Diagram {
     protected final Layout layout;
     protected final ImmutableList<Interactable> interactables;
 
-    protected Diagram(Layout layout, ImmutableList<Interactable> interactables) {
+    public Diagram(Layout layout, ImmutableList<Interactable> interactables) {
         this.layout = layout;
         this.interactables = interactables;
     }
 
-    public Iterable<Interactable> interactables() {
+    public Iterable<Interactable> interactables(DiagramState diagramState) {
         // Slots go at the end so that they get last priority.
         return Iterables.concat(interactables, layout.allSlots());
     }
 
-    public void drawBackground(Ticker ticker) {
-        layout.draw(ticker);
+    public void drawBackground(DiagramState diagramState) {
+        layout.draw(diagramState);
     }
 
-    public void drawForeground(Ticker ticker) {
-        interactables.forEach(interactable -> interactable.draw(ticker));
+    public void drawForeground(DiagramState diagramState) {
+        interactables.forEach(interactable -> interactable.draw(diagramState));
     }
 
     public static Builder builder() {

@@ -26,10 +26,10 @@ public final class OreDictUtil {
                 .collect(Collectors.toList());
     }
 
-    public static List<Component> getComponents(String oreName) {
+    public static List<ItemComponent> getComponents(String oreName) {
         // Note: OreDictionary.getOres() returns OreDictionary.UnmodifiableArrayList, whose stream()
         // method is not implemented correctly and returns an empty stream! Don't use it!
-        List<Component> components = new ArrayList<>();
+        List<ItemComponent> components = new ArrayList<>();
         for (ItemStack itemStack : OreDictionary.getOres(oreName, false)) {
             components.add(ItemComponent.create(itemStack));
         }

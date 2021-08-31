@@ -64,7 +64,9 @@ public final class ForgeFluidContainers implements DiagramGenerator {
         Optional<FluidComponent> fluidOptional = FluidDictUtil.getFluidContents(component);
         if (!fluidOptional.isPresent() && Registry.ModIds.isModLoaded(Registry.ModIds.GREGTECH)) {
             // Try looking up GregTech fluid display stack.
-            fluidOptional = GregTechFluidDictUtil.displayItemToFluid(component);
+            if (component.type() == Component.ComponentType.ITEM) {
+                fluidOptional = GregTechFluidDictUtil.displayItemToFluid((ItemComponent) component);
+            }
         }
         if (!fluidOptional.isPresent()) {
             return Lists.newArrayList();

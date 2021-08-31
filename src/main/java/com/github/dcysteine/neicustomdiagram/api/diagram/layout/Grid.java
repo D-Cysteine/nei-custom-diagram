@@ -46,6 +46,7 @@ public abstract class Grid {
         }
     }
 
+    // TODO we should be able to customize grid spacing as well
     public static Grid create(int offsetX, int offsetY) {
         return create(Point.create(offsetX, offsetY));
     }
