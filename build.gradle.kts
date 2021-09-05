@@ -84,7 +84,12 @@ dependencies {
     compile("codechicken:CodeChickenLib:$minecraftVersion-$codeChickenLibVersion:dev")
 
     val gregTechVersion: String by project
+    val forestryVersion: String by project
+    val railcraftVersion: String by project
     compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTechVersion:dev") { this.isChanging = true }
+    // The following are compile-time dependencies of GT5.
+    compileOnly("net.sengir.forestry:forestry_$minecraftVersion:$forestryVersion:dev")
+    compileOnly("mods.railcraft:Railcraft_1.7.10:$railcraftVersion:dev")
 }
 
 tasks.withType<Jar> {

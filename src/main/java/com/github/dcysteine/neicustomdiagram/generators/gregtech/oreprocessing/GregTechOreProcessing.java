@@ -7,7 +7,6 @@ import com.github.dcysteine.neicustomdiagram.api.Registry;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
-import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.util.bartworks.BartWorksOreDictUtil;
@@ -36,6 +35,7 @@ public final class GregTechOreProcessing implements DiagramGenerator {
     private final DiagramGroupInfo info;
     private final LabelHandler labelHandler;
     private final LayoutHandler layoutHandler;
+    private final RecipeHandler recipeHandler;
 
     public GregTechOreProcessing(String groupId) {
         this.info =
@@ -45,6 +45,7 @@ public final class GregTechOreProcessing implements DiagramGenerator {
 
         this.labelHandler = new LabelHandler();
         this.layoutHandler = new LayoutHandler(this.info, this.labelHandler);
+        this.recipeHandler = new RecipeHandler();
     }
 
     @Override
@@ -56,17 +57,18 @@ public final class GregTechOreProcessing implements DiagramGenerator {
     public DiagramGroup generate() {
         labelHandler.initialize();
         layoutHandler.initialize();
+        recipeHandler.initialize();
 
         ComponentDiagramMatcher.Builder matcherBuilder = ComponentDiagramMatcher.builder();
 
         for (Materials material : Materials.getAll()) {
             if ((material.mTypes & 8) == 0) {
-                // Bit 3 is the flag controlling whether ores get generated.
+                // Bit 4 is the flag controlling whether ores get generated.
                 // So if it's off, skip this material.
                 continue;
             }
 
-            List<Component> rawOres =
+            List<ItemComponent> rawOres =
                     GregTechOreDictUtil.getAllComponents(OrePrefixes.ore, material);
             if (rawOres.isEmpty()) {
                 continue;
@@ -88,7 +90,7 @@ public final class GregTechOreProcessing implements DiagramGenerator {
                     continue;
                 }
 
-                List<Component> rawOres = new ArrayList<>();
+                List<ItemComponent> rawOres = new ArrayList<>();
                 rawOres.add(rawOre.get());
 
                 OTHER_ORE_PREFIXES.forEach(
@@ -106,8 +108,9 @@ public final class GregTechOreProcessing implements DiagramGenerator {
     }
 
     private void buildDiagram(
-            ComponentDiagramMatcher.Builder matcherBuilder, List<Component> rawOres) {
-        DiagramBuilder diagramBuilder = new DiagramBuilder(layoutHandler, labelHandler, rawOres);
+            ComponentDiagramMatcher.Builder matcherBuilder, List<ItemComponent> rawOres) {
+        DiagramBuilder diagramBuilder =
+                new DiagramBuilder(layoutHandler, labelHandler, recipeHandler, rawOres);
         diagramBuilder.buildDiagram(matcherBuilder);
 
         Logger.GREGTECH_ORE_PROCESSING.debug("Generated diagram [{}]", rawOres.get(0));

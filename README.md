@@ -5,6 +5,7 @@ It comes bundled with some diagrams already:
 - Forge Fluid Containers
 - Forge Ore Dictionary
 - GregTech Material Parts
+- GregTech Material Tools
 - GregTech Ore Dictionary
 - GregTech Ore Processing
 

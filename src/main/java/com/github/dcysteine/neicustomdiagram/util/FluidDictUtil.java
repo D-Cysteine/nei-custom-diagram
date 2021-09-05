@@ -51,7 +51,7 @@ public final class FluidDictUtil {
     public static DisplayComponent displayFluidContainer(ItemStack container) {
         int capacity = FluidContainerRegistry.getContainerCapacity(container);
         return DisplayComponent.builder(container)
-                .setStackSize(Optional.empty())
+                .clearStackSize()
                 .setAdditionalInfo(Formatter.formatInt(capacity))
                 .setAdditionalTooltip(
                         Tooltip.create(

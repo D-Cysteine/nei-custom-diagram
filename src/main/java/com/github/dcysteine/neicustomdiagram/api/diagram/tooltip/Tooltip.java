@@ -4,6 +4,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.memoized.Memoized;
+import com.google.auto.value.extension.toprettystring.ToPrettyString;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.EnumChatFormatting;
@@ -13,6 +15,8 @@ import java.util.Arrays;
 /** Class holding a tooltip, with options for using a default color. */
 @AutoValue
 public abstract class Tooltip {
+    private static final Splitter SPLITTER = Splitter.on('\n');
+
     public static final Tooltip EMPTY_TOOLTIP = builder().build();
     public static final TextFormatting DEFAULT_FORMATTING =
             TextFormatting.create(false, EnumChatFormatting.RESET);
@@ -33,10 +37,9 @@ public abstract class Tooltip {
     /** The default horizontal space between tooltip lines. */
     public static final int ELEMENT_SPACING = 4;
 
-    private static final Splitter SPLITTER = Splitter.on('\n');
-
     public abstract ImmutableList<TooltipLine> lines();
 
+    @Memoized
     public int width() {
         return lines().stream()
                 .mapToInt(TooltipLine::width)
@@ -44,6 +47,7 @@ public abstract class Tooltip {
                 .orElse(0);
     }
 
+    @Memoized
     public int height() {
         return Tooltip.LINE_SPACING * (lines().size() - 1)
                 + lines().stream()
@@ -59,6 +63,9 @@ public abstract class Tooltip {
     public void draw(Point mousePos) {
         Draw.drawTooltip(this, mousePos);
     }
+
+    @ToPrettyString
+    public abstract String toPrettyString();
 
     /** This method will split the input on the newline character {@code '\n'}. */
     public static Tooltip create(String line) {

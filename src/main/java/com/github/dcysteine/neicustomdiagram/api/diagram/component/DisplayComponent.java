@@ -1,5 +1,6 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.component;
 
+import codechicken.nei.NEIClientUtils;
 import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.TextFormatting;
@@ -7,7 +8,10 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.toprettystring.ToPrettyString;
+import com.google.common.base.Splitter;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
@@ -22,6 +26,9 @@ import java.util.Optional;
  */
 @AutoValue
 public abstract class DisplayComponent {
+    /** NBT strings will be split if they are too long. */
+    private static final Splitter NBT_SPLITTER = Splitter.fixedLength(64);
+
     public abstract Component component();
     public abstract Optional<Integer> stackSize();
 
@@ -40,11 +47,7 @@ public abstract class DisplayComponent {
 
     /** Returns an {@link ItemStack} or {@link FluidStack}, depending on the component type. */
     public Object stack() {
-        if (stackSize().isPresent()) {
-            return component().stack(stackSize().get());
-        } else {
-            return component().stack();
-        }
+        return component().stack(stackSize());
     }
 
     /** Returns a localized description of the item or fluid component, for printing as text. */
@@ -59,6 +62,19 @@ public abstract class DisplayComponent {
                 stackSize -> builder
                         .setFormatting(TextFormatting.create(true))
                         .addTextLine(Lang.API.transf("stacksize", stackSize)));
+
+        if (component().nbt().isPresent()) {
+            NBTTagCompound nbt = component().nbt().get();
+            if (NEIClientUtils.shiftKey()) {
+                builder.addSpacing()
+                        .setFormatting(Tooltip.TRIVIAL_FORMATTING)
+                        .addAllTextLines(NBT_SPLITTER.split(nbt.toString()));
+            } else {
+                builder.addSpacing()
+                        .setFormatting(Tooltip.INFO_FORMATTING)
+                        .addTextLine(Lang.API.trans("hasnbt"));
+            }
+        }
 
         return builder.build();
     }
@@ -77,6 +93,9 @@ public abstract class DisplayComponent {
         additionalInfo().ifPresent(
                 additionalInfo -> Draw.drawAdditionalInfo(additionalInfo, pos, true));
     }
+
+    @ToPrettyString
+    public abstract String toPrettyString();
 
     public static Builder builder(Component component) {
         return new AutoValue_DisplayComponent.Builder()
@@ -108,6 +127,14 @@ public abstract class DisplayComponent {
         public abstract Builder setAdditionalInfo(Optional<String> stackSize);
         public abstract Builder setAdditionalInfo(@Nullable String stackSize);
         public abstract Builder setAdditionalTooltip(Tooltip additionalTooltip);
+
+        public Builder clearStackSize() {
+            return setStackSize(Optional.empty());
+        }
+
+        public Builder clearAdditionalInfo() {
+            return setAdditionalInfo(Optional.empty());
+        }
 
         public abstract DisplayComponent build();
     }

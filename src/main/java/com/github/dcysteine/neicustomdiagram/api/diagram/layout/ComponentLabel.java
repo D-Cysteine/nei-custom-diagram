@@ -1,10 +1,10 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 
+import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.draw.BoundedDrawable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 import com.google.auto.value.AutoValue;
 
 /** A label that looks like a component. */
@@ -30,7 +30,7 @@ public abstract class ComponentLabel implements BoundedDrawable {
     }
 
     @Override
-    public void draw(Ticker ticker) {
+    public void draw(DiagramState diagramState) {
         component().draw(position());
     }
 }

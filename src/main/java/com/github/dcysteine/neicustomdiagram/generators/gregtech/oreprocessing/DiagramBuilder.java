@@ -4,7 +4,6 @@ import com.github.dcysteine.neicustomdiagram.api.Logger;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
-import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInteractable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
@@ -15,20 +14,15 @@ import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.github.dcysteine.neicustomdiagram.util.FluidDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechRecipeUtil;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.util.GT_OreDictUnificator;
-import gregtech.api.util.GT_Recipe;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
-import net.minecraftforge.fluids.FluidRegistry;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -39,27 +33,28 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 class DiagramBuilder {
-    private static final FluidComponent WATER =
-            FluidComponent.create(FluidRegistry.WATER);
     private static final ItemComponent STONE_DUST =
             ItemComponent.create(GT_OreDictUnificator.get(OrePrefixes.dust, Materials.Stone, 1));
 
     private final LayoutHandler layoutHandler;
     private final LabelHandler labelHandler;
-    private final Component rawOre;
+    private final RecipeHandler recipeHandler;
 
+    private final ItemComponent rawOre;
     private final Set<Component> craftingComponents;
     private final Set<Component> usageComponents;
     private final Diagram.Builder diagramBuilder;
 
     DiagramBuilder(
-            LayoutHandler layoutHandler, LabelHandler labelHandler, List<Component> rawOres) {
+            LayoutHandler layoutHandler, LabelHandler labelHandler, RecipeHandler recipeHandler,
+            List<ItemComponent> rawOres) {
         this.layoutHandler = layoutHandler;
         this.labelHandler = labelHandler;
+        this.recipeHandler = recipeHandler;
 
         // Sometimes, non-GregTech-compatible ores get returned because they are in the Forge ore
         // dictionary. Filter them out to fix the diagrams.
-        List<Component> filteredRawOres =
+        List<ItemComponent> filteredRawOres =
                 rawOres.stream()
                         .filter(rawOre -> GregTechOreDictUtil.getItemData(rawOre).isPresent())
                         .collect(Collectors.toList());
@@ -77,101 +72,84 @@ class DiagramBuilder {
                         LayoutHandler.SlotKeys.RAW_ORE,
                         DisplayComponent.builder(rawOre).build());
 
-        Optional<Component> crushedOreOptional =
+        Optional<ItemComponent> crushedOreOptional =
                 handleRecipes(
-                        GregTechRecipeUtil.findRecipeByInput(
-                                GT_Recipe.GT_Recipe_Map.sMaceratorRecipes, rawOre),
-                        rawOre, LayoutHandler.SlotGroupKeys.RAW_ORE_MACERATE);
+                        RecipeHandler.RecipeMap.MACERATOR, rawOre,
+                        LayoutHandler.SlotGroupKeys.RAW_ORE_MACERATE);
 
-        Optional<Component> purifiedOreOptional =
+        Optional<ItemComponent> purifiedOreOptional =
                 crushedOreOptional.flatMap(
                         crushedOre ->
                                 handleRecipes(
-                                        GregTechRecipeUtil.findRecipeByInput(
-                                                GT_Recipe.GT_Recipe_Map.sOreWasherRecipes,
-                                                crushedOre, WATER),
-                                        crushedOre,
+                                        RecipeHandler.RecipeMap.ORE_WASHER, crushedOre,
                                         LayoutHandler.SlotGroupKeys.CRUSHED_ORE_WASH));
 
-        Optional<Component> impureDustOptional =
+        Optional<ItemComponent> impureDustOptional =
                 crushedOreOptional.flatMap(
                         crushedOre ->
                                 handleRecipes(
-                                        GregTechRecipeUtil.findRecipeByInput(
-                                                GT_Recipe.GT_Recipe_Map.sMaceratorRecipes,
-                                                crushedOre),
-                                        crushedOre,
+                                        RecipeHandler.RecipeMap.MACERATOR, crushedOre,
                                         LayoutHandler.SlotGroupKeys.CRUSHED_ORE_MACERATE));
 
-        Optional<Component> crushedOreThermalCentrifugeOptional =
+        Optional<ItemComponent> crushedOreThermalCentrifugeOptional =
                 crushedOreOptional.flatMap(
                         crushedOre ->
                                 handleRecipes(
-                                        GregTechRecipeUtil.findRecipeByInput(
-                                                GT_Recipe.GT_Recipe_Map.sThermalCentrifugeRecipes,
-                                                crushedOre),
-                                        crushedOre,
+                                        RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, crushedOre,
                                         LayoutHandler.SlotGroupKeys
                                                 .CRUSHED_ORE_THERMAL_CENTRIFUGE));
 
-        Optional<Component> purifiedDustOptional =
+        Optional<ItemComponent> purifiedDustOptional =
                 purifiedOreOptional.flatMap(
                         purifiedOre ->
                                 handleRecipes(
-                                        GregTechRecipeUtil.findRecipeByInput(
-                                                GT_Recipe.GT_Recipe_Map.sMaceratorRecipes,
-                                                purifiedOre),
-                                        purifiedOre,
+                                        RecipeHandler.RecipeMap.MACERATOR, purifiedOre,
                                         LayoutHandler.SlotGroupKeys.PURIFIED_ORE_MACERATE));
 
-        Optional<Component> purifiedOreThermalCentrifugeOptional =
+        Optional<ItemComponent> purifiedOreThermalCentrifugeOptional =
                 purifiedOreOptional.flatMap(
                         purifiedOre ->
                                 handleRecipes(
-                                        GregTechRecipeUtil.findRecipeByInput(
-                                                GT_Recipe.GT_Recipe_Map.sThermalCentrifugeRecipes,
-                                                purifiedOre),
-                                        purifiedOre,
+                                        RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, purifiedOre,
                                         LayoutHandler.SlotGroupKeys
                                                 .PURIFIED_ORE_THERMAL_CENTRIFUGE));
 
         purifiedOreOptional.ifPresent(
                 purifiedOre ->
                         handleRecipes(
-                                GregTechRecipeUtil.findRecipeByInput(
-                                        GT_Recipe.GT_Recipe_Map.sSifterRecipes, purifiedOre),
-                                purifiedOre, LayoutHandler.SlotGroupKeys.PURIFIED_ORE_SIFT));
+                                RecipeHandler.RecipeMap.SIFTER, purifiedOre,
+                                LayoutHandler.SlotGroupKeys.PURIFIED_ORE_SIFT));
 
         impureDustOptional.ifPresent(
                 impureDust ->
                         handleRecipes(
-                                GregTechRecipeUtil.findRecipeByInput(
-                                        GT_Recipe.GT_Recipe_Map.sCentrifugeRecipes, impureDust),
-                                impureDust, LayoutHandler.SlotGroupKeys.IMPURE_DUST_CENTRIFUGE));
+                                RecipeHandler.RecipeMap.CENTRIFUGE, impureDust,
+                                LayoutHandler.SlotGroupKeys.IMPURE_DUST_CENTRIFUGE));
 
         purifiedDustOptional.ifPresent(
                 purifiedDust ->
                         handleRecipes(
-                                GregTechRecipeUtil.findRecipeByInput(
-                                        GT_Recipe.GT_Recipe_Map.sCentrifugeRecipes, purifiedDust),
-                                purifiedDust,
+                                RecipeHandler.RecipeMap.CENTRIFUGE, purifiedDust,
                                 LayoutHandler.SlotGroupKeys.PURIFIED_DUST_CENTRIFUGE));
+
+        purifiedDustOptional.ifPresent(
+                purifiedDust ->
+                        handleRecipes(
+                                RecipeHandler.RecipeMap.ELECTROMAGNETIC_SEPARATOR, purifiedDust,
+                                LayoutHandler.SlotGroupKeys
+                                        .PURIFIED_DUST_ELECTROMAGNETIC_SEPARATE));
 
         crushedOreThermalCentrifugeOptional.ifPresent(
                 centrifugedOre ->
                         handleRecipes(
-                                GregTechRecipeUtil.findRecipeByInput(
-                                        GT_Recipe.GT_Recipe_Map.sMaceratorRecipes, centrifugedOre),
-                                centrifugedOre,
+                                RecipeHandler.RecipeMap.MACERATOR, centrifugedOre,
                                 LayoutHandler.SlotGroupKeys
                                         .CRUSHED_ORE_THERMAL_CENTRIFUGE_MACERATE));
 
         purifiedOreThermalCentrifugeOptional.ifPresent(
                 centrifugedOre ->
                         handleRecipes(
-                                GregTechRecipeUtil.findRecipeByInput(
-                                        GT_Recipe.GT_Recipe_Map.sMaceratorRecipes, centrifugedOre),
-                                centrifugedOre,
+                                RecipeHandler.RecipeMap.MACERATOR, centrifugedOre,
                                 LayoutHandler.SlotGroupKeys
                                         .PURIFIED_ORE_THERMAL_CENTRIFUGE_MACERATE));
 
@@ -188,29 +166,29 @@ class DiagramBuilder {
                 addAdditionalRecipesInteractable(
                         LabelHandler.ItemLabel.ELECTRIC_BLAST_FURNACE,
                         LayoutHandler.AdditionalRecipeLabelPositions.ELECTRIC_BLAST_FURNACE,
-                        GT_Recipe.GT_Recipe_Map.sBlastRecipes,
+                        RecipeHandler.RecipeMap.BLAST_FURNACE,
                         Optional.of(rawOre)));
 
         additionalRecipeOutputs.addAll(
                 addAdditionalRecipesInteractable(
                         LabelHandler.ItemLabel.CHEMICAL_BATH,
                         LayoutHandler.AdditionalRecipeLabelPositions.CHEMICAL_BATH,
-                        GT_Recipe.GT_Recipe_Map.sChemicalBathRecipes,
+                        RecipeHandler.RecipeMap.CHEMICAL_BATH,
                         crushedOreOptional));
 
         additionalRecipeOutputs.addAll(
                 addAdditionalRecipesInteractable(
                         LabelHandler.ItemLabel.CHEMICAL_REACTOR,
                         LayoutHandler.AdditionalRecipeLabelPositions.CHEMICAL_REACTOR,
-                        GT_Recipe.GT_Recipe_Map.sChemicalRecipes,
+                        RecipeHandler.RecipeMap.CHEMICAL_REACTOR,
                         crushedOreOptional, purifiedOreOptional));
 
         additionalRecipeOutputs.addAll(
                 addAdditionalRecipesInteractable(
-                        LabelHandler.ItemLabel.ELECTROMAGNETIC_SEPARATOR,
-                        LayoutHandler.AdditionalRecipeLabelPositions.ELECTROMAGNETIC_SEPARATOR,
-                        GT_Recipe.GT_Recipe_Map.sElectroMagneticSeparatorRecipes,
-                        purifiedDustOptional));
+                        LabelHandler.ItemLabel.AUTOCLAVE,
+                        LayoutHandler.AdditionalRecipeLabelPositions.AUTOCLAVE,
+                        RecipeHandler.RecipeMap.AUTOCLAVE,
+                        impureDustOptional, purifiedDustOptional));
 
         additionalRecipeOutputs.removeIf(STONE_DUST::equals);
         for (Component component : ImmutableList.copyOf(additionalRecipeOutputs)) {
@@ -219,14 +197,17 @@ class DiagramBuilder {
                     ComponentTransformer.transformFromDisplay(
                             FluidDictUtil.getFluidContainers(component)));
 
-            Optional<ItemComponent> displayItem =
-                    GregTechFluidDictUtil.fluidToDisplayItem(component);
+            Optional<ItemComponent> displayItem = GregTechFluidDictUtil.getDisplayItem(component);
             if (displayItem.isPresent()) {
                 craftingComponents.add(displayItem.get());
-                // Replace fluids with their GregTech display item form, since it's more convenient
-                // when looking up recipes.
+
+                // Replace fluids with their GregTech cell form (or, failing that, fluid display
+                // item form), since it's more convenient when looking up recipes.
+                ItemComponent replacementItem = displayItem.get();
+                replacementItem =
+                        GregTechFluidDictUtil.fillCell(replacementItem).orElse(replacementItem);
                 additionalRecipeOutputs.remove(component);
-                additionalRecipeOutputs.add(displayItem.get());
+                additionalRecipeOutputs.add(replacementItem);
             }
         }
         diagramBuilder.autoInsertIntoSlotGroup(
@@ -243,26 +224,19 @@ class DiagramBuilder {
      * Checks if there is exactly one recipe. If so, inserts its outputs into the slot and returns
      * its first output.
      */
-    private Optional<Component> handleRecipes(
-            List<GT_Recipe> recipes, Component input, String key) {
-        Set<List<DisplayComponent>> outputsSet =
-                recipes.stream()
-                        .map(GregTechRecipeUtil::buildComponentsFromItemOutputs)
-                        .collect(Collectors.toSet());
-        if (outputsSet.size() > 1) {
-            Logger.GREGTECH_ORE_PROCESSING.warn(
-                    "Found {} recipes: [{}] [{}]", outputsSet.size(), input, key);
-
-            return Optional.empty();
-        } else if (outputsSet.isEmpty()) {
+    private Optional<ItemComponent> handleRecipes(
+            RecipeHandler.RecipeMap recipeMap, ItemComponent input, String key) {
+        Optional<ImmutableList<DisplayComponent>> outputsOptional =
+                recipeHandler.getUniqueRecipeOutput(recipeMap, input);
+        if (!outputsOptional.isPresent()) {
             return Optional.empty();
         }
 
-        List<DisplayComponent> outputs = Iterables.getOnlyElement(outputsSet);
+        List<DisplayComponent> outputs = new ArrayList<>(outputsOptional.get());
         ComponentTransformer.removeComponent(outputs, STONE_DUST);
         if (outputs.size() == 0) {
             Logger.GREGTECH_ORE_PROCESSING.warn(
-                    "Found no recipe outputs: [{}] [{}]", input, key);
+                    "Found no recipe outputs: [{}] [{}]", key, input);
 
             return Optional.empty();
         }
@@ -274,39 +248,43 @@ class DiagramBuilder {
                     GregTechOreDictUtil.getAssociatedComponents(output.component()));
         }
 
-        return Optional.of(outputs.get(0).component());
+        Component firstOutput = outputs.get(0).component();
+        if (firstOutput.type() == Component.ComponentType.FLUID) {
+            Logger.GREGTECH_ORE_PROCESSING.warn(
+                    "Found unexpected fluid output: [{}] [{}] [{}]", key, input, outputs);
+            return Optional.empty();
+        }
+        return Optional.of((ItemComponent) firstOutput);
     }
 
     @SafeVarargs
     private final Collection<Component> addAdditionalRecipesInteractable(
             LabelHandler.ItemLabel label,
             Point pos,
-            GT_Recipe.GT_Recipe_Map recipes,
-            Optional<Component>... components) {
+            RecipeHandler.RecipeMap recipeMap,
+            Optional<ItemComponent>... components) {
         return addAdditionalRecipesInteractable(
-                label, pos, component -> getRecipeOutputs(recipes, component), components);
+                label, pos, component -> getRecipeOutputs(recipeMap, component), components);
     }
 
-    private static Collection<Component> getRecipeOutputs(
-            GT_Recipe.GT_Recipe_Map recipes, Component component) {
-        return GregTechRecipeUtil.findRecipeByInput(recipes, component).stream()
-                .flatMap(recipe -> GregTechRecipeUtil.buildComponentsFromOutputs(recipe).stream())
+    private Collection<Component> getRecipeOutputs(
+            RecipeHandler.RecipeMap recipeMap, ItemComponent component) {
+        return recipeHandler.getRecipeOutputs(recipeMap, component).stream()
+                .flatMap(List::stream)
                 .map(DisplayComponent::component)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 
     @SafeVarargs
     private final Collection<Component> addAdditionalFurnaceRecipesInteractable(
-            LabelHandler.ItemLabel label, Point pos, Optional<Component>... components) {
+            LabelHandler.ItemLabel label, Point pos, Optional<ItemComponent>... components) {
         return addAdditionalRecipesInteractable(
-                label, pos, DiagramBuilder::getFurnaceRecipeOutputs, components);
+                label, pos, this::getFurnaceRecipeOutputs, components);
     }
 
-    private static Collection<Component> getFurnaceRecipeOutputs(Component component) {
-        ItemStack output =
-                (ItemStack) FurnaceRecipes.smelting().getSmeltingList().get(component.stack());
-        return output == null
-                ? Lists.newArrayList() : Lists.newArrayList(ItemComponent.create(output));
+    private Collection<Component> getFurnaceRecipeOutputs(ItemComponent component) {
+        Optional<ItemComponent> output = recipeHandler.getFurnaceRecipeOutput(component);
+        return output.isPresent() ? Lists.newArrayList(output.get()) : Lists.newArrayList();
     }
 
     /**
@@ -316,10 +294,10 @@ class DiagramBuilder {
     private final Collection<Component> addAdditionalRecipesInteractable(
             LabelHandler.ItemLabel label,
             Point pos,
-            Function<Component, Collection<Component>> recipeOutputs,
-            Optional<Component>... components) {
-        SetMultimap<Component, Component> multimap =
-                MultimapBuilder.hashKeys().hashSetValues().build();
+            Function<ItemComponent, Collection<Component>> recipeOutputs,
+            Optional<ItemComponent>... components) {
+        SetMultimap<ItemComponent, Component> multimap =
+                MultimapBuilder.linkedHashKeys().hashSetValues().build();
         Arrays.stream(components)
                 .filter(Optional::isPresent)
                 .map(Optional::get)

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  * Implementation of {@link DiagramMatcher} that looks up diagrams by their components.
  *
  * <p>This implementation has fast lookup regardless of the number of diagrams, but is
- * memory-intensive. This implementation is a good choice if:
+ * memory-intensive. NBT is ignored by default. This implementation is a good choice if:
  * <ul>
  *     <li>There is a large number of diagrams.
  *     <li>Diagrams match a small number of components.
@@ -23,11 +23,14 @@ import java.util.stream.Collectors;
 public class ComponentDiagramMatcher implements DiagramMatcher {
     protected final ImmutableMap<
             Interactable.RecipeType, ImmutableSetMultimap<Component, Diagram>> matchData;
+    protected final boolean ignoreNbt;
 
     public ComponentDiagramMatcher(
             ImmutableMap<
-                    Interactable.RecipeType, ImmutableSetMultimap<Component, Diagram>> matchData) {
+                    Interactable.RecipeType, ImmutableSetMultimap<Component, Diagram>> matchData,
+            boolean ignoreNbt) {
         this.matchData = matchData;
+        this.ignoreNbt = ignoreNbt;
     }
 
     @Override
@@ -40,6 +43,10 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
 
     @Override
     public Collection<Diagram> match(Interactable.RecipeType recipeType, Component component) {
+        if (ignoreNbt) {
+            component = component.withoutNbt();
+        }
+
         return matchData.get(recipeType).get(component);
     }
 
@@ -50,6 +57,7 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
     public static final class Builder {
         private final EnumMap<Interactable.RecipeType,
                 ImmutableSetMultimap.Builder<Component, Diagram>> matchDataBuilder;
+        private boolean ignoreNbt;
 
         public Builder() {
             matchDataBuilder = new EnumMap<>(Interactable.RecipeType.class);
@@ -57,10 +65,17 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
             for (Interactable.RecipeType recipeType : Interactable.RecipeType.VALID_TYPES) {
                 matchDataBuilder.put(recipeType, ImmutableSetMultimap.builder());
             }
+
+            ignoreNbt = true;
         }
 
         public DiagramSubBuilder addDiagram(Diagram diagram) {
             return new DiagramSubBuilder(diagram);
+        }
+
+        public Builder setIgnoreNbt(boolean ignoreNbt) {
+            this.ignoreNbt = ignoreNbt;
+            return this;
         }
 
         public ComponentDiagramMatcher build() {
@@ -70,7 +85,7 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
             matchDataBuilder.entrySet()
                     .forEach(entry -> builder.put(entry.getKey(), entry.getValue().build()));
 
-            return new ComponentDiagramMatcher(builder.build());
+            return new ComponentDiagramMatcher(builder.build(), ignoreNbt);
         }
 
         public final class DiagramSubBuilder {
@@ -80,6 +95,10 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
                 this.diagram = diagram;
             }
 
+            /**
+             * If ignoring NBT, it is the caller's responsibility to remove NBT from
+             * {@code component}.
+             */
             public DiagramSubBuilder addComponent(Component component) {
                 for (Interactable.RecipeType recipeType : Interactable.RecipeType.VALID_TYPES) {
                     this.addComponent(recipeType, component);
@@ -87,6 +106,10 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
                 return this;
             }
 
+            /**
+             * If ignoring NBT, it is the caller's responsibility to remove NBT from
+             * {@code components}.
+             */
             public DiagramSubBuilder addAllComponents(Iterable<Component> components) {
                 for (Interactable.RecipeType recipeType : Interactable.RecipeType.VALID_TYPES) {
                     this.addAllComponents(recipeType, components);
@@ -94,12 +117,20 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
                 return this;
             }
 
+            /**
+             * If ignoring NBT, it is the caller's responsibility to remove NBT from
+             * {@code component}.
+             */
             public DiagramSubBuilder addComponent(
                     Interactable.RecipeType recipeType, Component component) {
                 matchDataBuilder.get(recipeType).put(component, diagram);
                 return this;
             }
 
+            /**
+             * If ignoring NBT, it is the caller's responsibility to remove NBT from
+             * {@code components}.
+             */
             public DiagramSubBuilder addAllComponents(
                     Interactable.RecipeType recipeType, Iterable<Component> components) {
                 ImmutableSetMultimap.Builder<Component, Diagram> builder =

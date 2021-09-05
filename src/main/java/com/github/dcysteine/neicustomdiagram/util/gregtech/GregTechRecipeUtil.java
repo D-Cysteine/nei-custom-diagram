@@ -41,7 +41,7 @@ public final class GregTechRecipeUtil {
 
     public static List<GT_Recipe> findRecipe(
             GT_Recipe.GT_Recipe_Map recipes,
-            Collection<Component> inputs, Collection<Component> outputs) {
+            Collection<? extends Component> inputs, Collection<? extends Component> outputs) {
         List<FluidStack> inputFluids = new ArrayList<>();
         List<ItemStack> inputItems = new ArrayList<>();
         for (Component component : inputs) {
@@ -137,6 +137,10 @@ public final class GregTechRecipeUtil {
         List<DisplayComponent> results = new ArrayList<>();
 
         for (int i = 0; i < recipe.mOutputs.length; i++) {
+            if (recipe.mOutputs[i] == null) {
+                continue;
+            }
+
             DisplayComponent.Builder builder = DisplayComponent.builder(recipe.mOutputs[i]);
             int chance = recipe.getOutputChance(i);
 
@@ -148,6 +152,9 @@ public final class GregTechRecipeUtil {
                                 ? Integer.toString(chance / 100)
                                 : Formatter.formatDouble(normalizedChance);
 
+                // TODO also handle cleanroom required, low gravity required, etc.
+                //  Unfortunately, special recipe value has different semantics based on recipe map.
+                //  Will need to handle that somehow.
                 Tooltip tooltip =
                         Tooltip.create(
                                 Lang.GREGTECH_UTIL.transf("outputchance", normalizedChance),

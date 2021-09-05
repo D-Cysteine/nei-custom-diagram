@@ -28,7 +28,7 @@ public final class GregTechOreDictUtil {
         return itemStackOptional.map(ItemComponent::create);
     }
 
-    public static List<Component> getAllComponents(OrePrefixes prefix, Materials material) {
+    public static List<ItemComponent> getAllComponents(OrePrefixes prefix, Materials material) {
         List<ItemStack> itemStacks = GT_OreDictUnificator.getOres(prefix, material);
         return itemStacks.stream().map(ItemComponent::create).collect(Collectors.toList());
     }

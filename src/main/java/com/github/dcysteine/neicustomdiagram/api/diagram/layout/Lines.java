@@ -3,6 +3,7 @@ package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.toprettystring.ToPrettyString;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
@@ -52,6 +53,9 @@ public abstract class Lines {
         segments().forEach(segment -> segment.drawSegment(color()));
         arrows().forEach(segment -> segment.drawArrow(color()));
     }
+
+    @ToPrettyString
+    public abstract String toPrettyString();
 
     public static Builder builder(Point pos) {
         return new Builder(pos);

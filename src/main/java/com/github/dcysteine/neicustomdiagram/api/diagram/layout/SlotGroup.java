@@ -1,11 +1,12 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 
+import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Drawable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.toprettystring.ToPrettyString;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 
@@ -39,9 +40,12 @@ public abstract class SlotGroup implements Drawable {
         return slots().get(x + y * height());
     }
 
-    public void draw(Ticker ticker) {
-        slots().forEach(slot -> slot.draw(ticker));
+    public void draw(DiagramState diagramState) {
+        slots().forEach(slot -> slot.draw(diagramState));
     }
+
+    @ToPrettyString
+    public abstract String toPrettyString();
 
     /**
      * Returns a builder, with {@code width x height} slots pre-constructed with no tooltip message
@@ -70,7 +74,7 @@ public abstract class SlotGroup implements Drawable {
 
         private int slotWidth;
         private Tooltip defaultTooltip;
-        private BiConsumer<Ticker, Point> defaultDrawFunction;
+        private BiConsumer<DiagramState, Point> defaultDrawFunction;
         private final Slot[][] slots;
 
         private Builder(int width, int height, Point position, Grid.Direction direction) {
@@ -103,7 +107,7 @@ public abstract class SlotGroup implements Drawable {
          * Sets the default draw function, which will be used for any slots that are not explicitly
          * set.
          */
-        public Builder setDefaultDrawFunction(BiConsumer<Ticker, Point> defaultDrawFunction) {
+        public Builder setDefaultDrawFunction(BiConsumer<DiagramState, Point> defaultDrawFunction) {
             this.defaultDrawFunction = defaultDrawFunction;
             return this;
         }

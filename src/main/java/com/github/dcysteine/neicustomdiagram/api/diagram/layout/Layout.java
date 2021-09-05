@@ -1,9 +1,10 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 
+import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Drawable;
-import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.toprettystring.ToPrettyString;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
@@ -45,13 +46,16 @@ public abstract class Layout implements Drawable {
     }
 
     @Override
-    public void draw(Ticker ticker) {
+    public void draw(DiagramState diagramState) {
         lines().forEach(Lines::draw);
-        slotGroups().values().forEach(slotGroup -> slotGroup.draw(ticker));
-        slots().values().forEach(slot -> slot.draw(ticker));
-        labels().forEach(label -> label.draw(ticker));
+        slotGroups().values().forEach(slotGroup -> slotGroup.draw(diagramState));
+        slots().values().forEach(slot -> slot.draw(diagramState));
+        labels().forEach(label -> label.draw(diagramState));
         // Interactables are drawn in the foreground, and will be handled by Diagram.draw()
     }
+
+    @ToPrettyString
+    public abstract String toPrettyString();
 
     public static Builder builder() {
         return new AutoValue_Layout.Builder();

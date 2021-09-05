@@ -2,6 +2,8 @@ package com.github.dcysteine.neicustomdiagram.api.diagram.tooltip;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.google.auto.value.AutoValue;
+import com.google.auto.value.extension.memoized.Memoized;
+import com.google.auto.value.extension.toprettystring.ToPrettyString;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.util.EnumChatFormatting;
 
@@ -10,6 +12,7 @@ public abstract class TooltipLine {
     public abstract ImmutableList<TooltipElement> elements();
     public abstract int additionalSpacing();
 
+    @Memoized
     public int width() {
         int width = 0;
         TextFormatting currFormatting = Tooltip.DEFAULT_FORMATTING;
@@ -31,6 +34,7 @@ public abstract class TooltipLine {
         return width;
     }
 
+    @Memoized
     public int height() {
         int maxHeight = 0;
         TextFormatting currFormatting = Tooltip.DEFAULT_FORMATTING;
@@ -46,6 +50,9 @@ public abstract class TooltipLine {
 
         return maxHeight + additionalSpacing();
     }
+
+    @ToPrettyString
+    public abstract String toPrettyString();
 
     /**
      * Unlike most other draw methods, this method takes position coordinates as separate integers,

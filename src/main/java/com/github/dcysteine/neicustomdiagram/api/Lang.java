@@ -16,6 +16,8 @@ public final class Lang {
             new Lang("neicustomdiagram.generators.gregtech.util.");
     public static final Lang GREGTECH_MATERIAL_PARTS =
             new Lang("neicustomdiagram.generators.gregtech.materialparts.");
+    public static final Lang GREGTECH_MATERIAL_TOOLS =
+            new Lang("neicustomdiagram.generators.gregtech.materialtools.");
     public static final Lang GREGTECH_ORE_DICTIONARY =
             new Lang("neicustomdiagram.generators.gregtech.oredictionary.");
     public static final Lang GREGTECH_ORE_PROCESSING =

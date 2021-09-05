@@ -24,7 +24,9 @@ class LayoutHandler {
 
         static final String RING = "ring";
         static final String ROUND = "round";
+        static final String ALLOY_PLATE = "alloy-plate";
         static final String CASING = "casing";
+        static final String ROTOR = "rotor";
         static final String FRAME_BOX = "frame-box";
 
         static final String FINE_WIRE = "fine-wire";
@@ -51,7 +53,6 @@ class LayoutHandler {
         static final String BOLTS = "bolts";
         static final String SPRINGS = "springs";
         static final String GEARS = "gears";
-        static final String ROTORS = "rotors";
 
         static final String WIRES = "wires";
         static final String CABLES = "cables";
@@ -95,9 +96,10 @@ class LayoutHandler {
         optionalLayoutsBuilder.add(buildRoundLayout());
         optionalLayoutsBuilder.add(buildSpringsLayout());
         optionalLayoutsBuilder.add(buildGearsLayout());
+        optionalLayoutsBuilder.add(buildAlloyPlateLayout());
         optionalLayoutsBuilder.add(buildCasingLayout());
+        optionalLayoutsBuilder.add(buildRotorLayout());
         optionalLayoutsBuilder.add(buildFrameBoxLayout());
-        optionalLayoutsBuilder.add(buildRotorsLayout());
         optionalLayoutsBuilder.add(buildWiresLayout());
         optionalLayoutsBuilder.add(buildFineWireLayout());
         optionalLayoutsBuilder.add(buildCablesLayout());
@@ -392,14 +394,41 @@ class LayoutHandler {
                 .build();
     }
 
+    private Layout buildAlloyPlateLayout() {
+        return Layout.builder()
+                .putSlot(
+                        SlotKeys.ALLOY_PLATE,
+                        Slot.builder(Grid.GRID.grid(10, 14))
+                                .setTooltip(
+                                        Tooltip.create(
+                                                Lang.GREGTECH_MATERIAL_PARTS.trans(
+                                                        "alloyplateslot"),
+                                                Tooltip.SLOT_FORMATTING))
+                                .build())
+                .build();
+    }
+
     private Layout buildCasingLayout() {
         return Layout.builder()
                 .putSlot(
                         SlotKeys.CASING,
-                        Slot.builder(Grid.GRID.grid(10, 14))
+                        Slot.builder(Grid.GRID.grid(10, 16))
                                 .setTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_MATERIAL_PARTS.trans("casingslot"),
+                                                Tooltip.SLOT_FORMATTING))
+                                .build())
+                .build();
+    }
+
+    private Layout buildRotorLayout() {
+        return Layout.builder()
+                .putSlot(
+                        SlotKeys.ROTOR,
+                        Slot.builder(Grid.GRID.grid(12, 14))
+                                .setTooltip(
+                                        Tooltip.create(
+                                                Lang.GREGTECH_MATERIAL_PARTS.trans("rotorslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();
@@ -409,23 +438,10 @@ class LayoutHandler {
         return Layout.builder()
                 .putSlot(
                         SlotKeys.FRAME_BOX,
-                        Slot.builder(Grid.GRID.grid(10, 16))
+                        Slot.builder(Grid.GRID.grid(12, 16))
                                 .setTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_MATERIAL_PARTS.trans("frameboxslot"),
-                                                Tooltip.SLOT_FORMATTING))
-                                .build())
-                .build();
-    }
-
-    private Layout buildRotorsLayout() {
-        return Layout.builder()
-                .putSlotGroup(
-                        SlotGroupKeys.ROTORS,
-                        SlotGroup.builder(1, 2, Grid.GRID.grid(12, 14), Grid.Direction.S)
-                                .setDefaultTooltip(
-                                        Tooltip.create(
-                                                Lang.GREGTECH_MATERIAL_PARTS.trans("rotorsslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();

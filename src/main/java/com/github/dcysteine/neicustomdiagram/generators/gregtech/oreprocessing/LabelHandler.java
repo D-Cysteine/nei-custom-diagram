@@ -18,13 +18,14 @@ class LabelHandler {
         CENTRIFUGE(ItemList.Machine_HV_Centrifuge, "centrifugelabel"),
         THERMAL_CENTRIFUGE(ItemList.Machine_HV_ThermalCentrifuge, "thermalcentrifugelabel"),
         SIFTER(ItemList.Machine_HV_Sifter, "sifterlabel"),
+        ELECTROMAGNETIC_SEPARATOR(
+                ItemList.Machine_HV_ElectromagneticSeparator, "electromagneticseparatorlabel"),
 
         FURNACE(ItemList.Machine_HV_E_Furnace, "furnacelabel"),
         ELECTRIC_BLAST_FURNACE(ItemList.Machine_Multi_BlastFurnace, "ebflabel"),
         CHEMICAL_BATH(ItemList.Machine_HV_ChemicalBath, "chemicalbathlabel"),
         CHEMICAL_REACTOR(ItemList.Machine_HV_ChemicalReactor, "chemicalreactorlabel"),
-        ELECTROMAGNETIC_SEPARATOR(
-                ItemList.Machine_HV_ElectromagneticSeparator, "electromagneticseparatorlabel");
+        AUTOCLAVE(ItemList.Machine_HV_Autoclave, "autoclavelabel");
 
         final ItemList item;
         final String tooltipKey;

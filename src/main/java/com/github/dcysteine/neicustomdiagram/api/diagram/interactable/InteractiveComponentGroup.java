@@ -1,13 +1,13 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.interactable;
 
 import com.github.dcysteine.neicustomdiagram.api.Lang;
+import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Slot;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.api.draw.Ticker;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
@@ -51,18 +51,18 @@ public class InteractiveComponentGroup implements Interactable {
         this(slot.position(), components, slot.tooltip());
     }
 
-    public int currentIndex(Ticker ticker) {
-        return ticker.cycleIndex(components.size());
+    public int currentIndex(DiagramState diagramState) {
+        return diagramState.cycleIndex(components.size());
     }
 
-    public DisplayComponent currentComponent(Ticker ticker) {
-        return components.get(currentIndex(ticker));
+    public DisplayComponent currentComponent(DiagramState diagramState) {
+        return components.get(currentIndex(diagramState));
     }
 
     /**
      * Returns a tooltip containing the current index and total number of components in this group.
      */
-    public Tooltip indexTooltip(Ticker ticker) {
+    public Tooltip indexTooltip(DiagramState diagramState) {
         if (components.size() <= 1) {
             return Tooltip.EMPTY_TOOLTIP;
         }
@@ -71,7 +71,7 @@ public class InteractiveComponentGroup implements Interactable {
                 .setFormatting(Tooltip.INFO_FORMATTING.toBuilder().setSmall(true).build())
                 .addTextLine(
                         Lang.API.transf("componentindex",
-                                currentIndex(ticker) + 1, components.size()))
+                                currentIndex(diagramState) + 1, components.size()))
                 .build();
     }
 
@@ -91,23 +91,23 @@ public class InteractiveComponentGroup implements Interactable {
     }
 
     @Override
-    public void interact(Ticker ticker, RecipeType recipeType) {
-        currentComponent(ticker).interact(recipeType);
+    public void interact(DiagramState diagramState, RecipeType recipeType) {
+        currentComponent(diagramState).interact(recipeType);
     }
 
     @Override
-    public void draw(Ticker ticker) {
-        currentComponent(ticker).draw(position);
+    public void draw(DiagramState diagramState) {
+        currentComponent(diagramState).draw(position);
     }
 
     @Override
-    public void drawOverlay(Ticker ticker) {
+    public void drawOverlay(DiagramState diagramState) {
         Draw.drawOverlay(position, Draw.Color.OVERLAY_WHITE);
     }
 
     @Override
-    public void drawTooltip(Ticker ticker, Point mousePos) {
-        DisplayComponent component = currentComponent(ticker);
+    public void drawTooltip(DiagramState diagramState, Point mousePos) {
+        DisplayComponent component = currentComponent(diagramState);
 
         Tooltip itemStackTooltip = Tooltip.EMPTY_TOOLTIP;
         if (component.type() == Component.ComponentType.ITEM) {
@@ -127,7 +127,7 @@ public class InteractiveComponentGroup implements Interactable {
         }
 
         Tooltip.concat(
-                        component.descriptionTooltip(), indexTooltip(ticker),
+                        component.descriptionTooltip(), indexTooltip(diagramState),
                         slotTooltip, component.additionalTooltip(), itemStackTooltip)
                 .draw(mousePos);
     }
