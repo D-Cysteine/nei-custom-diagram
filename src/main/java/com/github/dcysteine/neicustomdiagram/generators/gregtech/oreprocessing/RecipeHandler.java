@@ -87,10 +87,9 @@ class RecipeHandler {
 
         ((Map<ItemStack, ItemStack>) FurnaceRecipes.smelting().getSmeltingList()).entrySet()
                 .forEach(
-                        entry ->
-                                furnaceData.put(
-                                        ItemComponent.create(entry.getKey()),
-                                        ItemComponent.create(entry.getValue())));
+                        entry -> furnaceData.put(
+                                ItemComponent.create(entry.getKey()),
+                                ItemComponent.create(entry.getValue())));
     }
 
     /** The returned set is immutable! */

@@ -7,6 +7,8 @@ public final class GregTechFormatting {
     private GregTechFormatting() {}
 
     public static String getMaterialName(Materials material) {
+        // TODO maybe can delete this null check. Fixed by:
+        //  https://github.com/GTNewHorizons/bartworks/pull/35
         return material.mLocalizedName.equals("null") ? material.mName : material.mLocalizedName;
     }
 

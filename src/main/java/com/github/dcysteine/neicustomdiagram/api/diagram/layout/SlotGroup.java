@@ -23,6 +23,10 @@ import java.util.function.Consumer;
  */
 @AutoValue
 public abstract class SlotGroup implements Drawable {
+    public static Slot.Builder slotBuilder() {
+        return Slot.builder(Point.create(0, 0));
+    }
+
     /** The slot group's width, in # of slots. */
     public abstract int width();
 
@@ -37,7 +41,7 @@ public abstract class SlotGroup implements Drawable {
     public abstract ImmutableList<Slot> slots();
 
     public Slot slot(int x, int y) {
-        return slots().get(x + y * height());
+        return slots().get(x + y * width());
     }
 
     public void draw(DiagramState diagramState) {
@@ -123,7 +127,10 @@ public abstract class SlotGroup implements Drawable {
 
         /**
          * Sets a slot with a custom tooltip and/or draw function.
-         * The slot's position will be overridden during slot group construction.
+         *
+         * <p>The slot's position will be overridden during slot group construction, so for
+         * convenience, you can use {@link #slotBuilder()} to get a slot builder without specifying
+         * a position.
          */
         public Builder setSlot(int x, int y, Slot slot) {
             slots[x][y] = slot;

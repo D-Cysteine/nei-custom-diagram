@@ -2,6 +2,9 @@
 
 **NEI Custom Diagram** is a framework for creating custom diagrams for NEI.\
 It comes bundled with some diagrams already:
+- Debug Ruler
+- Ender Storage Chest Overview
+- Ender Storage Tank Overview
 - Forge Fluid Containers
 - Forge Ore Dictionary
 - GregTech Material Parts

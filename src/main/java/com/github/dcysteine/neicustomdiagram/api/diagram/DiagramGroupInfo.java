@@ -7,18 +7,6 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class DiagramGroupInfo {
-    public static DiagramGroupInfo create(
-            String groupName, String groupId, ItemComponent icon, int diagramsPerPage,
-            boolean enabledByDefault) {
-        return new AutoValue_DiagramGroupInfo(
-                groupName, groupId, icon, diagramsPerPage, enabledByDefault);
-    }
-
-    public static DiagramGroupInfo create(
-            String groupName, String groupId, ItemComponent icon, int diagramsPerPage) {
-        return create(groupName, groupId, icon, diagramsPerPage, true);
-    }
-
     /** Display description for this diagram group. */
     public abstract String groupName();
 
@@ -42,6 +30,9 @@ public abstract class DiagramGroupInfo {
      */
     public abstract int diagramsPerPage();
 
+    /** If {@code true}, then NBT data will be removed when looking up a component. */
+    public abstract boolean ignoreNbt();
+
     /** Whether this diagram is enabled by default, or must be enabled via config. */
     public abstract boolean enabledByDefault();
 
@@ -49,5 +40,30 @@ public abstract class DiagramGroupInfo {
         builder.setDisplayStack(icon().stack())
                 .setHeight(Grid.TOTAL_HEIGHT / diagramsPerPage())
                 .setMaxRecipesPerPage(diagramsPerPage());
+    }
+
+    public static Builder builder(
+        String groupName, String groupId, ItemComponent icon, int diagramsPerPage) {
+            return new AutoValue_DiagramGroupInfo.Builder()
+                    .setGroupName(groupName)
+                    .setGroupId(groupId)
+                    .setIcon(icon)
+                    .setDiagramsPerPage(diagramsPerPage)
+                    .setIgnoreNbt(true)
+                    .setEnabledByDefault(true);
+    }
+
+    public abstract Builder toBuilder();
+
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder setGroupName(String groupName);
+        public abstract Builder setGroupId(String groupId);
+        public abstract Builder setIcon(ItemComponent icon);
+        public abstract Builder setDiagramsPerPage(int diagramsPerPage);
+        public abstract Builder setIgnoreNbt(boolean ignoreNbt);
+        public abstract Builder setEnabledByDefault(boolean enabledByDefault);
+
+        public abstract DiagramGroupInfo build();
     }
 }

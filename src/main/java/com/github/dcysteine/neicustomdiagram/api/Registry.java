@@ -4,6 +4,9 @@ import codechicken.nei.api.API;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
+import com.github.dcysteine.neicustomdiagram.generators.debug.ruler.DebugRuler;
+import com.github.dcysteine.neicustomdiagram.generators.enderstorage.chestoverview.EnderStorageChestOverview;
+import com.github.dcysteine.neicustomdiagram.generators.enderstorage.tankoverview.EnderStorageTankOverview;
 import com.github.dcysteine.neicustomdiagram.generators.forge.fluidcontainers.ForgeFluidContainers;
 import com.github.dcysteine.neicustomdiagram.generators.forge.oredictionary.ForgeOreDictionary;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts.GregTechMaterialParts;
@@ -31,6 +34,11 @@ public final class Registry {
 
     static {
         // Add your diagram generator here!
+        addGenerator("debug.ruler", DebugRuler::new);
+        addGenerator(
+                "enderstorage.chestoverview", EnderStorageChestOverview::new, ModIds.ENDER_STORAGE);
+        addGenerator(
+                "enderstorage.tankoverview", EnderStorageTankOverview::new, ModIds.ENDER_STORAGE);
         addGenerator("forge.fluidcontainers", ForgeFluidContainers::new);
         addGenerator("forge.oredictionary", ForgeOreDictionary::new);
         addGenerator("gregtech.materialparts", GregTechMaterialParts::new, ModIds.GREGTECH);
@@ -43,8 +51,10 @@ public final class Registry {
     public static final class ModIds {
         // If you're adding a new mod dependency here, don't forget to also add it to the list of
         // dependencies in NeiCustomDiagram.java (if necessary).
+        public static final String ENDER_STORAGE = "EnderStorage";
         public static final String GREGTECH = "gregtech";
         public static final String BARTWORKS = "bartworks";
+        public static final String DETRAV_SCANNER = "detravscannermod";
 
         public static boolean isModLoaded(String modId) {
             return Loader.isModLoaded(modId);

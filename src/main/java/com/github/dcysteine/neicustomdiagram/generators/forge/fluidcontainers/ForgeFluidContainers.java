@@ -42,9 +42,11 @@ public final class ForgeFluidContainers implements DiagramGenerator {
 
     public ForgeFluidContainers(String groupId) {
         this.info =
-                DiagramGroupInfo.create(
-                        Lang.FORGE_FLUID_CONTAINERS.trans("groupname"),
-                        groupId, ICON, 2, false);
+                DiagramGroupInfo.builder(
+                                Lang.FORGE_FLUID_CONTAINERS.trans("groupname"),
+                                groupId, ICON, 2)
+                        .setEnabledByDefault(false)
+                        .build();
     }
 
     @Override

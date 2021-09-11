@@ -5,34 +5,42 @@ import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 import java.lang.reflect.Field;
+import java.util.function.Function;
 
 /** Class containing reflection accessors for private fields. */
 public final class Reflection {
-    public static IntegerField GUI_LEFT;
-    public static IntegerField GUI_TOP;
+    public static ReflectionField<GuiContainer, Integer> GUI_LEFT;
+    public static ReflectionField<GuiContainer, Integer> GUI_TOP;
 
     @AutoValue
-    public abstract static class IntegerField {
-        public static IntegerField create(Class<?> clazz, String... fieldNames) {
+    public abstract static class ReflectionField<T, U> {
+        public static <T> ReflectionField<T, Integer> createInteger(
+                Class<T> clazz, String... fieldNames) {
             Field field = ReflectionHelper.findField(clazz, fieldNames);
-            return new AutoValue_Reflection_IntegerField(field);
+            return new AutoValue_Reflection_ReflectionField<>(field, field::getInt);
+        }
+
+        @FunctionalInterface
+        protected interface FieldAccessorFunction<R, S> {
+            S apply(R obj) throws IllegalAccessException;
         }
 
         public abstract Field field();
+        public abstract FieldAccessorFunction<T, U> accessorFunction();
 
-        public int getInt(Object obj) {
+        public U get(T obj) {
             try {
-                return field().getInt(obj);
+                return accessorFunction().apply(obj);
             } catch (IllegalAccessException e) {
-                throw new IllegalStateException("Could not access reflection field!", e);
+                throw new RuntimeException("Could not access reflection field!", e);
             }
         }
     }
 
     /** This method is only intended to be called during mod initialization. */
     public static void initialize() {
-        GUI_LEFT = IntegerField.create(GuiContainer.class, "guiLeft", "field_147003_i");
-        GUI_TOP = IntegerField.create(GuiContainer.class, "guiTop", "field_147009_r");
+        GUI_LEFT = ReflectionField.createInteger(GuiContainer.class, "guiLeft", "field_147003_i");
+        GUI_TOP = ReflectionField.createInteger(GuiContainer.class, "guiTop", "field_147009_r");
     }
 
 }

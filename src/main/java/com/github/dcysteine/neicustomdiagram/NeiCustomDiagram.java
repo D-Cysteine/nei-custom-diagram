@@ -28,7 +28,8 @@ public final class NeiCustomDiagram {
     public static final String MOD_DEPENDENCIES =
             "required-after:NotEnoughItems;"
                 + "after:gregtech;"
-                + "after:bartworks;";
+                + "after:bartworks;"
+                + "after:detravscannermod;";
 
     @Instance(MOD_ID)
     public static NeiCustomDiagram instance;

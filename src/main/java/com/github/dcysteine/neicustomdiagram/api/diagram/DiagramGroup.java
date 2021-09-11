@@ -92,7 +92,8 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         return diagrams.size();
     }
 
-    public DiagramGroup loadDiagrams(String id, Interactable.RecipeType recipeType, Object... stacks) {
+    public DiagramGroup loadDiagrams(
+            String id, Interactable.RecipeType recipeType, Object... stacks) {
         if (id.equals(info.groupId())) {
             return newInstance(matcher.all());
         }
@@ -100,14 +101,22 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         switch (id) {
             case "item":
                 ItemStack itemStack = (ItemStack) stacks[0];
-                return newInstance(
-                        matcher.match(recipeType, ItemComponent.createWithNbt(itemStack)));
+                ItemComponent itemComponent =
+                        info.ignoreNbt()
+                                ? ItemComponent.create(itemStack)
+                                : ItemComponent.createWithNbt(itemStack);
+
+                return newInstance(matcher.match(recipeType, itemComponent));
 
             case "liquid":
             case "fluid":
                 FluidStack fluidStack = (FluidStack) stacks[0];
-                return newInstance(
-                        matcher.match(recipeType, FluidComponent.createWithNbt(fluidStack)));
+                FluidComponent fluidComponent =
+                        info.ignoreNbt()
+                                ? FluidComponent.create(fluidStack)
+                                : FluidComponent.createWithNbt(fluidStack);
+
+                return newInstance(matcher.match(recipeType, fluidComponent));
         }
 
         return newInstance(ImmutableList.of());
@@ -165,8 +174,8 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         java.awt.Point mouse = GuiDraw.getMousePosition();
         java.awt.Point offset = gui.getRecipePosition(recipe);
 
-        int x = mouse.x - (Reflection.GUI_LEFT.getInt(gui) + offset.x);
-        int y = mouse.y - (Reflection.GUI_TOP.getInt(gui) + offset.y);
+        int x = mouse.x - (Reflection.GUI_LEFT.get(gui) + offset.x);
+        int y = mouse.y - (Reflection.GUI_TOP.get(gui) + offset.y);
         return Point.create(x, y);
     }
 

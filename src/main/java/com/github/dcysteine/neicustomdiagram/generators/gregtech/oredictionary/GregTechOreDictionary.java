@@ -45,9 +45,11 @@ public final class GregTechOreDictionary implements DiagramGenerator {
 
     public GregTechOreDictionary(String groupId) {
         this.info =
-                DiagramGroupInfo.create(
-                        Lang.GREGTECH_ORE_DICTIONARY.trans("groupname"),
-                        groupId, ICON, 2, false);
+                DiagramGroupInfo.builder(
+                                Lang.GREGTECH_ORE_DICTIONARY.trans("groupname"),
+                                groupId, ICON, 2)
+                        .setEnabledByDefault(false)
+                        .build();
 
     }
 
