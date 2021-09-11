@@ -23,8 +23,12 @@ class LayoutHandler {
     static final class SlotGroupKeys {
         static final String TOOLS = "tools";
         static final String TOOL_HEADS = "tool-heads";
+
         static final String TURBINES = "turbines";
         static final String ARROWS = "arrows";
+
+        static final String SCANNERS = "scanners";
+        static final String ELECTRIC_SCANNERS = "electric-scanners";
     }
 
     private final DiagramGroupInfo info;
@@ -51,6 +55,7 @@ class LayoutHandler {
         optionalLayoutsBuilder.add(buildTurbinesLayout());
         optionalLayoutsBuilder.add(buildArrowheadLayout());
         optionalLayoutsBuilder.add(buildArrowsLayout());
+        optionalLayoutsBuilder.add(buildScannersLayout());
         optionalLayouts = optionalLayoutsBuilder.build();
     }
 
@@ -154,6 +159,32 @@ class LayoutHandler {
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_MATERIAL_TOOLS.trans("arrowsslot"),
+                                                Tooltip.SLOT_FORMATTING))
+                                .build())
+                .build();
+    }
+
+    private Layout buildScannersLayout() {
+        return Layout.builder()
+                .addLines(
+                        Lines.builder(Grid.GRID.grid(4, 23))
+                                .addSegment(Grid.GRID.grid(10, 23))
+                                .build())
+                .putSlotGroup(
+                        SlotGroupKeys.SCANNERS,
+                        SlotGroup.builder(5, 2, Grid.GRID.grid(4, 23), Grid.Direction.C)
+                                .setDefaultTooltip(
+                                        Tooltip.create(
+                                                Lang.GREGTECH_MATERIAL_TOOLS.trans("scannersslot"),
+                                                Tooltip.SLOT_FORMATTING))
+                                .build())
+                .putSlotGroup(
+                        SlotGroupKeys.ELECTRIC_SCANNERS,
+                        SlotGroup.builder(2, 2, Grid.GRID.grid(10, 23), Grid.Direction.C)
+                                .setDefaultTooltip(
+                                        Tooltip.create(
+                                                Lang.GREGTECH_MATERIAL_TOOLS.trans(
+                                                        "electricscannersslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();

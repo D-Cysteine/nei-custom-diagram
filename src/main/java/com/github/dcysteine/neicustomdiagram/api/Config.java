@@ -23,7 +23,9 @@ public final class Config {
         CTRL_FAST_FORWARD(
                 "ctrl_fast_forward", false,
                 "Enables fast-forwarding through component groups by holding down <Ctrl>.");
+
         // TODO add config option to show / hide item IDs / damage?
+        // TODO add config option to hide "1" for stack size 1?
         // TODO add config option for smaller resolutions? Will probably need to modify layouts...
 
         private final String key;

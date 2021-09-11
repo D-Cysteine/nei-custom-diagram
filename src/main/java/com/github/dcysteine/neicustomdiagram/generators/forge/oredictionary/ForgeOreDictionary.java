@@ -40,9 +40,11 @@ public final class ForgeOreDictionary implements DiagramGenerator {
 
     public ForgeOreDictionary(String groupId) {
         this.info =
-                DiagramGroupInfo.create(
-                        Lang.FORGE_ORE_DICTIONARY.trans("groupname"),
-                        groupId, ICON, 2, false);
+                DiagramGroupInfo.builder(
+                                Lang.FORGE_ORE_DICTIONARY.trans("groupname"),
+                                groupId, ICON, 2)
+                        .setEnabledByDefault(false)
+                        .build();
     }
 
     @Override

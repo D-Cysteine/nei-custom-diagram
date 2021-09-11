@@ -86,10 +86,9 @@ public abstract class DisplayComponent {
     public void draw(Point pos) {
         component().draw(pos);
         stackSize().ifPresent(
-                stackSize ->
-                        Draw.drawStackSize(
-                                stackSize, pos,
-                                component().type() == Component.ComponentType.FLUID));
+                stackSize -> Draw.drawStackSize(
+                        stackSize, pos,
+                        component().type() == Component.ComponentType.FLUID));
         additionalInfo().ifPresent(
                 additionalInfo -> Draw.drawAdditionalInfo(additionalInfo, pos, true));
     }
@@ -110,9 +109,23 @@ public abstract class DisplayComponent {
                 .setAdditionalTooltip(Tooltip.EMPTY_TOOLTIP);
     }
 
+    public static Builder builderWithNbt(ItemStack itemStack) {
+        return new AutoValue_DisplayComponent.Builder()
+                .setComponent(ItemComponent.createWithNbt(itemStack))
+                .setStackSize(itemStack.stackSize)
+                .setAdditionalTooltip(Tooltip.EMPTY_TOOLTIP);
+    }
+
     public static Builder builder(FluidStack fluidStack) {
         return new AutoValue_DisplayComponent.Builder()
                 .setComponent(FluidComponent.create(fluidStack))
+                .setStackSize(fluidStack.amount)
+                .setAdditionalTooltip(Tooltip.EMPTY_TOOLTIP);
+    }
+
+    public static Builder builderWithNbt(FluidStack fluidStack) {
+        return new AutoValue_DisplayComponent.Builder()
+                .setComponent(FluidComponent.createWithNbt(fluidStack))
                 .setStackSize(fluidStack.amount)
                 .setAdditionalTooltip(Tooltip.EMPTY_TOOLTIP);
     }

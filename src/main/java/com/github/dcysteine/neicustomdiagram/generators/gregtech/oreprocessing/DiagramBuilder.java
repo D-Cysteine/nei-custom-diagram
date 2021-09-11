@@ -79,79 +79,63 @@ class DiagramBuilder {
 
         Optional<ItemComponent> purifiedOreOptional =
                 crushedOreOptional.flatMap(
-                        crushedOre ->
-                                handleRecipes(
-                                        RecipeHandler.RecipeMap.ORE_WASHER, crushedOre,
-                                        LayoutHandler.SlotGroupKeys.CRUSHED_ORE_WASH));
+                        crushedOre -> handleRecipes(
+                                RecipeHandler.RecipeMap.ORE_WASHER, crushedOre,
+                                LayoutHandler.SlotGroupKeys.CRUSHED_ORE_WASH));
 
         Optional<ItemComponent> impureDustOptional =
                 crushedOreOptional.flatMap(
-                        crushedOre ->
-                                handleRecipes(
-                                        RecipeHandler.RecipeMap.MACERATOR, crushedOre,
-                                        LayoutHandler.SlotGroupKeys.CRUSHED_ORE_MACERATE));
+                        crushedOre -> handleRecipes(
+                                RecipeHandler.RecipeMap.MACERATOR, crushedOre,
+                                LayoutHandler.SlotGroupKeys.CRUSHED_ORE_MACERATE));
 
         Optional<ItemComponent> crushedOreThermalCentrifugeOptional =
                 crushedOreOptional.flatMap(
-                        crushedOre ->
-                                handleRecipes(
-                                        RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, crushedOre,
-                                        LayoutHandler.SlotGroupKeys
-                                                .CRUSHED_ORE_THERMAL_CENTRIFUGE));
+                        crushedOre -> handleRecipes(
+                                RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, crushedOre,
+                                LayoutHandler.SlotGroupKeys.CRUSHED_ORE_THERMAL_CENTRIFUGE));
 
         Optional<ItemComponent> purifiedDustOptional =
                 purifiedOreOptional.flatMap(
-                        purifiedOre ->
-                                handleRecipes(
-                                        RecipeHandler.RecipeMap.MACERATOR, purifiedOre,
-                                        LayoutHandler.SlotGroupKeys.PURIFIED_ORE_MACERATE));
+                        purifiedOre -> handleRecipes(
+                                RecipeHandler.RecipeMap.MACERATOR, purifiedOre,
+                                LayoutHandler.SlotGroupKeys.PURIFIED_ORE_MACERATE));
 
         Optional<ItemComponent> purifiedOreThermalCentrifugeOptional =
                 purifiedOreOptional.flatMap(
-                        purifiedOre ->
-                                handleRecipes(
-                                        RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, purifiedOre,
-                                        LayoutHandler.SlotGroupKeys
-                                                .PURIFIED_ORE_THERMAL_CENTRIFUGE));
+                        purifiedOre -> handleRecipes(
+                                RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, purifiedOre,
+                                LayoutHandler.SlotGroupKeys.PURIFIED_ORE_THERMAL_CENTRIFUGE));
 
         purifiedOreOptional.ifPresent(
-                purifiedOre ->
-                        handleRecipes(
-                                RecipeHandler.RecipeMap.SIFTER, purifiedOre,
-                                LayoutHandler.SlotGroupKeys.PURIFIED_ORE_SIFT));
+                purifiedOre -> handleRecipes(
+                        RecipeHandler.RecipeMap.SIFTER, purifiedOre,
+                        LayoutHandler.SlotGroupKeys.PURIFIED_ORE_SIFT));
 
         impureDustOptional.ifPresent(
-                impureDust ->
-                        handleRecipes(
-                                RecipeHandler.RecipeMap.CENTRIFUGE, impureDust,
-                                LayoutHandler.SlotGroupKeys.IMPURE_DUST_CENTRIFUGE));
+                impureDust -> handleRecipes(
+                        RecipeHandler.RecipeMap.CENTRIFUGE, impureDust,
+                        LayoutHandler.SlotGroupKeys.IMPURE_DUST_CENTRIFUGE));
 
         purifiedDustOptional.ifPresent(
-                purifiedDust ->
-                        handleRecipes(
-                                RecipeHandler.RecipeMap.CENTRIFUGE, purifiedDust,
-                                LayoutHandler.SlotGroupKeys.PURIFIED_DUST_CENTRIFUGE));
+                purifiedDust -> handleRecipes(
+                        RecipeHandler.RecipeMap.CENTRIFUGE, purifiedDust,
+                        LayoutHandler.SlotGroupKeys.PURIFIED_DUST_CENTRIFUGE));
 
         purifiedDustOptional.ifPresent(
-                purifiedDust ->
-                        handleRecipes(
-                                RecipeHandler.RecipeMap.ELECTROMAGNETIC_SEPARATOR, purifiedDust,
-                                LayoutHandler.SlotGroupKeys
-                                        .PURIFIED_DUST_ELECTROMAGNETIC_SEPARATE));
+                purifiedDust -> handleRecipes(
+                        RecipeHandler.RecipeMap.ELECTROMAGNETIC_SEPARATOR, purifiedDust,
+                        LayoutHandler.SlotGroupKeys.PURIFIED_DUST_ELECTROMAGNETIC_SEPARATE));
 
         crushedOreThermalCentrifugeOptional.ifPresent(
-                centrifugedOre ->
-                        handleRecipes(
-                                RecipeHandler.RecipeMap.MACERATOR, centrifugedOre,
-                                LayoutHandler.SlotGroupKeys
-                                        .CRUSHED_ORE_THERMAL_CENTRIFUGE_MACERATE));
+                centrifugedOre -> handleRecipes(
+                        RecipeHandler.RecipeMap.MACERATOR, centrifugedOre,
+                        LayoutHandler.SlotGroupKeys.CRUSHED_ORE_THERMAL_CENTRIFUGE_MACERATE));
 
         purifiedOreThermalCentrifugeOptional.ifPresent(
-                centrifugedOre ->
-                        handleRecipes(
-                                RecipeHandler.RecipeMap.MACERATOR, centrifugedOre,
-                                LayoutHandler.SlotGroupKeys
-                                        .PURIFIED_ORE_THERMAL_CENTRIFUGE_MACERATE));
+                centrifugedOre -> handleRecipes(
+                        RecipeHandler.RecipeMap.MACERATOR, centrifugedOre,
+                        LayoutHandler.SlotGroupKeys.PURIFIED_ORE_THERMAL_CENTRIFUGE_MACERATE));
 
         HashSet<Component> additionalRecipeOutputs = new HashSet<>();
         additionalRecipeOutputs.addAll(

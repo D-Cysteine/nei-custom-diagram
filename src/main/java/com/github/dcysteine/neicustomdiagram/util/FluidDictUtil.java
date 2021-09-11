@@ -52,7 +52,7 @@ public final class FluidDictUtil {
         int capacity = FluidContainerRegistry.getContainerCapacity(container);
         return DisplayComponent.builder(container)
                 .clearStackSize()
-                .setAdditionalInfo(Formatter.formatInt(capacity))
+                .setAdditionalInfo(Formatter.smartFormatInt(capacity))
                 .setAdditionalTooltip(
                         Tooltip.create(
                                 Lang.UTIL.transf("capacity", capacity),

@@ -68,11 +68,10 @@ public final class GregTechFluidDictUtil {
                 }
 
                 return fluidOptional.map(
-                        fluidComponent ->
-                                GT_Utility.fillFluidContainer(
-                                        fluidComponent.stack(),
-                                        ItemList.Cell_Empty.get(1),
-                                        false, false))
+                        fluidComponent -> GT_Utility.fillFluidContainer(
+                                fluidComponent.stack(),
+                                ItemList.Cell_Empty.get(1),
+                                false, false))
                         .map(ItemComponent::create);
 
             case FLUID:

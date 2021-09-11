@@ -23,14 +23,11 @@ import java.util.stream.Collectors;
 public class ComponentDiagramMatcher implements DiagramMatcher {
     protected final ImmutableMap<
             Interactable.RecipeType, ImmutableSetMultimap<Component, Diagram>> matchData;
-    protected final boolean ignoreNbt;
 
     public ComponentDiagramMatcher(
             ImmutableMap<
-                    Interactable.RecipeType, ImmutableSetMultimap<Component, Diagram>> matchData,
-            boolean ignoreNbt) {
+                    Interactable.RecipeType, ImmutableSetMultimap<Component, Diagram>> matchData) {
         this.matchData = matchData;
-        this.ignoreNbt = ignoreNbt;
     }
 
     @Override
@@ -43,10 +40,6 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
 
     @Override
     public Collection<Diagram> match(Interactable.RecipeType recipeType, Component component) {
-        if (ignoreNbt) {
-            component = component.withoutNbt();
-        }
-
         return matchData.get(recipeType).get(component);
     }
 
@@ -57,7 +50,6 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
     public static final class Builder {
         private final EnumMap<Interactable.RecipeType,
                 ImmutableSetMultimap.Builder<Component, Diagram>> matchDataBuilder;
-        private boolean ignoreNbt;
 
         public Builder() {
             matchDataBuilder = new EnumMap<>(Interactable.RecipeType.class);
@@ -65,27 +57,19 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
             for (Interactable.RecipeType recipeType : Interactable.RecipeType.VALID_TYPES) {
                 matchDataBuilder.put(recipeType, ImmutableSetMultimap.builder());
             }
-
-            ignoreNbt = true;
         }
 
         public DiagramSubBuilder addDiagram(Diagram diagram) {
             return new DiagramSubBuilder(diagram);
         }
 
-        public Builder setIgnoreNbt(boolean ignoreNbt) {
-            this.ignoreNbt = ignoreNbt;
-            return this;
-        }
-
         public ComponentDiagramMatcher build() {
             ImmutableMap.Builder<
                     Interactable.RecipeType, ImmutableSetMultimap<Component, Diagram>> builder =
                             ImmutableMap.builder();
-            matchDataBuilder.entrySet()
-                    .forEach(entry -> builder.put(entry.getKey(), entry.getValue().build()));
+            matchDataBuilder.forEach((key, value) -> builder.put(key, value.build()));
 
-            return new ComponentDiagramMatcher(builder.build(), ignoreNbt);
+            return new ComponentDiagramMatcher(builder.build());
         }
 
         public final class DiagramSubBuilder {

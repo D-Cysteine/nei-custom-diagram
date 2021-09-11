@@ -38,9 +38,11 @@ public final class GregTechMaterialTools implements DiagramGenerator {
 
     public GregTechMaterialTools(String groupId) {
         this.info =
-                DiagramGroupInfo.create(
-                        Lang.GREGTECH_MATERIAL_TOOLS.trans("groupname"),
-                        groupId, ICON, 1);
+                DiagramGroupInfo.builder(
+                                Lang.GREGTECH_MATERIAL_TOOLS.trans("groupname"),
+                                groupId, ICON, 1)
+                        .setIgnoreNbt(false)
+                        .build();
 
         this.layoutHandler = new LayoutHandler(this.info);
         this.recipeHandler = new RecipeHandler();
@@ -78,7 +80,7 @@ public final class GregTechMaterialTools implements DiagramGenerator {
         Materials material = null;
 
         if (component.type() == Component.ComponentType.ITEM
-                && ((ItemComponent) component).item() == GT_MetaGenerated_Tool_01.INSTANCE) {
+                && ((ItemComponent) component).item() instanceof GT_MetaGenerated_Tool) {
             material = GT_MetaGenerated_Tool.getPrimaryMaterial((ItemStack) component.stack());
         } else {
             Optional<ItemData> itemDataOptional = GregTechOreDictUtil.getItemData(component);

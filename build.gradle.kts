@@ -66,7 +66,6 @@ repositories {
         this.artifactPattern("http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]-[revision].[ext]")
     }
     maven("https://jitpack.io") { this.name = "jitpack.io" }
-    maven("http://jenkins.usrv.eu:8081/nexus/content/repositories/releases/") { this.name = "GTNH" }
     maven("https://gregtech.overminddl1.com/") { this.name = "GregTech" }
     maven("http://www.ryanliptak.com/maven/") { this.name = "AppleCore" }
     maven("http://maven.ic2.player.to/") { this.name = "IC2" }
@@ -90,6 +89,9 @@ dependencies {
     // The following are compile-time dependencies of GT5.
     compileOnly("net.sengir.forestry:forestry_$minecraftVersion:$forestryVersion:dev")
     compileOnly("mods.railcraft:Railcraft_1.7.10:$railcraftVersion:dev")
+
+    val enderStorageVersion: String by project
+    compile("com.github.GTNewHorizons:EnderStorage:$enderStorageVersion:dev")
 }
 
 tasks.withType<Jar> {

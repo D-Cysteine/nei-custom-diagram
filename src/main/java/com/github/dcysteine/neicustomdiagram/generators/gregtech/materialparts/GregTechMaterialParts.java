@@ -37,9 +37,10 @@ public final class GregTechMaterialParts implements DiagramGenerator {
 
     public GregTechMaterialParts(String groupId) {
         this.info =
-                DiagramGroupInfo.create(
-                        Lang.GREGTECH_MATERIAL_PARTS.trans("groupname"),
-                        groupId, ICON, 1);
+                DiagramGroupInfo.builder(
+                                Lang.GREGTECH_MATERIAL_PARTS.trans("groupname"),
+                                groupId, ICON, 1)
+                        .build();
 
         this.layoutHandler = new LayoutHandler(this.info);
         this.heatingCoilHandler = new HeatingCoilHandler();

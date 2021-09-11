@@ -85,16 +85,16 @@ public class CustomInteractable implements Interactable {
         tooltip.draw(mousePos);
     }
 
-    /** Helper method for building an interaction lambda to look up a diagram group. */
-    protected static Consumer<RecipeType> buildInteractionLambda(String groupId) {
+    /** Helper method for building an interaction lambda with a custom ID. */
+    protected static Consumer<RecipeType> buildInteractionLambda(String id) {
         return recipeType -> {
             switch (recipeType) {
                 case CRAFTING:
-                    GuiUsageRecipe.openRecipeGui(groupId);
+                    GuiUsageRecipe.openRecipeGui(id);
                     break;
 
                 case USAGE:
-                    GuiCraftingRecipe.openRecipeGui(groupId);
+                    GuiCraftingRecipe.openRecipeGui(id);
                     break;
             }
         };
@@ -126,9 +126,9 @@ public class CustomInteractable implements Interactable {
             return this;
         }
 
-        /** Sets this interactable to open a diagram group. */
-        public Builder setInteract(String groupId) {
-            this.interact = buildInteractionLambda(groupId);
+        /** Sets this interactable to invoke NEI with the given ID. */
+        public Builder setInteract(String id) {
+            this.interact = buildInteractionLambda(id);
             return this;
         }
 

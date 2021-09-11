@@ -39,9 +39,10 @@ public final class GregTechOreProcessing implements DiagramGenerator {
 
     public GregTechOreProcessing(String groupId) {
         this.info =
-                DiagramGroupInfo.create(
-                        Lang.GREGTECH_ORE_PROCESSING.trans("groupname"),
-                        groupId, ICON, 1);
+                DiagramGroupInfo.builder(
+                                Lang.GREGTECH_ORE_PROCESSING.trans("groupname"),
+                                groupId, ICON, 1)
+                        .build();
 
         this.labelHandler = new LabelHandler();
         this.layoutHandler = new LayoutHandler(this.info, this.labelHandler);
@@ -75,9 +76,8 @@ public final class GregTechOreProcessing implements DiagramGenerator {
             }
 
             OTHER_ORE_PREFIXES.forEach(
-                    prefix ->
-                            rawOres.addAll(
-                                    GregTechOreDictUtil.getAllComponents(prefix, material)));
+                    prefix -> rawOres.addAll(
+                            GregTechOreDictUtil.getAllComponents(prefix, material)));
 
             buildDiagram(matcherBuilder, rawOres);
         }
@@ -94,9 +94,8 @@ public final class GregTechOreProcessing implements DiagramGenerator {
                 rawOres.add(rawOre.get());
 
                 OTHER_ORE_PREFIXES.forEach(
-                        prefix ->
-                                BartWorksOreDictUtil.getComponent(prefix, werkstoff)
-                                        .ifPresent(rawOres::add));
+                        prefix -> BartWorksOreDictUtil.getComponent(prefix, werkstoff)
+                                .ifPresent(rawOres::add));
 
                 buildDiagram(matcherBuilder, rawOres);
             }

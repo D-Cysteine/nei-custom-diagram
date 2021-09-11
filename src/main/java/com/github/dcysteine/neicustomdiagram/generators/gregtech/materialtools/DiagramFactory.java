@@ -1,6 +1,7 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialtools;
 
 import com.github.dcysteine.neicustomdiagram.api.Lang;
+import com.github.dcysteine.neicustomdiagram.api.Registry;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
@@ -33,6 +34,8 @@ class DiagramFactory {
                     (int) GT_MetaGenerated_Tool_01.TURBINE,
                     (int) GT_MetaGenerated_Tool_01.TURBINE_LARGE,
                     (int) GT_MetaGenerated_Tool_01.TURBINE_HUGE);
+
+    private static final int ELECTRIC_SCANNER_ID_START = 100;
 
     private enum MaterialPart {
         TOOL_HEADS(LayoutHandler.SlotGroupKeys.TOOL_HEADS,
@@ -94,6 +97,22 @@ class DiagramFactory {
                 .insertEachSafe(ComponentTransformer.transformToDisplay(tools));
         diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.TURBINES)
                 .insertEachSafe(ComponentTransformer.transformToDisplay(turbines));
+
+        if (Registry.ModIds.isModLoaded(Registry.ModIds.DETRAV_SCANNER)) {
+            List<ItemComponent> scanners = new ArrayList<>();
+            List<ItemComponent> electricScanners = new ArrayList<>();
+            for (ItemComponent scanner : recipeHandler.getScanners(material)) {
+                if (scanner.damage() >= ELECTRIC_SCANNER_ID_START) {
+                    electricScanners.add(scanner);
+                } else {
+                    scanners.add(scanner);
+                }
+            }
+            diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.SCANNERS)
+                    .insertEachSafe(ComponentTransformer.transformToDisplay(scanners));
+            diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.ELECTRIC_SCANNERS)
+                    .insertEachSafe(ComponentTransformer.transformToDisplay(electricScanners));
+        }
 
         Arrays.stream(DiagramFactory.MaterialPart.values())
                 .forEach(part -> part.insertIntoSlot(diagramBuilder, material));

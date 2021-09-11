@@ -1,5 +1,7 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialtools;
 
+import com.detrav.items.DetravMetaGeneratedTool01;
+import com.github.dcysteine.neicustomdiagram.api.Registry;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Multimaps;
@@ -30,8 +32,12 @@ class RecipeHandler {
     /** Map of material to sorted set of tools with that primary material. */
     private final SortedSetMultimap<Materials, ItemComponent> toolsMultimap;
 
+    /** Map of material to sorted set of Detrav scanners with that primary material. */
+    private final SortedSetMultimap<Materials, ItemComponent> scannersMultimap;
+
     RecipeHandler() {
         this.toolsMultimap = MultimapBuilder.hashKeys().treeSetValues(TOOL_COMPARATOR).build();
+        this.scannersMultimap = MultimapBuilder.hashKeys().treeSetValues(TOOL_COMPARATOR).build();
     }
 
     /** This method must be called before any other methods are called. */
@@ -49,6 +55,11 @@ class RecipeHandler {
         return Multimaps.unmodifiableSortedSetMultimap(toolsMultimap).get(material);
     }
 
+    /** The returned set is immutable! */
+    SortedSet<ItemComponent> getScanners(Materials material) {
+        return Multimaps.unmodifiableSortedSetMultimap(scannersMultimap).get(material);
+    }
+
     private void addTool(@Nullable ItemStack itemStack) {
         if (itemStack == null) {
             return;
@@ -58,6 +69,14 @@ class RecipeHandler {
             toolsMultimap.put(
                     GT_MetaGenerated_Tool.getPrimaryMaterial(itemStack),
                     ItemComponent.createWithNbt(itemStack));
+        }
+
+        if (Registry.ModIds.isModLoaded(Registry.ModIds.DETRAV_SCANNER)) {
+            if (itemStack.getItem() == DetravMetaGeneratedTool01.INSTANCE) {
+                scannersMultimap.put(
+                        GT_MetaGenerated_Tool.getPrimaryMaterial(itemStack),
+                        ItemComponent.createWithNbt(itemStack));
+            }
         }
     }
 }

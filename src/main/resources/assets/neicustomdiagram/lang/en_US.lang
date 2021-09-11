@@ -5,6 +5,27 @@ neicustomdiagram.api.showalldiagrams=Show all diagrams
 
 neicustomdiagram.util.capacity=Capacity: %,d
 
+neicustomdiagram.generators.debug.ruler.groupname=Debug Ruler
+neicustomdiagram.generators.debug.ruler.slotlabel=Slot (%02d, %02d)
+
+neicustomdiagram.generators.enderstorage.chestoverview.groupname=Ender Storage Chest Overview
+neicustomdiagram.generators.enderstorage.chestoverview.globalbutton=View global frequencies
+neicustomdiagram.generators.enderstorage.chestoverview.personalbutton=View personal frequencies
+neicustomdiagram.generators.enderstorage.chestoverview.personalitemlabel=Use this item to switch to personal frequency:
+neicustomdiagram.generators.enderstorage.chestoverview.globallabel=Global frequency
+neicustomdiagram.generators.enderstorage.chestoverview.personallabel=Personal frequency
+neicustomdiagram.generators.enderstorage.chestoverview.frequencyslot=Frequency
+neicustomdiagram.generators.enderstorage.chestoverview.inventoryslot=Chest contents
+
+neicustomdiagram.generators.enderstorage.tankoverview.groupname=Ender Storage Tank Overview
+neicustomdiagram.generators.enderstorage.tankoverview.globalbutton=View global frequencies
+neicustomdiagram.generators.enderstorage.tankoverview.personalbutton=View personal frequencies
+neicustomdiagram.generators.enderstorage.tankoverview.personalitemlabel=Use this item to switch to personal frequency:
+neicustomdiagram.generators.enderstorage.tankoverview.globallabel=Global frequencies
+neicustomdiagram.generators.enderstorage.tankoverview.personallabel=Personal frequencies
+neicustomdiagram.generators.enderstorage.tankoverview.frequencyslot=Frequency
+neicustomdiagram.generators.enderstorage.tankoverview.tankslot=Tank contents
+
 neicustomdiagram.generators.forge.fluidcontainers.groupname=Forge Fluid Containers
 neicustomdiagram.generators.forge.fluidcontainers.fluidlabel=Fluid
 neicustomdiagram.generators.forge.fluidcontainers.blocklabel=Block
@@ -75,6 +96,8 @@ neicustomdiagram.generators.gregtech.materialtools.turbinebladeslot=Turbine blad
 neicustomdiagram.generators.gregtech.materialtools.turbinesslot=Turbines
 neicustomdiagram.generators.gregtech.materialtools.arrowheadslot=Arrowhead
 neicustomdiagram.generators.gregtech.materialtools.arrowsslot=Arrows
+neicustomdiagram.generators.gregtech.materialtools.scannersslot=Prospector's Scanners
+neicustomdiagram.generators.gregtech.materialtools.electricscannersslot=Electric Prospector's Scanners
 
 neicustomdiagram.generators.gregtech.oredictionary.groupname=GregTech Ore Dictionary
 neicustomdiagram.generators.gregtech.oredictionary.materialnamelabel=Material name
