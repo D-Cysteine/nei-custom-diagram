@@ -1,6 +1,5 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing;
 
-import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.AllDiagramsButton;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInteractable;
@@ -12,6 +11,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.google.common.collect.ImmutableList;
 
 class LayoutHandler {

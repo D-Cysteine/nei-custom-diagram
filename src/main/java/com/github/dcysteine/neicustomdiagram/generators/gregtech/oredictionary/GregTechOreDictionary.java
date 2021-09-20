@@ -1,7 +1,6 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.oredictionary;
 
 import codechicken.lib.gui.GuiDraw;
-import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroup;
@@ -16,6 +15,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Text;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFormatting;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
@@ -48,7 +49,7 @@ public final class GregTechOreDictionary implements DiagramGenerator {
                 DiagramGroupInfo.builder(
                                 Lang.GREGTECH_ORE_DICTIONARY.trans("groupname"),
                                 groupId, ICON, 2)
-                        .setEnabledByDefault(false)
+                        .setDefaultVisibility(DiagramGroupVisibility.DISABLED)
                         .build();
 
     }
@@ -107,11 +108,12 @@ public final class GregTechOreDictionary implements DiagramGenerator {
             Materials material = itemDataOptional.get().mMaterial.mMaterial;
             String materialName = GregTechFormatting.getMaterialDescription(material);
             String prefixName = itemDataOptional.get().mPrefix.mRegularLocalName;
-            boolean small = GuiDraw.getStringWidth(materialName) > Grid.TOTAL_WIDTH - 4;
+            boolean materialSmall = GuiDraw.getStringWidth(materialName) > Grid.TOTAL_WIDTH - 4;
+            boolean prefixSmall = GuiDraw.getStringWidth(prefixName) > Grid.TOTAL_WIDTH - 4;
 
             Text materialNameText =
                     Text.builder(materialName, Grid.GRID.grid(6, 0), Grid.Direction.C)
-                            .setSmall(small)
+                            .setSmall(materialSmall)
                             .build();
             Interactable materialNameLabel =
                     CustomInteractable.builder(materialNameText)
@@ -122,7 +124,9 @@ public final class GregTechOreDictionary implements DiagramGenerator {
                             .build();
 
             Text prefixNameText =
-                    Text.builder(prefixName, Grid.GRID.grid(6, 1), Grid.Direction.C).build();
+                    Text.builder(prefixName, Grid.GRID.grid(6, 1), Grid.Direction.C)
+                            .setSmall(prefixSmall)
+                            .build();
             Interactable prefixNameLabel =
                     CustomInteractable.builder(prefixNameText)
                             .setTooltip(

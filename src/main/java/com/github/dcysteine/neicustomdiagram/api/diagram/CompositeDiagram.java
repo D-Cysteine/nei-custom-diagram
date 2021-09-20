@@ -20,7 +20,7 @@ import java.util.List;
  */
 public abstract class CompositeDiagram extends Diagram {
     /** The passed-in layout and interactables will always be shown. */
-    public CompositeDiagram(Layout layout, ImmutableList<Interactable> interactables) {
+    public CompositeDiagram(Layout layout, ImmutableList<? extends Interactable> interactables) {
         super(layout, interactables);
     }
 

@@ -1,10 +1,11 @@
 package com.github.dcysteine.neicustomdiagram.util.gregtech;
 
 import com.github.dcysteine.neicustomdiagram.api.Formatter;
-import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import gregtech.api.util.GT_OreDictUnificator;
 import gregtech.api.util.GT_Recipe;
@@ -19,6 +20,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class GregTechRecipeUtil {
+    private static final Joiner STRING_JOINER = Joiner.on(' ');
+
     // Static class.
     private GregTechRecipeUtil() {}
 
@@ -142,25 +145,50 @@ public final class GregTechRecipeUtil {
             }
 
             DisplayComponent.Builder builder = DisplayComponent.builder(recipe.mOutputs[i]);
-            int chance = recipe.getOutputChance(i);
+            List<String> additionalInfoStrings = new ArrayList<>();
+            List<Tooltip> tooltips = new ArrayList<>();
 
+            int chance = recipe.getOutputChance(i);
             if (chance < 100_00) {
                 double normalizedChance = chance / 100d;
                 // Truncate the decimal portion where possible.
                 String formattedChance =
                         chance % 100 == 0
                                 ? Integer.toString(chance / 100)
-                                : Formatter.formatDouble(normalizedChance);
+                                : Formatter.formatFloat(normalizedChance);
 
-                // TODO also handle cleanroom required, low gravity required, etc.
-                //  Unfortunately, special recipe value has different semantics based on recipe map.
-                //  Will need to handle that somehow.
-                Tooltip tooltip =
+                tooltips.add(
                         Tooltip.create(
                                 Lang.GREGTECH_UTIL.transf("outputchance", normalizedChance),
-                                Tooltip.INFO_FORMATTING);
-                builder.setAdditionalInfo(formattedChance + "%");
-                builder.setAdditionalTooltip(tooltip);
+                                Tooltip.INFO_FORMATTING));
+                additionalInfoStrings.add(formattedChance + "%");
+            }
+
+            // TODO these special values only apply for certain recipe types.
+            //  Do we ever run into cases where they don't apply?
+            boolean requiresCleanroom =
+                    recipe.mSpecialValue == -100 || recipe.mSpecialValue == -300;
+            boolean requiresLowGravity =
+                    recipe.mSpecialValue == -200 || recipe.mSpecialValue == -300;
+            if (requiresCleanroom || requiresLowGravity) {
+                additionalInfoStrings.add("*");
+
+                Tooltip.Builder tooltipBuilder =
+                        Tooltip.builder().setFormatting(Tooltip.INFO_FORMATTING);
+                if (requiresCleanroom) {
+                    tooltipBuilder.addTextLine(Lang.GREGTECH_UTIL.trans("recipecleanroom"));
+                }
+                if (requiresLowGravity) {
+                    tooltipBuilder.addTextLine(Lang.GREGTECH_UTIL.trans("recipelowgravity"));
+                }
+                tooltips.add(tooltipBuilder.build());
+            }
+
+            if (!additionalInfoStrings.isEmpty()) {
+                builder.setAdditionalInfo(STRING_JOINER.join(additionalInfoStrings));
+            }
+            if (!tooltips.isEmpty()) {
+                builder.setAdditionalTooltip(Tooltip.concat(tooltips));
             }
 
             results.add(builder.build());

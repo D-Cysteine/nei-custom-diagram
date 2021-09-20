@@ -2,7 +2,6 @@ package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
-import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedMap;
 import gregtech.api.enums.ItemList;
@@ -41,8 +40,12 @@ class HeatingCoilHandler {
         heatingCoilMap = builder.build();
     }
 
-    /** Returns an ordered collection of heating coils that support the specified heat level. */
-    ImmutableCollection<Component> getHeatingCoils(long heat) {
-        return heatingCoilMap.tailMap(heat, true).values();
+    /**
+     * Returns a sorted map of heating coils that support the specified heat level.
+     *
+     * <p>The returned map is a map of heating coil base heat capacity to heating coil.
+     */
+    ImmutableSortedMap<Long, Component> getHeatingCoils(long heat) {
+        return heatingCoilMap.tailMap(heat, true);
     }
 }

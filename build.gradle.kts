@@ -59,11 +59,13 @@ repositories {
     maven("http://chickenbones.net/maven/") { this.name = "ChickenBones" }
     ivy {
         this.name = "gtnh_download_source_stupid_underscore_typo"
-        this.artifactPattern("http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]_[revision].[ext]")
+        this.artifactPattern(
+            "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]_[revision].[ext]")
     }
     ivy {
         this.name = "gtnh_download_source"
-        this.artifactPattern("http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]-[revision].[ext]")
+        this.artifactPattern(
+            "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]-[revision].[ext]")
     }
     maven("https://jitpack.io") { this.name = "jitpack.io" }
     maven("https://gregtech.overminddl1.com/") { this.name = "GregTech" }
@@ -85,10 +87,17 @@ dependencies {
     val gregTechVersion: String by project
     val forestryVersion: String by project
     val railcraftVersion: String by project
-    compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTechVersion:dev") { this.isChanging = true }
+    compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTechVersion:dev") {
+        this.isChanging = true
+    }
     // The following are compile-time dependencies of GT5.
     compileOnly("net.sengir.forestry:forestry_$minecraftVersion:$forestryVersion:dev")
     compileOnly("mods.railcraft:Railcraft_1.7.10:$railcraftVersion:dev")
+
+    val bartworksVersion: String by project
+    compile("com.github.GTNewHorizons:bartworks:$bartworksVersion:dev") {
+        this.isTransitive = false
+    }
 
     val enderStorageVersion: String by project
     compile("com.github.GTNewHorizons:EnderStorage:$enderStorageVersion:dev")

@@ -1,7 +1,5 @@
 package com.github.dcysteine.neicustomdiagram.generators.forge.fluidcontainers;
 
-import com.github.dcysteine.neicustomdiagram.api.Lang;
-import com.github.dcysteine.neicustomdiagram.api.Registry;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroup;
@@ -16,6 +14,9 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.mod.Registry;
+import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.github.dcysteine.neicustomdiagram.util.FluidDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtil;
 import com.google.common.collect.Lists;
@@ -45,7 +46,7 @@ public final class ForgeFluidContainers implements DiagramGenerator {
                 DiagramGroupInfo.builder(
                                 Lang.FORGE_FLUID_CONTAINERS.trans("groupname"),
                                 groupId, ICON, 2)
-                        .setEnabledByDefault(false)
+                        .setDefaultVisibility(DiagramGroupVisibility.DISABLED)
                         .build();
     }
 

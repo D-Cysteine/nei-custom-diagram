@@ -1,11 +1,10 @@
-package com.github.dcysteine.neicustomdiagram.api;
+package com.github.dcysteine.neicustomdiagram.mod;
 
 import com.google.auto.value.AutoValue;
 import cpw.mods.fml.relauncher.ReflectionHelper;
 import net.minecraft.client.gui.inventory.GuiContainer;
 
 import java.lang.reflect.Field;
-import java.util.function.Function;
 
 /** Class containing reflection accessors for private fields. */
 public final class Reflection {
@@ -42,5 +41,4 @@ public final class Reflection {
         GUI_LEFT = ReflectionField.createInteger(GuiContainer.class, "guiLeft", "field_147003_i");
         GUI_TOP = ReflectionField.createInteger(GuiContainer.class, "guiTop", "field_147009_r");
     }
-
 }

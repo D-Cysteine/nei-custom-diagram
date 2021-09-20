@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.api;
+package com.github.dcysteine.neicustomdiagram.mod;
 
 import codechicken.nei.api.API;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
@@ -13,6 +13,8 @@ import com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts.G
 import com.github.dcysteine.neicustomdiagram.generators.gregtech.materialtools.GregTechMaterialTools;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech.oredictionary.GregTechOreDictionary;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing.GregTechOreProcessing;
+import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -129,7 +131,7 @@ public final class Registry {
 
         for (DiagramGenerator generator : generators) {
             DiagramGroupInfo info = generator.info();
-            if (!Config.getDiagramEnabled(info)) {
+            if (ConfigOptions.getDiagramGroupVisibility(info) == DiagramGroupVisibility.DISABLED) {
                 Logger.MOD.info("Diagram group [{}] disabled by config.", info.groupId());
                 continue;
             }

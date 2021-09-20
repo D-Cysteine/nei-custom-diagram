@@ -1,12 +1,13 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.component;
 
 import codechicken.nei.NEIClientUtils;
-import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.TextFormatting;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.toprettystring.ToPrettyString;
 import com.google.common.base.Splitter;
@@ -85,10 +86,28 @@ public abstract class DisplayComponent {
 
     public void draw(Point pos) {
         component().draw(pos);
-        stackSize().ifPresent(
-                stackSize -> Draw.drawStackSize(
-                        stackSize, pos,
-                        component().type() == Component.ComponentType.FLUID));
+
+        if (stackSize().isPresent()) {
+            int stackSize = stackSize().get();
+            switch (type()) {
+                case ITEM:
+                    // Special handling of stack size 1, where we'll not show the stack size unless
+                    // it is enabled by config.
+                    //
+                    // Not showing stack size 1 is consistent with Minecraft's default behavior, and
+                    // also avoids covering up display of things like Tinker's Construct tools with
+                    // ammo counts.
+                    if (ConfigOptions.SHOW_STACK_SIZE_ONE.get() || stackSize != 1) {
+                        Draw.drawStackSize(stackSize, pos, false);
+                    }
+                    break;
+
+                case FLUID:
+                    Draw.drawStackSize(stackSize, pos, true);
+                    break;
+            }
+        }
+
         additionalInfo().ifPresent(
                 additionalInfo -> Draw.drawAdditionalInfo(additionalInfo, pos, true));
     }
@@ -137,8 +156,8 @@ public abstract class DisplayComponent {
         public abstract Builder setComponent(Component component);
         public abstract Builder setStackSize(Optional<Integer> stackSize);
         public abstract Builder setStackSize(int stackSize);
-        public abstract Builder setAdditionalInfo(Optional<String> stackSize);
-        public abstract Builder setAdditionalInfo(@Nullable String stackSize);
+        public abstract Builder setAdditionalInfo(Optional<String> additionalInfo);
+        public abstract Builder setAdditionalInfo(@Nullable String additionalInfo);
         public abstract Builder setAdditionalTooltip(Tooltip additionalTooltip);
 
         public Builder clearStackSize() {

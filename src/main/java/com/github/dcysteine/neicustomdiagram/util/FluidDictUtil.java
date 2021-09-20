@@ -1,12 +1,12 @@
 package com.github.dcysteine.neicustomdiagram.util;
 
 import com.github.dcysteine.neicustomdiagram.api.Formatter;
-import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
@@ -52,7 +52,7 @@ public final class FluidDictUtil {
         int capacity = FluidContainerRegistry.getContainerCapacity(container);
         return DisplayComponent.builder(container)
                 .clearStackSize()
-                .setAdditionalInfo(Formatter.smartFormatInt(capacity))
+                .setAdditionalInfo(Formatter.smartFormatInteger(capacity))
                 .setAdditionalTooltip(
                         Tooltip.create(
                                 Lang.UTIL.transf("capacity", capacity),

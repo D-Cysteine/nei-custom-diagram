@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.api;
+package com.github.dcysteine.neicustomdiagram.mod;
 
 import net.minecraft.util.StatCollector;
 
@@ -6,6 +6,8 @@ import net.minecraft.util.StatCollector;
 public final class Lang {
     public static final Lang API = new Lang("neicustomdiagram.api.");
     public static final Lang UTIL = new Lang("neicustomdiagram.util.");
+
+    public static final Lang GREGTECH_UTIL = new Lang("neicustomdiagram.util.gregtech.");
 
     public static final Lang DEBUG_RULER = new Lang("neicustomdiagram.generators.debug.ruler.");
 
@@ -19,7 +21,6 @@ public final class Lang {
     public static final Lang FORGE_ORE_DICTIONARY =
             new Lang("neicustomdiagram.generators.forge.oredictionary.");
 
-    public static final Lang GREGTECH_UTIL = new Lang("neicustomdiagram.generators.gregtech.util.");
     public static final Lang GREGTECH_MATERIAL_PARTS =
             new Lang("neicustomdiagram.generators.gregtech.materialparts.");
     public static final Lang GREGTECH_MATERIAL_TOOLS =

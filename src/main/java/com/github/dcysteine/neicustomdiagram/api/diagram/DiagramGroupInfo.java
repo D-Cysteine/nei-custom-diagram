@@ -3,6 +3,7 @@ package com.github.dcysteine.neicustomdiagram.api.diagram;
 import codechicken.nei.recipe.HandlerInfo;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
+import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.google.auto.value.AutoValue;
 
 @AutoValue
@@ -22,19 +23,22 @@ public abstract class DiagramGroupInfo {
     /**
      * Number of diagrams that can fit on a single page.
      *
-     * <p>{@code 1} allows diagrams with up to 14 rows of slots; {@code 2} allows diagrams with up
-     * to 7.
-     *
-     * <p>NEI seems to expect this to always be either {@code 1} or {@code 2}, so larger values
-     * might not work.
+     * <p>A full page allows diagrams with up to 14 rows of slots; see {@link Grid#TOTAL_HEIGHT} for
+     * the height in pixels. Smaller resolutions will have less space, though.
      */
     public abstract int diagramsPerPage();
+    // TODO allow specifying this based on # rows (and maybe # of columns) to support scrollbar?
 
     /** If {@code true}, then NBT data will be removed when looking up a component. */
     public abstract boolean ignoreNbt();
 
-    /** Whether this diagram is enabled by default, or must be enabled via config. */
-    public abstract boolean enabledByDefault();
+    /**
+     * Determines when the diagram group is shown.
+     *
+     * <p>The special value {@link DiagramGroupVisibility#DISABLED} will cause this diagram group to
+     * not be generated at all, saving CPU and RAM usage.
+     */
+    public abstract DiagramGroupVisibility defaultVisibility();
 
     public void buildHandlerInfo(HandlerInfo.Builder builder) {
         builder.setDisplayStack(icon().stack())
@@ -50,7 +54,7 @@ public abstract class DiagramGroupInfo {
                     .setIcon(icon)
                     .setDiagramsPerPage(diagramsPerPage)
                     .setIgnoreNbt(true)
-                    .setEnabledByDefault(true);
+                    .setDefaultVisibility(DiagramGroupVisibility.ALWAYS_SHOWN);
     }
 
     public abstract Builder toBuilder();
@@ -62,7 +66,7 @@ public abstract class DiagramGroupInfo {
         public abstract Builder setIcon(ItemComponent icon);
         public abstract Builder setDiagramsPerPage(int diagramsPerPage);
         public abstract Builder setIgnoreNbt(boolean ignoreNbt);
-        public abstract Builder setEnabledByDefault(boolean enabledByDefault);
+        public abstract Builder setDefaultVisibility(DiagramGroupVisibility visibility);
 
         public abstract DiagramGroupInfo build();
     }

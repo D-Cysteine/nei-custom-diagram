@@ -2,7 +2,6 @@ package com.github.dcysteine.neicustomdiagram.api.diagram;
 
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.NEIClientConfig;
-import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.api.IRecipeOverlayRenderer;
@@ -10,12 +9,13 @@ import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.recipe.GuiRecipe;
 import codechicken.nei.recipe.ICraftingHandler;
 import codechicken.nei.recipe.IUsageHandler;
-import com.github.dcysteine.neicustomdiagram.api.Reflection;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.DiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
+import com.github.dcysteine.neicustomdiagram.mod.Reflection;
+import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
@@ -54,7 +54,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         this(info, matcher, DiagramState::new);
     }
 
-    public DiagramGroup(DiagramGroup parent, Iterable<Diagram> diagrams) {
+    public DiagramGroup(DiagramGroup parent, Iterable<? extends Diagram> diagrams) {
         this.info = parent.info;
         this.matcher = parent.matcher;
         this.diagramStateSupplier = parent.diagramStateSupplier;
@@ -68,7 +68,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     }
 
     /** Subclasses will need to override this to use their own constructor. */
-    public DiagramGroup newInstance(Iterable<Diagram> diagrams) {
+    public DiagramGroup newInstance(Iterable<? extends Diagram> diagrams) {
         return new DiagramGroup(this, diagrams);
     }
 
@@ -96,6 +96,10 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
             String id, Interactable.RecipeType recipeType, Object... stacks) {
         if (id.equals(info.groupId())) {
             return newInstance(matcher.all());
+        }
+
+        if (!ConfigOptions.getDiagramGroupVisibility(info).isShown()) {
+            return newInstance(ImmutableList.of());
         }
 
         switch (id) {
@@ -135,9 +139,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     @OverridingMethodsMustInvokeSuper
     @Override
     public void onUpdate() {
-        if (!NEIClientUtils.shiftKey()) {
-            diagramState.tick();
-        }
+        diagramState.tick();
     }
 
     @Override

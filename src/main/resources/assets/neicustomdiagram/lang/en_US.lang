@@ -5,6 +5,10 @@ neicustomdiagram.api.showalldiagrams=Show all diagrams
 
 neicustomdiagram.util.capacity=Capacity: %,d
 
+neicustomdiagram.util.gregtech.outputchance=Chance: %.2f%%
+neicustomdiagram.util.gregtech.recipecleanroom=Recipe requires cleanroom
+neicustomdiagram.util.gregtech.recipelowgravity=Recipe requires low gravity
+
 neicustomdiagram.generators.debug.ruler.groupname=Debug Ruler
 neicustomdiagram.generators.debug.ruler.slotlabel=Slot (%02d, %02d)
 
@@ -16,6 +20,9 @@ neicustomdiagram.generators.enderstorage.chestoverview.globallabel=Global freque
 neicustomdiagram.generators.enderstorage.chestoverview.personallabel=Personal frequency
 neicustomdiagram.generators.enderstorage.chestoverview.frequencyslot=Frequency
 neicustomdiagram.generators.enderstorage.chestoverview.inventoryslot=Chest contents
+neicustomdiagram.generators.enderstorage.chestoverview.nodataheader=No chest data!
+neicustomdiagram.generators.enderstorage.chestoverview.nodatasubheader1=Sorry, if on a server, chest data is only loaded for
+neicustomdiagram.generators.enderstorage.chestoverview.nodatasubheader2=chests when you open them.
 
 neicustomdiagram.generators.enderstorage.tankoverview.groupname=Ender Storage Tank Overview
 neicustomdiagram.generators.enderstorage.tankoverview.globalbutton=View global frequencies
@@ -25,6 +32,8 @@ neicustomdiagram.generators.enderstorage.tankoverview.globallabel=Global frequen
 neicustomdiagram.generators.enderstorage.tankoverview.personallabel=Personal frequencies
 neicustomdiagram.generators.enderstorage.tankoverview.frequencyslot=Frequency
 neicustomdiagram.generators.enderstorage.tankoverview.tankslot=Tank contents
+neicustomdiagram.generators.enderstorage.tankoverview.nodataheader=No tank data!
+neicustomdiagram.generators.enderstorage.tankoverview.nodatasubheader=Sorry, if on a server, tank data is not available.
 
 neicustomdiagram.generators.forge.fluidcontainers.groupname=Forge Fluid Containers
 neicustomdiagram.generators.forge.fluidcontainers.fluidlabel=Fluid
@@ -34,8 +43,6 @@ neicustomdiagram.generators.forge.fluidcontainers.containersslot=Containers
 
 neicustomdiagram.generators.forge.oredictionary.groupname=Forge Ore Dictionary
 neicustomdiagram.generators.forge.oredictionary.orenamelabel=Ore name
-
-neicustomdiagram.generators.gregtech.util.outputchance=Chance: %.2f%%
 
 neicustomdiagram.generators.gregtech.materialparts.groupname=GregTech Material Parts
 neicustomdiagram.generators.gregtech.materialparts.materialinforadioactive=DANGER! RADIOACTIVE!
@@ -88,9 +95,11 @@ neicustomdiagram.generators.gregtech.materialparts.pipesslot=Pipes
 neicustomdiagram.generators.gregtech.materialparts.specialpipesslot=Special pipes
 
 neicustomdiagram.generators.gregtech.materialtools.groupname=GregTech Material Tools
-neicustomdiagram.generators.gregtech.materialtools.materialinfohandlematerial=Handle material: %s
+neicustomdiagram.generators.gregtech.materialtools.handlelabel=Tool handle
 neicustomdiagram.generators.gregtech.materialtools.prefixlabel=Ore prefix: %s
-neicustomdiagram.generators.gregtech.materialtools.toolheadsslot=Tool heads
+neicustomdiagram.generators.gregtech.materialtools.primarymateriallabel=Primary material: %s
+neicustomdiagram.generators.gregtech.materialtools.secondarymateriallabel=Secondary material: %s
+neicustomdiagram.generators.gregtech.materialtools.toolpartsslot=Tool parts
 neicustomdiagram.generators.gregtech.materialtools.toolsslot=Tools
 neicustomdiagram.generators.gregtech.materialtools.turbinebladeslot=Turbine blade
 neicustomdiagram.generators.gregtech.materialtools.turbinesslot=Turbines

@@ -1,9 +1,9 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing;
 
-import com.github.dcysteine.neicustomdiagram.api.Logger;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
+import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechRecipeUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;

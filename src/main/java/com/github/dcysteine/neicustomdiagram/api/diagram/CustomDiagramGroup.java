@@ -49,14 +49,14 @@ public class CustomDiagramGroup extends DiagramGroup {
         this.customBehaviorMap = ImmutableMap.copyOf(customBehaviorMap);
     }
 
-    public CustomDiagramGroup(CustomDiagramGroup parent, Iterable<Diagram> diagrams) {
+    public CustomDiagramGroup(CustomDiagramGroup parent, Iterable<? extends Diagram> diagrams) {
         super(parent, diagrams);
 
         this.customBehaviorMap = parent.customBehaviorMap;
     }
 
     @Override
-    public CustomDiagramGroup newInstance(Iterable<Diagram> diagrams) {
+    public CustomDiagramGroup newInstance(Iterable<? extends Diagram> diagrams) {
         return new CustomDiagramGroup(this, diagrams);
     }
 

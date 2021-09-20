@@ -14,7 +14,6 @@ import net.minecraftforge.fluids.FluidStack;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.IntConsumer;
 import java.util.stream.IntStream;
 
 public final class EnderStorageUtil {
@@ -104,7 +103,7 @@ public final class EnderStorageUtil {
                 .forEach(
                         freq -> map.put(
                                 EnderStorageFrequency.create(freq),
-                                (EnderItemStorage) EnderStorageManager.instance(false).getStorage(
+                                (EnderItemStorage) getManager().getStorage(
                                         ownerParam, freq, Type.CHEST.stringParam)));
 
         return map;
@@ -122,7 +121,7 @@ public final class EnderStorageUtil {
                 .forEach(
                         freq -> map.put(
                                 EnderStorageFrequency.createReverse(freq),
-                                (EnderLiquidStorage) EnderStorageManager.instance(false).getStorage(
+                                (EnderLiquidStorage) getManager().getStorage(
                                         ownerParam, freq, Type.TANK.stringParam)));
 
         return map;
@@ -156,5 +155,20 @@ public final class EnderStorageUtil {
     public static boolean isEmpty(EnderLiquidStorage storage) {
         FluidStack fluidStack = storage.getFluid();
         return fluidStack == null || fluidStack.amount == 0;
+    }
+
+    /**
+     * Try to return the server instance when possible (which is for the host of a
+     * single-player or LAN world).
+     *
+     * <p>If we're playing on a server, the server instance won't work, so we'll return the client
+     * instance, but it has access to limited data. As of the time of this writing
+     * ({@code 2021-09}), the client instance will only refresh data for ender chests when they are
+     * opened by the player, and data for ender tanks is missing entirely.
+     *
+     * TODO add link to GitHub issue here
+     */
+    private static EnderStorageManager getManager() {
+        return EnderStorageManager.instance(!Minecraft.getMinecraft().isSingleplayer());
     }
 }

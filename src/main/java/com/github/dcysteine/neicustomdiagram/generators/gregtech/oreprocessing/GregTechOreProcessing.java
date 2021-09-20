@@ -1,20 +1,21 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing;
 
 import com.github.bartimaeusnek.bartworks.system.material.Werkstoff;
-import com.github.dcysteine.neicustomdiagram.api.Lang;
-import com.github.dcysteine.neicustomdiagram.api.Logger;
-import com.github.dcysteine.neicustomdiagram.api.Registry;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagramMatcher;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.mod.Registry;
 import com.github.dcysteine.neicustomdiagram.util.bartworks.BartWorksOreDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
-import net.minecraft.init.Blocks;
+import gregtech.common.blocks.GT_Block_Ores_Abstract;
+import net.minecraft.block.Block;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +24,9 @@ import java.util.Optional;
 /** Generates ore processing diagrams for GregTech ores. */
 public final class GregTechOreProcessing implements DiagramGenerator {
     public static final ItemComponent ICON =
-            GregTechOreDictUtil.getComponent(OrePrefixes.ore, Materials.Beryllium)
-                    .orElse(ItemComponent.create(Blocks.iron_ore, 0).get());
+            GregTechOreDictUtil.getAllComponents(OrePrefixes.ore, Materials.Aluminium).stream()
+                    .filter(GregTechOreProcessing::isGregTechOreBlock)
+                    .findFirst().get();
 
     private static final ImmutableList<OrePrefixes> OTHER_ORE_PREFIXES = ImmutableList.of(
             OrePrefixes.oreBlackgranite, OrePrefixes.oreRedgranite, OrePrefixes.oreMarble,
@@ -101,8 +103,6 @@ public final class GregTechOreProcessing implements DiagramGenerator {
             }
         }
 
-        // TODO maybe add GT++ ores?
-
         return new DiagramGroup(info, matcherBuilder.build());
     }
 
@@ -113,5 +113,10 @@ public final class GregTechOreProcessing implements DiagramGenerator {
         diagramBuilder.buildDiagram(matcherBuilder);
 
         Logger.GREGTECH_ORE_PROCESSING.debug("Generated diagram [{}]", rawOres.get(0));
+    }
+
+    static boolean isGregTechOreBlock(ItemComponent itemComponent) {
+        Block block = Block.getBlockFromItem(itemComponent.item());
+        return block instanceof GT_Block_Ores_Abstract;
     }
 }

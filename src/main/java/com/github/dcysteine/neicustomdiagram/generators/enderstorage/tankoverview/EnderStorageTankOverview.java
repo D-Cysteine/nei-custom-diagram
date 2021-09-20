@@ -1,7 +1,6 @@
 package com.github.dcysteine.neicustomdiagram.generators.enderstorage.tankoverview;
 
 import codechicken.enderstorage.storage.liquid.EnderLiquidStorage;
-import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.CustomDiagramGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
@@ -15,9 +14,11 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
+import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Text;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.github.dcysteine.neicustomdiagram.util.enderstorage.EnderStorageFrequency;
 import com.github.dcysteine.neicustomdiagram.util.enderstorage.EnderStorageUtil;
 import com.google.common.base.Preconditions;
@@ -66,6 +67,7 @@ public final class EnderStorageTankOverview implements DiagramGenerator {
     private final DiagramGroupInfo info;
     private Layout headerLayout;
     private List<Layout> tankLayouts;
+    private Layout noDataLayout;
 
     public EnderStorageTankOverview(String groupId) {
         this.info =
@@ -87,6 +89,7 @@ public final class EnderStorageTankOverview implements DiagramGenerator {
                 IntStream.range(0, TANKS_PER_DIAGRAM)
                         .mapToObj(EnderStorageTankOverview::buildTanksLayout)
                         .collect(Collectors.toList());
+        noDataLayout = buildNoDataLayout();
 
         ImmutableMap<String, Supplier<Iterable<Diagram>>> customBehaviorMap =
                 ImmutableMap.of(
@@ -115,9 +118,16 @@ public final class EnderStorageTankOverview implements DiagramGenerator {
                         .collect(Collectors.toList());
 
         // Break up the list into sub-lists of length <= TANKS_PER_DIAGRAM.
-        return Lists.partition(tanks, TANKS_PER_DIAGRAM).stream()
-                .map(subList -> buildDiagram(owner, subList))
-                .collect(Collectors.toList());
+        List<Diagram> diagrams =
+                Lists.partition(tanks, TANKS_PER_DIAGRAM).stream()
+                        .map(subList -> buildDiagram(owner, subList))
+                        .collect(Collectors.toList());
+
+        if (diagrams.isEmpty()) {
+            return Lists.newArrayList(buildNoDataDiagram(owner));
+        } else {
+            return diagrams;
+        }
     }
 
     /** {@code tanks} must have size less than or equal to {@code TANKS_PER_DIAGRAM}. */
@@ -158,41 +168,25 @@ public final class EnderStorageTankOverview implements DiagramGenerator {
         return builder.build();
     }
 
-    private Layout buildHeaderLayout() {
-        CustomInteractable globalButton =
-                CustomInteractable.builder(ComponentLabel.create(GLOBAL_ICON, Grid.GRID.grid(0, 0)))
-                        .setTooltip(
-                                Tooltip.create(
-                                        Lang.ENDER_STORAGE_TANK_OVERVIEW.trans("globalbutton"),
-                                        Tooltip.SPECIAL_FORMATTING))
-                        .setInteract(info.groupId() + LOOKUP_GLOBAL_TANKS_SUFFIX)
-                        .setDrawBackground(Draw::drawRaisedSlot)
-                        .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Color.OVERLAY_BLUE))
-                        .build();
-        CustomInteractable personalButton =
-                CustomInteractable.builder(
-                                ComponentLabel.create(PERSONAL_ICON, Grid.GRID.grid(2, 0)))
-                        .setTooltip(
-                                Tooltip.builder()
-                                        .setFormatting(Tooltip.SPECIAL_FORMATTING)
-                                        .addTextLine(
-                                                Lang.ENDER_STORAGE_TANK_OVERVIEW.trans(
-                                                        "personalbutton"))
-                                        .addSpacing()
-                                        .setFormatting(Tooltip.INFO_FORMATTING)
-                                        .addTextLine(
-                                                Lang.ENDER_STORAGE_TANK_OVERVIEW.trans(
-                                                        "personalitemlabel"))
-                                        .addComponent(EnderStorageUtil.getPersonalItem())
-                                        .build())
-                        .setInteract(info.groupId() + LOOKUP_PERSONAL_TANKS_SUFFIX)
-                        .setDrawBackground(Draw::drawRaisedSlot)
-                        .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Color.OVERLAY_BLUE))
-                        .build();
+    private Diagram buildNoDataDiagram(EnderStorageUtil.Owner owner) {
+        Diagram.Builder builder = Diagram.builder().addLayout(noDataLayout);
+        switch (owner) {
+            case GLOBAL:
+                builder.addInteractable(GLOBAL_LABEL);
+                break;
 
+            case PERSONAL:
+                builder.addInteractable(PERSONAL_LABEL);
+                break;
+        }
+
+        return builder.build();
+    }
+
+    private Layout buildHeaderLayout() {
         return Layout.builder()
-                .addInteractable(globalButton)
-                .addInteractable(personalButton)
+                .addInteractable(buildGlobalButton())
+                .addInteractable(buildPersonalButton())
                 .build();
     }
 
@@ -221,6 +215,58 @@ public final class EnderStorageTankOverview implements DiagramGenerator {
                                                                 Tooltip.SLOT_FORMATTING))
                                                 .build())
                                 .build())
+                .build();
+    }
+
+    private Layout buildNoDataLayout() {
+        return Layout.builder()
+                .addInteractable(buildGlobalButton())
+                .addInteractable(buildPersonalButton())
+                .addLabel(
+                        Text.builder(
+                                        Lang.ENDER_STORAGE_TANK_OVERVIEW.trans("nodataheader"),
+                                        Grid.GRID.grid(0, 2), Grid.Direction.E)
+                                .build())
+                .addLabel(
+                        Text.builder(
+                                        Lang.ENDER_STORAGE_TANK_OVERVIEW.trans("nodatasubheader"),
+                                        Grid.GRID.grid(0, 3), Grid.Direction.E)
+                                .setSmall(true)
+                                .build())
+                .build();
+    }
+
+    private CustomInteractable buildGlobalButton() {
+        return CustomInteractable.builder(ComponentLabel.create(GLOBAL_ICON, Grid.GRID.grid(0, 0)))
+                .setTooltip(
+                        Tooltip.create(
+                                Lang.ENDER_STORAGE_TANK_OVERVIEW.trans("globalbutton"),
+                                Tooltip.SPECIAL_FORMATTING))
+                .setInteract(info.groupId() + LOOKUP_GLOBAL_TANKS_SUFFIX)
+                .setDrawBackground(Draw::drawRaisedSlot)
+                .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Color.OVERLAY_BLUE))
+                .build();
+    }
+
+    private CustomInteractable buildPersonalButton() {
+        return CustomInteractable.builder(
+                        ComponentLabel.create(PERSONAL_ICON, Grid.GRID.grid(2, 0)))
+                .setTooltip(
+                        Tooltip.builder()
+                                .setFormatting(Tooltip.SPECIAL_FORMATTING)
+                                .addTextLine(
+                                        Lang.ENDER_STORAGE_TANK_OVERVIEW.trans(
+                                                "personalbutton"))
+                                .addSpacing()
+                                .setFormatting(Tooltip.INFO_FORMATTING)
+                                .addTextLine(
+                                        Lang.ENDER_STORAGE_TANK_OVERVIEW.trans(
+                                                "personalitemlabel"))
+                                .addComponent(EnderStorageUtil.getPersonalItem())
+                                .build())
+                .setInteract(info.groupId() + LOOKUP_PERSONAL_TANKS_SUFFIX)
+                .setDrawBackground(Draw::drawRaisedSlot)
+                .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Color.OVERLAY_BLUE))
                 .build();
     }
 }

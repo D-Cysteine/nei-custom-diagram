@@ -6,6 +6,7 @@ import codechicken.nei.recipe.GuiUsageRecipe;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
+import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 import com.google.auto.value.AutoValue;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -13,10 +14,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 
+import java.util.Comparator;
 import java.util.Optional;
 
 @AutoValue
 public abstract class ItemComponent implements Component {
+    public static final Comparator<ItemComponent> COMPARATOR =
+            Comparator.<ItemComponent, Integer>comparing(c -> Item.getIdFromItem(c.item()))
+                    .thenComparing(ItemComponent::damage)
+                    .thenComparing(
+                            c -> c.nbtWrapper().orElse(null), ImmutableNbtWrapper.COMPARATOR);
+
     public static final int DEFAULT_STACK_SIZE = 1;
 
     public static ItemComponent create(Item item, int damage, Optional<NBTTagCompound> nbt) {
@@ -40,6 +48,10 @@ public abstract class ItemComponent implements Component {
         return create(
                 itemStack.getItem(), itemStack.getItemDamage(),
                 Optional.ofNullable(itemStack.stackTagCompound));
+    }
+
+    public static ItemComponent createWithNbt(ItemStack itemStack, NBTTagCompound nbt) {
+        return create(itemStack.getItem(), itemStack.getItemDamage(), Optional.of(nbt));
     }
 
     public static Optional<ItemComponent> create(Block block, int damage) {
@@ -90,8 +102,12 @@ public abstract class ItemComponent implements Component {
 
     @Override
     public String description() {
-        return String.format("%s (#%d/%d)",
-                stack().getDisplayName(), Item.getIdFromItem(item()), damage());
+        if (ConfigOptions.SHOW_IDS.get()) {
+            return String.format("%s (#%d/%d)",
+                    stack().getDisplayName(), Item.getIdFromItem(item()), damage());
+        } else {
+            return stack().getDisplayName();
+        }
     }
 
     @Override
@@ -120,5 +136,18 @@ public abstract class ItemComponent implements Component {
     @Override
     public final String toString() {
         return description();
+    }
+
+    @Override
+    public int compareTo(Component other) {
+        if (other == null) {
+            return 1;
+        }
+
+        if (other instanceof ItemComponent) {
+            return COMPARATOR.compare(this, (ItemComponent) other);
+        } else {
+            return type().compareTo(other.type());
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing;
 
-import com.github.dcysteine.neicustomdiagram.api.Logger;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
@@ -10,6 +9,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactab
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
+import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.github.dcysteine.neicustomdiagram.util.FluidDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtil;
@@ -53,13 +53,19 @@ class DiagramBuilder {
         this.recipeHandler = recipeHandler;
 
         // Sometimes, non-GregTech-compatible ores get returned because they are in the Forge ore
-        // dictionary. Filter them out to fix the diagrams.
+        // dictionary. These don't have the right recipes, so filter them out.
         List<ItemComponent> filteredRawOres =
                 rawOres.stream()
                         .filter(rawOre -> GregTechOreDictUtil.getItemData(rawOre).isPresent())
                         .collect(Collectors.toList());
-        this.rawOre = filteredRawOres.get(0);
 
+        // Try to show a GregTech ore, if there are any.
+        List<ItemComponent> gregTechOres =
+                filteredRawOres.stream()
+                        .filter(GregTechOreProcessing::isGregTechOreBlock)
+                        .collect(Collectors.toList());
+
+        this.rawOre = gregTechOres.isEmpty() ? filteredRawOres.get(0) : gregTechOres.get(0);
         this.craftingComponents = new HashSet<>(filteredRawOres);
         this.usageComponents = new HashSet<>(filteredRawOres);
         this.diagramBuilder = Diagram.builder();

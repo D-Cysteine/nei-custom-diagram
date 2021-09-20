@@ -4,7 +4,6 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.google.auto.value.AutoValue;
-import com.google.auto.value.extension.memoized.Memoized;
 import com.google.auto.value.extension.toprettystring.ToPrettyString;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -39,7 +38,6 @@ public abstract class Tooltip {
 
     public abstract ImmutableList<TooltipLine> lines();
 
-    @Memoized
     public int width() {
         return lines().stream()
                 .mapToInt(TooltipLine::width)
@@ -47,7 +45,6 @@ public abstract class Tooltip {
                 .orElse(0);
     }
 
-    @Memoized
     public int height() {
         return Tooltip.LINE_SPACING * (lines().size() - 1)
                 + lines().stream()
@@ -162,7 +159,7 @@ public abstract class Tooltip {
                             .build());
         }
 
-        public Builder addAllComponents(Iterable<Component> components) {
+        public Builder addAllComponents(Iterable<? extends Component> components) {
             components.forEach(this::addComponent);
             return this;
         }

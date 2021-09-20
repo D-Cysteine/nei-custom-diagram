@@ -67,9 +67,9 @@ public abstract class Layout implements Drawable {
     public abstract static class Builder {
         public abstract Builder setLines(Iterable<Lines> lines);
         public abstract ImmutableList.Builder<Lines> linesBuilder();
-        public abstract Builder setLabels(Iterable<Drawable> labels);
+        public abstract Builder setLabels(Iterable<? extends Drawable> labels);
         public abstract ImmutableList.Builder<Drawable> labelsBuilder();
-        public abstract Builder setInteractables(Iterable<Interactable> interactables);
+        public abstract Builder setInteractables(Iterable<? extends Interactable> interactables);
         public abstract ImmutableList.Builder<Interactable> interactablesBuilder();
         public abstract Builder setSlots(Map<String, Slot> slots);
         public abstract ImmutableMap.Builder<String, Slot> slotsBuilder();
@@ -91,7 +91,7 @@ public abstract class Layout implements Drawable {
             return this;
         }
 
-        public Builder addAllLabels(Iterable<Drawable> labels) {
+        public Builder addAllLabels(Iterable<? extends Drawable> labels) {
             labelsBuilder().addAll(labels);
             return this;
         }
@@ -101,7 +101,7 @@ public abstract class Layout implements Drawable {
             return this;
         }
 
-        public Builder addAllInteractables(Iterable<Interactable> interactables) {
+        public Builder addAllInteractables(Iterable<? extends Interactable> interactables) {
             interactablesBuilder().addAll(interactables);
             return this;
         }

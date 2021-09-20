@@ -163,7 +163,7 @@ public final class Draw {
      * @param small Whether to draw half-scale text; use this for fluid stack sizes.
      */
     public static void drawStackSize(int stackSize, Point pos, boolean small) {
-        String text = Formatter.smartFormatInt(stackSize);
+        String text = Formatter.smartFormatInteger(stackSize);
         int textWidth = GuiDraw.getStringWidth(text);
         int textHeight = TEXT_HEIGHT;
         if (small) {

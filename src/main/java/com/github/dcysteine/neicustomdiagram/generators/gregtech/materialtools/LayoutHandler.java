@@ -1,6 +1,5 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialtools;
 
-import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.AllDiagramsButton;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
@@ -10,6 +9,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Slot;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.google.common.collect.ImmutableList;
 
 class LayoutHandler {
@@ -22,7 +22,7 @@ class LayoutHandler {
 
     static final class SlotGroupKeys {
         static final String TOOLS = "tools";
-        static final String TOOL_HEADS = "tool-heads";
+        static final String TOOL_PARTS = "tool-parts";
 
         static final String TURBINES = "turbines";
         static final String ARROWS = "arrows";
@@ -49,7 +49,7 @@ class LayoutHandler {
         requiredLayouts = requiredLayoutsBuilder.build();
 
         ImmutableList.Builder<Layout> optionalLayoutsBuilder = new ImmutableList.Builder<>();
-        optionalLayoutsBuilder.add(buildToolHeadsLayout());
+        optionalLayoutsBuilder.add(buildToolPartsLayout());
         optionalLayoutsBuilder.add(buildToolsLayout());
         optionalLayoutsBuilder.add(buildTurbineBladeLayout());
         optionalLayoutsBuilder.add(buildTurbinesLayout());
@@ -73,14 +73,14 @@ class LayoutHandler {
                 .build();
     }
 
-    private Layout buildToolHeadsLayout() {
+    private Layout buildToolPartsLayout() {
         return Layout.builder()
                 .putSlotGroup(
-                        SlotGroupKeys.TOOL_HEADS,
+                        SlotGroupKeys.TOOL_PARTS,
                         SlotGroup.builder(4, 4, Grid.GRID.grid(6, 6), Grid.Direction.NE)
                                 .setDefaultTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_MATERIAL_TOOLS.trans("toolheadsslot"),
+                                                Lang.GREGTECH_MATERIAL_TOOLS.trans("toolpartsslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();
@@ -94,7 +94,7 @@ class LayoutHandler {
                                 .build())
                 .putSlotGroup(
                         SlotGroupKeys.TOOLS,
-                        SlotGroup.builder(9, 9, Grid.GRID.grid(6, 8), Grid.Direction.S)
+                        SlotGroup.builder(9, 5, Grid.GRID.grid(6, 8), Grid.Direction.S)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_MATERIAL_TOOLS.trans("toolsslot"),
@@ -167,12 +167,12 @@ class LayoutHandler {
     private Layout buildScannersLayout() {
         return Layout.builder()
                 .addLines(
-                        Lines.builder(Grid.GRID.grid(4, 23))
-                                .addSegment(Grid.GRID.grid(10, 23))
+                        Lines.builder(Grid.GRID.grid(4, 17))
+                                .addSegment(Grid.GRID.grid(10, 17))
                                 .build())
                 .putSlotGroup(
                         SlotGroupKeys.SCANNERS,
-                        SlotGroup.builder(5, 2, Grid.GRID.grid(4, 23), Grid.Direction.C)
+                        SlotGroup.builder(5, 2, Grid.GRID.grid(4, 17), Grid.Direction.C)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_MATERIAL_TOOLS.trans("scannersslot"),
@@ -180,7 +180,7 @@ class LayoutHandler {
                                 .build())
                 .putSlotGroup(
                         SlotGroupKeys.ELECTRIC_SCANNERS,
-                        SlotGroup.builder(2, 2, Grid.GRID.grid(10, 23), Grid.Direction.C)
+                        SlotGroup.builder(2, 2, Grid.GRID.grid(10, 17), Grid.Direction.C)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_MATERIAL_TOOLS.trans(

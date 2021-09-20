@@ -1,11 +1,14 @@
 package com.github.dcysteine.neicustomdiagram;
 
 import codechicken.nei.event.NEIRegisterHandlerInfosEvent;
-import com.github.dcysteine.neicustomdiagram.api.Config;
-import com.github.dcysteine.neicustomdiagram.api.Logger;
-import com.github.dcysteine.neicustomdiagram.api.Reflection;
-import com.github.dcysteine.neicustomdiagram.api.Registry;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
+import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.mod.Reflection;
+import com.github.dcysteine.neicustomdiagram.mod.Registry;
+import com.github.dcysteine.neicustomdiagram.mod.config.Config;
+import com.github.dcysteine.neicustomdiagram.mod.config.ConfigGuiFactory;
+import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -20,6 +23,7 @@ import net.minecraftforge.common.MinecraftForge;
         modid = NeiCustomDiagram.MOD_ID,
         name = NeiCustomDiagram.MOD_NAME,
         version = NeiCustomDiagram.MOD_VERSION,
+        guiFactory = ConfigGuiFactory.CLASS_NAME,
         dependencies = NeiCustomDiagram.MOD_DEPENDENCIES)
 public final class NeiCustomDiagram {
     public static final String MOD_ID = "neicustomdiagram";
@@ -44,7 +48,6 @@ public final class NeiCustomDiagram {
         Reflection.initialize();
         Registry.initialize();
         Config.initialize();
-        Config.saveConfig();
         MinecraftForge.EVENT_BUS.register(NeiCustomDiagram.this);
 
         Logger.MOD.info("Mod initialization complete!");
@@ -57,8 +60,6 @@ public final class NeiCustomDiagram {
         }
         Logger.MOD.info("Mod post-load starting...");
 
-        // TODO might be nice to hook into BetterLoadingScreen.
-        //  Though presently we load so fast that it really doesn't matter.
         Registry.generateDiagramGroups();
         Registry.cleanUp();
 
@@ -70,10 +71,12 @@ public final class NeiCustomDiagram {
         Logger.MOD.info("Registering handlers for diagram groups...");
 
         for (DiagramGroupInfo info : Registry.info()) {
-            if (Config.getDiagramEnabled(info)) {
-                event.registerHandlerInfo(info.groupId(), MOD_NAME, MOD_ID, info::buildHandlerInfo);
-                Logger.MOD.info("Registered handler for diagram group [{}]!", info.groupId());
+            if (ConfigOptions.getDiagramGroupVisibility(info) == DiagramGroupVisibility.DISABLED) {
+                continue;
             }
+
+            event.registerHandlerInfo(info.groupId(), MOD_NAME, MOD_ID, info::buildHandlerInfo);
+            Logger.MOD.info("Registered handler for diagram group [{}]!", info.groupId());
         }
 
         Logger.MOD.info("Registration complete!");
