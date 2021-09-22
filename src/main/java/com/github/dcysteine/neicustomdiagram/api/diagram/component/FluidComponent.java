@@ -5,6 +5,7 @@ import codechicken.nei.recipe.GuiUsageRecipe;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
+import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 import com.google.auto.value.AutoValue;
 import net.minecraft.block.Block;
 import net.minecraft.nbt.NBTTagCompound;
@@ -12,11 +13,17 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+import java.util.Comparator;
 import java.util.Optional;
 
 
 @AutoValue
 public abstract class FluidComponent implements Component {
+    public static final Comparator<FluidComponent> COMPARATOR =
+            Comparator.<FluidComponent, Integer>comparing(c -> c.fluid().getID())
+                    .thenComparing(
+                            c -> c.nbtWrapper().orElse(null), ImmutableNbtWrapper.COMPARATOR);
+
     public static final int DEFAULT_STACK_SIZE = 1_000;
 
     public static FluidComponent create(Fluid fluid, Optional<NBTTagCompound> nbt) {
@@ -34,6 +41,10 @@ public abstract class FluidComponent implements Component {
 
     public static FluidComponent createWithNbt(FluidStack stack) {
         return create(stack.getFluid(), Optional.ofNullable(stack.tag));
+    }
+
+    public static FluidComponent createWithNbt(FluidStack stack, NBTTagCompound nbt) {
+        return create(stack.getFluid(), Optional.of(nbt));
     }
 
     public static Optional<FluidComponent> create(Block block) {
@@ -79,7 +90,11 @@ public abstract class FluidComponent implements Component {
 
     @Override
     public String description() {
-        return String.format("%s (#%d)",stack().getLocalizedName(), fluid().getID());
+        if (ConfigOptions.SHOW_IDS.get()) {
+            return String.format("%s (#%d)", stack().getLocalizedName(), fluid().getID());
+        } else {
+            return stack().getLocalizedName();
+        }
     }
 
     @Override
@@ -108,5 +123,18 @@ public abstract class FluidComponent implements Component {
     @Override
     public final String toString() {
         return description();
+    }
+
+    @Override
+    public int compareTo(Component other) {
+        if (other == null) {
+            return 1;
+        }
+
+        if (other instanceof FluidComponent) {
+            return COMPARATOR.compare(this, (FluidComponent) other);
+        } else {
+            return type().compareTo(other.type());
+        }
     }
 }

@@ -1,7 +1,7 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts;
 
-import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
@@ -9,6 +9,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInte
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
+import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.TooltipLine;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFormatting;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
@@ -23,6 +25,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 class DiagramFactory {
@@ -196,6 +199,8 @@ class DiagramFactory {
         return list;
     }
 
+    // TODO move this into a shared util class?
+    //  Maybe if / when we add another diagram group that could use this.
     private static Interactable buildMaterialInfoButton(Materials material) {
         Tooltip.Builder tooltipBuilder =
                 Tooltip.builder()
@@ -240,8 +245,18 @@ class DiagramFactory {
                             Lang.GREGTECH_MATERIAL_PARTS.trans("blastfurnaceinfocoils"))
                     .setFormatting(Tooltip.DEFAULT_FORMATTING);
 
-            heatingCoilHandler.getHeatingCoils(material.mBlastFurnaceTemp)
-                    .forEach(tooltipBuilder::addComponent);
+            for (Map.Entry<Long, Component> entry :
+                    heatingCoilHandler.getHeatingCoils(material.mBlastFurnaceTemp).entrySet()) {
+                long heat = entry.getKey();
+                Component heatingCoil = entry.getValue();
+
+                tooltipBuilder.addLine(
+                        TooltipLine.builder()
+                                .addComponentIcon(heatingCoil)
+                                .addText(String.format("[%,dK]", heat))
+                                .addComponentDescription(heatingCoil)
+                                .build());
+            }
         } else {
             tooltipBuilder.addTextLine(Lang.GREGTECH_MATERIAL_PARTS.trans("blastfurnaceinfo"));
         }

@@ -1,7 +1,5 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialtools;
 
-import com.github.dcysteine.neicustomdiagram.api.Lang;
-import com.github.dcysteine.neicustomdiagram.api.Registry;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
@@ -9,13 +7,12 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInte
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
-import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFormatting;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
-import gregtech.common.items.GT_MetaGenerated_Tool_01;
 import net.minecraft.init.Items;
 
 import java.util.ArrayList;
@@ -28,17 +25,8 @@ class DiagramFactory {
             ComponentLabel.create(
                     ItemComponent.create(Items.book, 0), LayoutHandler.MATERIAL_INFO_POSITION);
 
-    private static final ImmutableList<Integer> TURBINE_TOOL_IDS =
-            ImmutableList.of(
-                    (int) GT_MetaGenerated_Tool_01.TURBINE_SMALL,
-                    (int) GT_MetaGenerated_Tool_01.TURBINE,
-                    (int) GT_MetaGenerated_Tool_01.TURBINE_LARGE,
-                    (int) GT_MetaGenerated_Tool_01.TURBINE_HUGE);
-
-    private static final int ELECTRIC_SCANNER_ID_START = 100;
-
     private enum MaterialPart {
-        TOOL_HEADS(LayoutHandler.SlotGroupKeys.TOOL_HEADS,
+        TOOL_HEADS(LayoutHandler.SlotGroupKeys.TOOL_PARTS,
                 OrePrefixes.toolHeadSword, OrePrefixes.toolHeadPickaxe, OrePrefixes.toolHeadShovel,
                 OrePrefixes.toolHeadAxe, OrePrefixes.toolHeadHoe, OrePrefixes.toolHeadSaw,
                 OrePrefixes.toolHeadHammer, OrePrefixes.toolHeadFile,
@@ -84,35 +72,26 @@ class DiagramFactory {
                 .addAllOptionalLayouts(layoutHandler.optionalLayouts())
                 .addInteractable(buildMaterialInfoButton(material));
 
-        List<ItemComponent> tools = new ArrayList<>();
-        List<ItemComponent> turbines = new ArrayList<>();
-        for (ItemComponent tool : recipeHandler.getTools(material)) {
-            if (TURBINE_TOOL_IDS.contains(tool.damage())) {
-                turbines.add(tool);
-            } else {
-                tools.add(tool);
-            }
-        }
-        diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.TOOLS)
-                .insertEachSafe(ComponentTransformer.transformToDisplay(tools));
-        diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.TURBINES)
-                .insertEachSafe(ComponentTransformer.transformToDisplay(turbines));
+        GregTechOreDictUtil.getComponent(OrePrefixes.stick, material.mHandleMaterial).ifPresent(
+                handle -> diagramBuilder
+                        .autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.TOOL_PARTS)
+                        .insertIntoNextSlot(
+                                DisplayComponent.builder(handle)
+                                        .setAdditionalTooltip(
+                                                Tooltip.create(
+                                                        Lang.GREGTECH_MATERIAL_TOOLS.trans(
+                                                                "handlelabel"),
+                                                        Tooltip.INFO_FORMATTING))
+                                        .build()));
 
-        if (Registry.ModIds.isModLoaded(Registry.ModIds.DETRAV_SCANNER)) {
-            List<ItemComponent> scanners = new ArrayList<>();
-            List<ItemComponent> electricScanners = new ArrayList<>();
-            for (ItemComponent scanner : recipeHandler.getScanners(material)) {
-                if (scanner.damage() >= ELECTRIC_SCANNER_ID_START) {
-                    electricScanners.add(scanner);
-                } else {
-                    scanners.add(scanner);
-                }
-            }
-            diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.SCANNERS)
-                    .insertEachSafe(ComponentTransformer.transformToDisplay(scanners));
-            diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.ELECTRIC_SCANNERS)
-                    .insertEachSafe(ComponentTransformer.transformToDisplay(electricScanners));
-        }
+        diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.TOOLS)
+                .insertEachGroupSafe(recipeHandler.getTools(material));
+        diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.TURBINES)
+                .insertEachGroupSafe(recipeHandler.getTurbines(material));
+        diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.SCANNERS)
+                .insertEachGroupSafe(recipeHandler.getScanners(material));
+        diagramBuilder.autoInsertIntoSlotGroup(LayoutHandler.SlotGroupKeys.ELECTRIC_SCANNERS)
+                .insertEachGroupSafe(recipeHandler.getElectricScanners(material));
 
         Arrays.stream(DiagramFactory.MaterialPart.values())
                 .forEach(part -> part.insertIntoSlot(diagramBuilder, material));
@@ -142,21 +121,14 @@ class DiagramFactory {
     }
 
     private static Interactable buildMaterialInfoButton(Materials material) {
-        Tooltip tooltip =
+        Tooltip.Builder tooltipBuilder =
                 Tooltip.builder()
                         .addTextLine(GregTechFormatting.getMaterialDescription(material))
                         .setFormatting(Tooltip.INFO_FORMATTING)
-                        .addTextLine(material.mChemicalFormula)
-                        .addSpacing()
-                        .addTextLine(
-                                Lang.GREGTECH_MATERIAL_TOOLS.transf(
-                                        "materialinfohandlematerial",
-                                        GregTechFormatting.getMaterialDescription(
-                                                material.mHandleMaterial)))
-                        .build();
+                        .addTextLine(material.mChemicalFormula);
 
         return CustomInteractable.builder(MATERIAL_INFO_ICON)
-                .setTooltip(tooltip)
+                .setTooltip(tooltipBuilder.build())
                 .build();
     }
 }

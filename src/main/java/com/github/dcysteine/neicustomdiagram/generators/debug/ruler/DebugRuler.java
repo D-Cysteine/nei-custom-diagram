@@ -1,6 +1,5 @@
 package com.github.dcysteine.neicustomdiagram.generators.debug.ruler;
 
-import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroup;
@@ -18,6 +17,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMa
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.google.common.collect.Lists;
 import net.minecraft.init.Items;
 
@@ -53,7 +54,7 @@ public final class DebugRuler implements DiagramGenerator {
                                 Lang.DEBUG_RULER.trans("groupname"),
                                 groupId, ICON, 1)
                         .setIgnoreNbt(false)
-                        .setEnabledByDefault(false)
+                        .setDefaultVisibility(DiagramGroupVisibility.DISABLED)
                         .build();
     }
 
@@ -81,7 +82,11 @@ public final class DebugRuler implements DiagramGenerator {
     }
 
     private static Layout buildLayout() {
-        Layout.Builder layoutBuilder = Layout.builder();
+        Layout.Builder layoutBuilder = Layout.builder()
+                .addLabel(
+                        Text.builder("0", Point.create(0, 0), Grid.Direction.C)
+                                .setSmall(true)
+                                .build());
 
         Lines.Builder rulerColor1 =
                 Lines.builder(Point.create(0, 0)).setColor(RULER_COLOR_1);

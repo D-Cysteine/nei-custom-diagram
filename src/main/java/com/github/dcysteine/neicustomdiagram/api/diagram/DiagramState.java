@@ -1,7 +1,7 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram;
 
 import codechicken.nei.NEIClientUtils;
-import com.github.dcysteine.neicustomdiagram.api.Config;
+import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 
 /**
  * Class that keeps track of any mutable state for diagrams.
@@ -25,13 +25,18 @@ public class DiagramState {
     }
 
     public void tick() {
-        if (Config.Options.CTRL_FAST_FORWARD.get() && NEIClientUtils.controlKey()) {
-            ticks += DiagramState.TICKS_PER_CYCLE;
-        } else {
+        if (ConfigOptions.CTRL_FAST_FORWARD.get() && NEIClientUtils.controlKey()) {
+            if (NEIClientUtils.shiftKey()) {
+                // <Ctrl + Shift> fast-forwards backwards.
+                ticks -= DiagramState.TICKS_PER_CYCLE;
+            } else {
+                ticks += DiagramState.TICKS_PER_CYCLE;
+            }
+        } else if (!NEIClientUtils.shiftKey()) {
             ticks++;
         }
 
-        // Just in case we somehow overflow.
+        // Prevent going too far backwards, as well as handle the unlikely case of overflow.
         //
         // Note that Java's implementation of modulus returns a negative result for negative
         // numbers, so having ticks < 0 would probably cause IndexOutOfBoundsException for callers

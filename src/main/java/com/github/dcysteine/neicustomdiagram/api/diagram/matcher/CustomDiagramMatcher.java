@@ -18,7 +18,7 @@ public class CustomDiagramMatcher implements DiagramMatcher {
             Interactable.RecipeType, Component, Collection<Diagram>> diagramFunction;
 
     public CustomDiagramMatcher(
-            Iterable<Diagram> diagrams,
+            Iterable<? extends Diagram> diagrams,
             BiFunction<Interactable.RecipeType, Component, Collection<Diagram>> diagramFunction) {
         this.diagrams = ImmutableList.copyOf(diagrams);
         this.diagramFunction = diagramFunction;

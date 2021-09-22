@@ -1,10 +1,10 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts;
 
-import com.github.dcysteine.neicustomdiagram.api.Lang;
-import com.github.dcysteine.neicustomdiagram.api.Logger;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFormatting;
 import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;
@@ -133,7 +133,7 @@ class RelatedMaterialsHandler {
                         Tooltip.create(
                                 Lang.GREGTECH_MATERIAL_PARTS.transf(
                                         "materiallabel",
-                                        GregTechFormatting.getMaterialName(material)),
+                                        GregTechFormatting.getMaterialDescription(material)),
                                 Tooltip.INFO_FORMATTING))
                 .build();
     }

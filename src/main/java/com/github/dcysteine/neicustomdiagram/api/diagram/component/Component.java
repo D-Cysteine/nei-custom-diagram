@@ -18,7 +18,7 @@ import java.util.Optional;
  * such as stack size. NBT is however included in this class, as it is sometimes a concrete detail
  * (e.g. enchantments) and sometimes part of the definition of an item type.
  */
-public interface Component {
+public interface Component extends Comparable<Component> {
     enum ComponentType {
         ITEM, FLUID;
     }

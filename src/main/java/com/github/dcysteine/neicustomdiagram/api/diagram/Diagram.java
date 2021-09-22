@@ -6,7 +6,6 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactiv
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Slot;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
@@ -19,9 +18,9 @@ import java.util.stream.StreamSupport;
 
 public class Diagram {
     protected final Layout layout;
-    protected final ImmutableList<Interactable> interactables;
+    protected final ImmutableList<? extends Interactable> interactables;
 
-    public Diagram(Layout layout, ImmutableList<Interactable> interactables) {
+    public Diagram(Layout layout, ImmutableList<? extends Interactable> interactables) {
         this.layout = layout;
         this.interactables = interactables;
     }
@@ -46,10 +45,15 @@ public class Diagram {
     public static final class Builder {
         /** Map of layout to whether it will be shown. */
         private final Map<Layout, Boolean> layouts;
+
+        /** Map of slot group key to slot group auto sub-builder. */
+        private final Map<String, SlotGroupAutoSubBuilder> slotGroupAutoSubBuilders;
+
         private final ImmutableList.Builder<Interactable> interactablesBuilder;
 
         private Builder() {
             this.layouts = new HashMap<>();
+            this.slotGroupAutoSubBuilders = new HashMap<>();
             this.interactablesBuilder = ImmutableList.builder();
         }
 
@@ -177,14 +181,19 @@ public class Diagram {
          * Returns a sub-builder which will automatically insert into the next available slot in
          * the specified slot group.
          *
-         * <p>This method should not be called on a slot group that has already been inserted into!
-         *
          * @throws IllegalArgumentException if no slot group with the specified key could be found
          *     in any layout in this builder.
          */
         public SlotGroupAutoSubBuilder autoInsertIntoSlotGroup(String key) {
+            if (slotGroupAutoSubBuilders.containsKey(key)) {
+                return slotGroupAutoSubBuilders.get(key);
+            }
+
             Layout layout = findLayoutContainingSlotGroup(key);
-            return new SlotGroupAutoSubBuilder(layout, layout.slotGroup(key).get());
+            SlotGroupAutoSubBuilder builder =
+                    new SlotGroupAutoSubBuilder(layout, layout.slotGroup(key).get());
+            slotGroupAutoSubBuilders.put(key, builder);
+            return builder;
         }
 
         /**
@@ -208,8 +217,11 @@ public class Diagram {
         }
 
         public Diagram build() {
-            Preconditions.checkState(!layouts.isEmpty(), "Diagram must have a layout!");
-
+            // TODO store a count of # of optional layouts that are slotted, so that we can filter
+            //  out empty diagrams.
+            //  Maybe add a config to filter these out? Requires a restart.
+            //  Will probably require adding a field to DiagramGroupInfo to control min # per group.
+            //  Or just have each DiagramGenerator filter it out. In that case maybe return slot key
             Layout.Builder layoutBuilder = Layout.builder();
             layouts.entrySet().stream()
                     .filter(Map.Entry::getValue)

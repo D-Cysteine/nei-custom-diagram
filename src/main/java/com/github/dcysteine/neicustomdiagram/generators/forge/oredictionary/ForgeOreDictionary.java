@@ -1,7 +1,6 @@
 package com.github.dcysteine.neicustomdiagram.generators.forge.oredictionary;
 
 import codechicken.lib.gui.GuiDraw;
-import com.github.dcysteine.neicustomdiagram.api.Lang;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroup;
@@ -17,6 +16,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Text;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
+import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.github.dcysteine.neicustomdiagram.util.OreDictUtil;
 import net.minecraft.init.Items;
@@ -43,7 +44,7 @@ public final class ForgeOreDictionary implements DiagramGenerator {
                 DiagramGroupInfo.builder(
                                 Lang.FORGE_ORE_DICTIONARY.trans("groupname"),
                                 groupId, ICON, 2)
-                        .setEnabledByDefault(false)
+                        .setDefaultVisibility(DiagramGroupVisibility.DISABLED)
                         .build();
     }
 

@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.api;
+package com.github.dcysteine.neicustomdiagram.mod;
 
 import com.github.dcysteine.neicustomdiagram.NeiCustomDiagram;
 import org.apache.logging.log4j.LogManager;
