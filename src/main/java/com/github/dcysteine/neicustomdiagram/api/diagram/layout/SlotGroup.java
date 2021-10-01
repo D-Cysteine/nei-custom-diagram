@@ -2,6 +2,7 @@ package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
+import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Drawable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
@@ -44,6 +45,12 @@ public abstract class SlotGroup implements Drawable {
         return slots().get(x + y * width());
     }
 
+    @Override
+    public Dimension maxDimension() {
+        return Drawable.computeMaxDimension(slots());
+    }
+
+    @Override
     public void draw(DiagramState diagramState) {
         slots().forEach(slot -> slot.draw(diagramState));
     }

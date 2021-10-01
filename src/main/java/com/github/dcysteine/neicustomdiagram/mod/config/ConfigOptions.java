@@ -16,14 +16,36 @@ public final class ConfigOptions {
     public static final Option<Boolean> CTRL_FAST_FORWARD =
             new BooleanOption(
                     Category.OPTIONS, "ctrl_fast_forward", true,
-                    "Enables fast-forwarding through component groups by holding down <Ctrl>."
+                    "Enables fast-forwarding through component cycles by holding down <Ctrl>."
                             + "\nFast-forward backwards with <Ctrl + Shift>.")
                     .register();
 
-    public static final Option<Boolean> SHOW_STACK_SIZE_ONE =
+    public static final Option<Boolean> DISABLE_PAGE_SCROLL =
             new BooleanOption(
-                    Category.OPTIONS, "show_stack_size_one", false,
-                    "Enables always showing stack size on item components, even if it's 1.")
+                    Category.OPTIONS, "disable_page_scroll", false,
+                    "The default behavior is that if a diagram is too large to fit,"
+                            + " scrolling will scroll the diagram;"
+                            + "\notherwise, you will get the default behavior of scrolling through"
+                            + " pages."
+                            + "\nThis option disables that default behavior. This is convenient if"
+                            + " you need to scroll a lot,"
+                            + "\nand want to avoid accidentally scrolling through pages."
+                            + "\nYou can still scroll through pages while mousing over the page"
+                            + " number.")
+                    .register();
+
+    public static final Option<Integer> SCROLL_SPEED =
+            new IntegerOption(
+                    Category.OPTIONS, "scroll_speed", 12,
+                    "Sets the scroll speed, in pixels."
+                            + " Use a negative value to invert the scroll direction.")
+                    .register();
+
+    public static final Option<Boolean> SHOW_EMPTY_DIAGRAMS =
+            new BooleanOption(
+                    Category.OPTIONS, "show_empty_diagrams", false,
+                    "Enables showing diagrams that contain few or no components."
+                            + "\nSometimes they still have some useful info.")
                     .register();
 
     public static final Option<Boolean> SHOW_IDS =
@@ -33,60 +55,19 @@ public final class ConfigOptions {
                             + "\nSome diagrams may also show other IDs if this option is enabled.")
                     .register();
 
-    // TODO add config option for smaller resolutions? Will probably need to modify layouts...
-    //  Maybe make it affect layouts per page in diagram info as well? Ehhh...
-    //  Better than adding a config would be checking GUI height somehow and auto-detecting.
+    public static final Option<Boolean> SHOW_STACK_SIZE_ONE =
+            new BooleanOption(
+                    Category.OPTIONS, "show_stack_size_one", false,
+                    "Enables always showing stack size on item components, even if it's 1.")
+                    .register();
 
-    // Static class.
-    private ConfigOptions() {}
-
-    /** This method is only intended to be called during mod initialization. */
-    static void setCategoryComments(Configuration config) {
-        config.setCategoryComment(
-                Category.OPTIONS.toString(),
-                "General usage options."
-                        + " These should be safe to change without requiring a restart.");
-
-        StringBuilder diagramGroupCategoryCommentBuilder = new StringBuilder();
-        diagramGroupCategoryCommentBuilder
-                .append("Visibility options for diagram groups."
-                        + " These control when diagram groups are shown."
-                        + "\nAll options are safe to change without requiring a restart,"
-                        + " except for the special DISABLED value."
-                        + "\nChanging from DISABLED requires a restart,"
-                        + " because it causes diagram groups to not be generated at all."
-                        + "\n\nValid values:");
-        Arrays.stream(DiagramGroupVisibility.values()).forEach(
-                visibility -> diagramGroupCategoryCommentBuilder
-                        .append("\n * ").append(visibility.toString()));
-        config.setCategoryComment(
-                Category.DIAGRAM_GROUPS.toString(), diagramGroupCategoryCommentBuilder.toString());
-    }
-
-    public static ImmutableList<Option<?>> getAllOptions() {
-        return ImmutableList.copyOf(allOptions);
-    }
-
-    public static DiagramGroupVisibility getDiagramGroupVisibility(DiagramGroupInfo info) {
-        String visibilityName =
-                Config.getConfig().get(
-                                Category.DIAGRAM_GROUPS.toString(), info.groupId(),
-                                info.defaultVisibility().toString(),
-                                buildDiagramGroupVisibilityComment(info))
-                        .getString();
-
-        return DiagramGroupVisibility.getByName(visibilityName);
-    }
-
-    private static String buildDefaultComment(Object defaultValue) {
-        return String.format("\nDefault: %s", defaultValue);
-    }
-
-    private static String buildDiagramGroupVisibilityComment(DiagramGroupInfo info) {
-        return String.format(
-                "Sets the visibility of the %s diagram group.\nDefault: %s",
-                info.groupName(), info.defaultVisibility());
-    }
+    public static final Option<Integer> TOOLTIP_MAX_CYCLE_COUNT =
+            new IntegerOption(
+                    Category.OPTIONS, "tooltip_max_cycle_count", 8,
+                    "Sets the maximum # of cycle components that will be shown in a tooltip"
+                            + " when <Shift> is held."
+                            + "\nSet to 0 to disable this feature.")
+                    .register();
 
     public enum Category {
         OPTIONS("options"),
@@ -171,5 +152,86 @@ public final class ConfigOptions {
         public Boolean get() {
             return property.getBoolean();
         }
+    }
+
+    public static final class IntegerOption extends Option<Integer> {
+        private IntegerOption(Category category, String key, int defaultValue, String comment) {
+            super(category, key, defaultValue, comment);
+        }
+
+        private IntegerOption(
+                Category category, String key, int defaultValue, String comment,
+                boolean requiresRestart) {
+            super(category, key, defaultValue, comment, requiresRestart);
+        }
+
+        @Override
+        Property getProperty(Configuration config) {
+            return Config.getConfig().get(category.toString(), key, defaultValue, comment);
+        }
+
+        @Override
+        public Integer get() {
+            return property.getInt();
+        }
+    }
+
+    // Static class.
+    private ConfigOptions() {}
+
+    /** This method is only intended to be called during mod initialization. */
+    static void setCategoryComments(Configuration config) {
+        config.setCategoryComment(
+                Category.OPTIONS.toString(),
+                "General usage options."
+                        + " These should be safe to change without requiring a restart.");
+
+        StringBuilder diagramGroupCategoryCommentBuilder = new StringBuilder();
+        diagramGroupCategoryCommentBuilder
+                .append("Visibility options for diagram groups."
+                        + " These control when diagram groups are shown."
+                        + "\nAll options are safe to change without requiring a restart,"
+                        + " except for the special DISABLED value."
+                        + "\nChanging from DISABLED requires a restart,"
+                        + " because it causes diagram groups to not be generated at all."
+                        + "\n\nValid values:");
+        Arrays.stream(DiagramGroupVisibility.values()).forEach(
+                visibility -> diagramGroupCategoryCommentBuilder
+                        .append("\n * ").append(visibility.toString()));
+        config.setCategoryComment(
+                Category.DIAGRAM_GROUPS.toString(), diagramGroupCategoryCommentBuilder.toString());
+    }
+
+    public static ImmutableList<Option<?>> getAllOptions() {
+        return ImmutableList.copyOf(allOptions);
+    }
+
+    public static DiagramGroupVisibility getDiagramGroupVisibility(DiagramGroupInfo info) {
+        String visibilityName =
+                Config.getConfig().get(
+                                Category.DIAGRAM_GROUPS.toString(), info.groupId(),
+                                info.defaultVisibility().toString(),
+                                buildDiagramGroupVisibilityComment(info))
+                        .getString();
+
+        return DiagramGroupVisibility.getByName(visibilityName);
+    }
+
+    private static String buildDefaultComment(Object defaultValue) {
+        return String.format("\nDefault: %s", defaultValue);
+    }
+
+    private static String buildDiagramGroupVisibilityComment(DiagramGroupInfo info) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(
+                String.format("Sets the visibility of the %s diagram group.", info.groupName()));
+
+        if (!info.description().isEmpty()) {
+            builder.append('\n');
+            builder.append(info.description());
+        }
+
+        builder.append(buildDefaultComment(info.defaultVisibility()));
+        return builder.toString();
     }
 }

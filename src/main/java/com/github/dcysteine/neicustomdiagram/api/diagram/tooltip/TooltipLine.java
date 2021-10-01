@@ -1,6 +1,7 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.tooltip;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.toprettystring.ToPrettyString;
 import com.google.common.collect.ImmutableList;
@@ -101,6 +102,10 @@ public abstract class TooltipLine {
 
         public Builder addText(String text) {
             return addElement(TooltipElement.ofText(text));
+        }
+
+        public Builder addDisplayComponentIcon(DisplayComponent displayComponent) {
+            return addElement(TooltipElement.ofDisplayComponentIcon(displayComponent));
         }
 
         public Builder addComponentIcon(Component component) {

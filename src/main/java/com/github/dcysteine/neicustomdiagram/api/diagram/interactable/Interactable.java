@@ -3,7 +3,6 @@ package com.github.dcysteine.neicustomdiagram.api.diagram.interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.draw.BoundedDrawable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.google.common.collect.ImmutableList;
 
 /**
  * This interface represents anything that is drawn on the screen and can be moused over or clicked
@@ -12,20 +11,7 @@ import com.google.common.collect.ImmutableList;
 public interface Interactable extends BoundedDrawable {
     enum RecipeType {
         CRAFTING,
-        USAGE,
-        /**
-         * Special value used for adding (or removing) an NEI bookmark.
-         *
-         * <p>Most of the time, you do NOT want to return or accept this value!
-         */
-        BOOKMARK;
-
-        /**
-         * Iterate over this instead of {@link #values()}, to avoid the special {@link #BOOKMARK}
-         * type.
-         */
-        public static final ImmutableList<RecipeType> VALID_TYPES =
-                ImmutableList.of(CRAFTING, USAGE);
+        USAGE;
     }
 
     default void interact(DiagramState diagramState, RecipeType recipeType) {
@@ -53,10 +39,10 @@ public interface Interactable extends BoundedDrawable {
 
     /** Returns whether the specified point is inside this interactable's bounding box. */
     default boolean checkBoundingBox(Point target) {
-        boolean withinX = (target.x() >= position().x() - width() / 2)
-                && (target.x() < position().x() + width() / 2);
-        boolean withinY = (target.y() >= position().y() - height() / 2)
-                && (target.y() < position().y() + height() / 2);
+        boolean withinX = (target.x() >= position().x() - dimension().width() / 2)
+                && (target.x() < position().x() + dimension().width() / 2);
+        boolean withinY = (target.y() >= position().y() - dimension().height() / 2)
+                && (target.y() < position().y() + dimension().height() / 2);
 
         return withinX && withinY;
     }

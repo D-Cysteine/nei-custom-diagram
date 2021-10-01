@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialtools;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech5.materialtools;
 
 import com.detrav.items.DetravMetaGeneratedTool01;
 import com.github.dcysteine.neicustomdiagram.api.Formatter;
@@ -6,9 +6,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayCompon
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
-import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.mod.Registry;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFormatting;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFormatting;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
@@ -26,6 +25,7 @@ import net.minecraft.item.crafting.IRecipe;
 import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -33,6 +33,12 @@ import java.util.stream.Collectors;
  * material.
  */
 class RecipeHandler {
+    /** Comparator that takes EU capacity into account. */
+    private static final Comparator<DisplayComponent> EU_CAPACITY_COMPARATOR =
+            Comparator.<DisplayComponent, Long>comparing(
+                            d -> getEuCapacity((ItemComponent) d.component()).orElse(-1L))
+                    .thenComparing(Comparator.naturalOrder());
+
     private static final ImmutableList<Integer> TURBINE_TOOL_IDS =
             ImmutableList.of(
                     (int) GT_MetaGenerated_Tool_01.TURBINE_SMALL,
@@ -109,13 +115,6 @@ class RecipeHandler {
     /** This method must be called before any other methods are called. */
     @SuppressWarnings("unchecked")
     void initialize() {
-        // TODO add primary and secondary materials to tooltips?
-        // TODO better handling of electric tools.
-        //  Suggest collapsing all three tiers as well as three EU capacities (9 total) into 1 group
-        //  Suggest showing EU capacity as top-left additional info (with smart formatting)
-        //  Show primary and secondary materials in tooltip
-        //  Use Stream::sorted in impl.
-
         // First pass: find all tools with recipes, and group them by base NBT item stack.
         ((List<IRecipe>) CraftingManager.getInstance().getRecipeList())
                 .forEach(recipe -> addTool(recipe.getRecipeOutput()));
@@ -123,12 +122,13 @@ class RecipeHandler {
                 .forEach(recipe -> addTool(recipe.getOutput(0)));
 
         // Second pass: iterate through and construct DisplayComponents for found tools.
-        // We iterate on SortedSet copies so that the resulting lists are ordered.
-        for (BaseTool baseTool : ImmutableSortedSet.copyOf(toolsMultimap.keySet())) {
+        // We iterate on SortedSet copies so that the resulting lists of tools are ordered.
+        for (BaseTool baseTool: ImmutableSortedSet.copyOf(toolsMultimap.keySet())) {
             ImmutableList<DisplayComponent> displayComponents =
                     ImmutableList.copyOf(
                             toolsMultimap.get(baseTool).stream()
                                     .map(RecipeHandler::buildDisplayComponent)
+                                    .sorted(EU_CAPACITY_COMPARATOR)
                                     .collect(Collectors.toList()));
 
             if (TURBINE_TOOL_IDS.contains(baseTool.itemComponent().damage())) {
@@ -143,6 +143,7 @@ class RecipeHandler {
                     ImmutableList.copyOf(
                             scannersMultimap.get(baseTool).stream()
                                     .map(RecipeHandler::buildDisplayComponent)
+                                    .sorted(EU_CAPACITY_COMPARATOR)
                                     .collect(Collectors.toList()));
 
             if (baseTool.itemComponent().damage() >= ELECTRIC_SCANNER_ID_START) {
@@ -205,11 +206,24 @@ class RecipeHandler {
             toolsMultimap.put(BaseTool.create(itemStack), ItemComponent.createWithNbt(itemStack));
         }
 
-        if (Registry.ModIds.isModLoaded(Registry.ModIds.DETRAV_SCANNER)) {
+        if (Registry.ModDependency.DETRAV_SCANNER.isLoaded()) {
             if (itemStack.getItem() == DetravMetaGeneratedTool01.INSTANCE) {
                 scannersMultimap.put(
                         BaseTool.create(itemStack), ItemComponent.createWithNbt(itemStack));
             }
+        }
+    }
+
+    /** Returns the EU capacity of the given item, if available. */
+    private static Optional<Long> getEuCapacity(ItemComponent itemComponent) {
+        Long[] electricStats =
+                ((GT_MetaGenerated_Tool) itemComponent.item())
+                        .getElectricStats(itemComponent.stack());
+        if (electricStats == null) {
+            return Optional.empty();
+        } else {
+            // The first entry in electricStats is the max energy capacity.
+            return Optional.of(electricStats[0]);
         }
     }
 
@@ -223,23 +237,19 @@ class RecipeHandler {
                 Tooltip.builder()
                         .setFormatting(Tooltip.INFO_FORMATTING)
                         .addTextLine(
-                                Lang.GREGTECH_MATERIAL_TOOLS.transf(
+                                Lang.GREGTECH_5_MATERIAL_TOOLS.transf(
                                         "primarymateriallabel",
                                         GregTechFormatting.getMaterialDescription(primaryMaterial)))
                         .addTextLine(
-                                Lang.GREGTECH_MATERIAL_TOOLS.transf(
+                                Lang.GREGTECH_5_MATERIAL_TOOLS.transf(
                                         "secondarymateriallabel",
                                         GregTechFormatting.getMaterialDescription(
                                                 secondaryMaterial)))
                         .build());
 
-        Long[] electricStats =
-                ((GT_MetaGenerated_Tool) itemStack.getItem())
-                        .getElectricStats(itemComponent.stack());
-        if (electricStats != null) {
-            // The first entry in electricStats is the max energy capacity.
-            builder.setAdditionalInfo(Formatter.smartFormatInteger(electricStats[0]));
-        }
+        getEuCapacity(itemComponent).ifPresent(
+                euCapacity -> builder.setAdditionalInfo(
+                        Formatter.smartFormatInteger(euCapacity)));
 
         return builder.build();
     }

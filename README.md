@@ -1,18 +1,9 @@
 ### NEI Custom Diagram
 
 **NEI Custom Diagram** is a framework for creating custom diagrams for NEI.\
-It comes bundled with some diagrams already:
-- Debug Ruler
-- Ender Storage Chest Overview
-- Ender Storage Tank Overview
-- Forge Fluid Containers
-- Forge Ore Dictionary
-- GregTech Material Parts
-- GregTech Material Tools
-- GregTech Ore Dictionary
-- GregTech Ore Processing
+See the [**Wiki**](https://github.com/D-Cysteine/nei-custom-diagram/wiki)
+for information on how to use it, and which diagrams are currently available!
 
-Note that some of these diagrams are disabled by default!\
 You can find the config file here: `.minecraft/config/NEICustomDiagram.cfg`
 
 Inspired by

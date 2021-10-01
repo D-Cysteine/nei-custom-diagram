@@ -3,6 +3,7 @@ package com.github.dcysteine.neicustomdiagram;
 import codechicken.nei.event.NEIRegisterHandlerInfosEvent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.mod.NeiIntegration;
 import com.github.dcysteine.neicustomdiagram.mod.Reflection;
 import com.github.dcysteine.neicustomdiagram.mod.Registry;
 import com.github.dcysteine.neicustomdiagram.mod.config.Config;
@@ -23,12 +24,12 @@ import net.minecraftforge.common.MinecraftForge;
         modid = NeiCustomDiagram.MOD_ID,
         name = NeiCustomDiagram.MOD_NAME,
         version = NeiCustomDiagram.MOD_VERSION,
-        guiFactory = ConfigGuiFactory.CLASS_NAME,
-        dependencies = NeiCustomDiagram.MOD_DEPENDENCIES)
+        dependencies = NeiCustomDiagram.MOD_DEPENDENCIES,
+        guiFactory = ConfigGuiFactory.CLASS_NAME)
 public final class NeiCustomDiagram {
     public static final String MOD_ID = "neicustomdiagram";
-    public static final String MOD_VERSION = "@version@";
     public static final String MOD_NAME = "NEI Custom Diagram";
+    public static final String MOD_VERSION = "@version@";
     public static final String MOD_DEPENDENCIES =
             "required-after:NotEnoughItems;"
                 + "after:gregtech;"
@@ -48,6 +49,7 @@ public final class NeiCustomDiagram {
         Reflection.initialize();
         Registry.initialize();
         Config.initialize();
+        NeiIntegration.initialize();
         MinecraftForge.EVENT_BUS.register(NeiCustomDiagram.this);
 
         Logger.MOD.info("Mod initialization complete!");

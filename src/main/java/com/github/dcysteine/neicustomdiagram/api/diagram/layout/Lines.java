@@ -1,11 +1,15 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 
+import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
+import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
+import com.github.dcysteine.neicustomdiagram.api.draw.Drawable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.toprettystring.ToPrettyString;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 
 /**
  * Immutable class holding line segments and arrows.
@@ -13,7 +17,7 @@ import com.google.common.collect.ImmutableList;
  * <p>See {@link Draw.Color} for color encoding information.
  */
 @AutoValue
-public abstract class Lines {
+public abstract class Lines implements Drawable {
     /**
      * Immutable class representing a line segment or arrow drawn between two points.
      *
@@ -49,7 +53,22 @@ public abstract class Lines {
     public abstract ImmutableList<Segment> segments();
     public abstract ImmutableList<Segment> arrows();
 
-    public void draw() {
+    @Override
+    public Dimension maxDimension() {
+        int maxX = -1, maxY = -1;
+        for (Segment segment : Iterables.concat(segments(), arrows())) {
+            maxX = Math.max(maxX, segment.a().x());
+            maxX = Math.max(maxX, segment.b().x());
+            maxY = Math.max(maxY, segment.a().y());
+            maxY = Math.max(maxY, segment.b().y());
+        }
+
+        // Add 1 because segments are drawn with thickness 2.
+        return Dimension.create(maxX + 1, maxY + 1);
+    }
+
+    @Override
+    public void draw(DiagramState diagramState) {
         segments().forEach(segment -> segment.drawSegment(color()));
         arrows().forEach(segment -> segment.drawArrow(color()));
     }

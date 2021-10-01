@@ -19,6 +19,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMa
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.util.DiagramUtil;
 import com.github.dcysteine.neicustomdiagram.util.enderstorage.EnderStorageFrequency;
 import com.github.dcysteine.neicustomdiagram.util.enderstorage.EnderStorageUtil;
 import com.google.common.base.Preconditions;
@@ -58,10 +59,10 @@ public final class EnderStorageTankOverview implements DiagramGenerator {
                     .build();
 
     private static final int TANKS_PER_DIAGRAM = 12;
-    private static final ImmutableList<String> SLOT_GROUP_TANKS =
+    private static final ImmutableList<Layout.SlotGroupKey> SLOT_GROUP_TANKS =
             ImmutableList.copyOf(
                     IntStream.range(0, TANKS_PER_DIAGRAM)
-                            .mapToObj(i -> "tanks-" + i)
+                            .mapToObj(i -> Layout.SlotGroupKey.create("tanks-" + i))
                             .collect(Collectors.toList()));
 
     private final DiagramGroupInfo info;
@@ -74,6 +75,9 @@ public final class EnderStorageTankOverview implements DiagramGenerator {
                 DiagramGroupInfo.builder(
                                 Lang.ENDER_STORAGE_TANK_OVERVIEW.trans("groupname"),
                                 groupId, ICON, 2)
+                        .setDescription(
+                                "This diagram displays ender tank used frequencies and contents."
+                                        + "\nUnfortunately, it doesn't work on servers.")
                         .build();
     }
 
@@ -91,7 +95,7 @@ public final class EnderStorageTankOverview implements DiagramGenerator {
                         .collect(Collectors.toList());
         noDataLayout = buildNoDataLayout();
 
-        ImmutableMap<String, Supplier<Iterable<Diagram>>> customBehaviorMap =
+        ImmutableMap<String, Supplier<Collection<Diagram>>> customBehaviorMap =
                 ImmutableMap.of(
                         info.groupId() + LOOKUP_GLOBAL_TANKS_SUFFIX,
                         () -> generateDiagrams(EnderStorageUtil.Owner.GLOBAL),

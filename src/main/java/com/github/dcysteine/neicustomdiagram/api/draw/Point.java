@@ -2,7 +2,12 @@ package com.github.dcysteine.neicustomdiagram.api.draw;
 
 import com.google.auto.value.AutoValue;
 
-/** Immutable class representing a point in 2D space. */
+/**
+ * Immutable class representing a point in 2D space.
+ *
+ * <p>While this class's contents are the same as those of {@link Dimension}, for type-safety, we
+ * treat this as a separate class.
+ */
 @AutoValue
 public abstract class Point {
     public static Point create(int x, int y) {

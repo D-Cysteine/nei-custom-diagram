@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.util.gregtech;
+package com.github.dcysteine.neicustomdiagram.util.gregtech5;
 
 import com.github.dcysteine.neicustomdiagram.api.Formatter;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public final class GregTechRecipeUtil {
@@ -131,11 +132,10 @@ public final class GregTechRecipeUtil {
     public static List<DisplayComponent> buildComponentsFromOutputs(GT_Recipe recipe) {
         List<DisplayComponent> components = new ArrayList<>();
         components.addAll(buildComponentsFromItemOutputs(recipe));
-        components.addAll(buildComponents(recipe.mFluidOutputs));
+        components.addAll(buildComponentsFromFluidOutputs(recipe));
         return components;
     }
 
-    /** Builds {@link DisplayComponent}s with output chance annotations. */
     public static List<DisplayComponent> buildComponentsFromItemOutputs(GT_Recipe recipe) {
         List<DisplayComponent> results = new ArrayList<>();
 
@@ -159,29 +159,16 @@ public final class GregTechRecipeUtil {
 
                 tooltips.add(
                         Tooltip.create(
-                                Lang.GREGTECH_UTIL.transf("outputchance", normalizedChance),
+                                Lang.GREGTECH_5_UTIL.transf("outputchance", normalizedChance),
                                 Tooltip.INFO_FORMATTING));
                 additionalInfoStrings.add(formattedChance + "%");
             }
 
-            // TODO these special values only apply for certain recipe types.
-            //  Do we ever run into cases where they don't apply?
-            boolean requiresCleanroom =
-                    recipe.mSpecialValue == -100 || recipe.mSpecialValue == -300;
-            boolean requiresLowGravity =
-                    recipe.mSpecialValue == -200 || recipe.mSpecialValue == -300;
-            if (requiresCleanroom || requiresLowGravity) {
+            Optional<Tooltip> specialConditionsTooltipOptional =
+                    buildSpecialConditionsTooltip(recipe);
+            if (specialConditionsTooltipOptional.isPresent()) {
                 additionalInfoStrings.add("*");
-
-                Tooltip.Builder tooltipBuilder =
-                        Tooltip.builder().setFormatting(Tooltip.INFO_FORMATTING);
-                if (requiresCleanroom) {
-                    tooltipBuilder.addTextLine(Lang.GREGTECH_UTIL.trans("recipecleanroom"));
-                }
-                if (requiresLowGravity) {
-                    tooltipBuilder.addTextLine(Lang.GREGTECH_UTIL.trans("recipelowgravity"));
-                }
-                tooltips.add(tooltipBuilder.build());
+                tooltips.add(specialConditionsTooltipOptional.get());
             }
 
             if (!additionalInfoStrings.isEmpty()) {
@@ -195,5 +182,49 @@ public final class GregTechRecipeUtil {
         }
 
         return results;
+    }
+
+    public static List<DisplayComponent> buildComponentsFromFluidOutputs(GT_Recipe recipe) {
+        List<DisplayComponent> results = new ArrayList<>();
+
+        for (int i = 0; i < recipe.mFluidOutputs.length; i++) {
+            if (recipe.mFluidOutputs[i] == null) {
+                continue;
+            }
+
+            DisplayComponent.Builder builder = DisplayComponent.builder(recipe.mFluidOutputs[i]);
+            Optional<Tooltip> specialConditionsTooltipOptional =
+                    buildSpecialConditionsTooltip(recipe);
+            if (specialConditionsTooltipOptional.isPresent()) {
+                builder.setAdditionalInfo("*");
+                builder.setAdditionalTooltip(specialConditionsTooltipOptional.get());
+            }
+
+            results.add(builder.build());
+        }
+
+        return results;
+    }
+
+    private static Optional<Tooltip> buildSpecialConditionsTooltip(GT_Recipe recipe) {
+        // TODO these special values only apply for certain recipe types.
+        //  Do we ever run into cases where they don't apply?
+        boolean requiresCleanroom =
+                recipe.mSpecialValue == -100 || recipe.mSpecialValue == -300;
+        boolean requiresLowGravity =
+                recipe.mSpecialValue == -200 || recipe.mSpecialValue == -300;
+        if (requiresCleanroom || requiresLowGravity) {
+            Tooltip.Builder tooltipBuilder =
+                    Tooltip.builder().setFormatting(Tooltip.INFO_FORMATTING);
+            if (requiresCleanroom) {
+                tooltipBuilder.addTextLine(Lang.GREGTECH_5_UTIL.trans("recipecleanroom"));
+            }
+            if (requiresLowGravity) {
+                tooltipBuilder.addTextLine(Lang.GREGTECH_5_UTIL.trans("recipelowgravity"));
+            }
+            return Optional.of(tooltipBuilder.build());
+        } else {
+            return Optional.empty();
+        }
     }
 }

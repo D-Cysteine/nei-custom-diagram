@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 public final class ForgeOreDictionary implements DiagramGenerator {
     public static final ItemComponent ICON = ItemComponent.create(Items.book, 0);
 
-    private static final String SLOT_GROUP_KEY = "key";
+    private static final Layout.SlotGroupKey SLOT_GROUP_KEY = Layout.SlotGroupKey.create("key");
 
     private final DiagramGroupInfo info;
 
@@ -45,6 +45,10 @@ public final class ForgeOreDictionary implements DiagramGenerator {
                                 Lang.FORGE_ORE_DICTIONARY.trans("groupname"),
                                 groupId, ICON, 2)
                         .setDefaultVisibility(DiagramGroupVisibility.DISABLED)
+                        .setDescription(
+                                "This diagram displays Forge ore dictionary prefixes"
+                                        + " and registered items."
+                                        + "\nMostly useful for modpack development.")
                         .build();
     }
 

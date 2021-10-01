@@ -6,6 +6,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
 import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.google.auto.value.AutoValue;
 
+import java.util.function.Predicate;
+
 @AutoValue
 public abstract class DiagramGroupInfo {
     /** Display description for this diagram group. */
@@ -27,10 +29,17 @@ public abstract class DiagramGroupInfo {
      * the height in pixels. Smaller resolutions will have less space, though.
      */
     public abstract int diagramsPerPage();
-    // TODO allow specifying this based on # rows (and maybe # of columns) to support scrollbar?
 
     /** If {@code true}, then NBT data will be removed when looking up a component. */
     public abstract boolean ignoreNbt();
+
+    /**
+     * An optional predicate that will be used to filter out empty diagrams, if the config setting
+     * is enabled.
+     *
+     * <p>Diagrams that this predicate returns {@code true} for will be filtered out.
+     */
+    public abstract Predicate<Diagram> emptyDiagramPredicate();
 
     /**
      * Determines when the diagram group is shown.
@@ -39,6 +48,14 @@ public abstract class DiagramGroupInfo {
      * not be generated at all, saving CPU and RAM usage.
      */
     public abstract DiagramGroupVisibility defaultVisibility();
+
+    /**
+     * A description of what this diagram group does; will be added to the visibility config
+     * comment.
+     *
+     * <p>Include {@code '\n'} to add line breaks. Set to empty string to disable.
+     */
+    public abstract String description();
 
     public void buildHandlerInfo(HandlerInfo.Builder builder) {
         builder.setDisplayStack(icon().stack())
@@ -54,7 +71,9 @@ public abstract class DiagramGroupInfo {
                     .setIcon(icon)
                     .setDiagramsPerPage(diagramsPerPage)
                     .setIgnoreNbt(true)
-                    .setDefaultVisibility(DiagramGroupVisibility.ALWAYS_SHOWN);
+                    .setEmptyDiagramPredicate(diagram -> false)
+                    .setDefaultVisibility(DiagramGroupVisibility.ALWAYS_SHOWN)
+                    .setDescription("");
     }
 
     public abstract Builder toBuilder();
@@ -66,7 +85,9 @@ public abstract class DiagramGroupInfo {
         public abstract Builder setIcon(ItemComponent icon);
         public abstract Builder setDiagramsPerPage(int diagramsPerPage);
         public abstract Builder setIgnoreNbt(boolean ignoreNbt);
+        public abstract Builder setEmptyDiagramPredicate(Predicate<Diagram> emptyDiagramPredicate);
         public abstract Builder setDefaultVisibility(DiagramGroupVisibility visibility);
+        public abstract Builder setDescription(String description);
 
         public abstract DiagramGroupInfo build();
     }

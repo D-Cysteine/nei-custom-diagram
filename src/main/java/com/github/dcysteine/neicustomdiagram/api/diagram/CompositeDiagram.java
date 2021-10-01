@@ -2,6 +2,7 @@ package com.github.dcysteine.neicustomdiagram.api.diagram;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
+import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 
@@ -26,7 +27,7 @@ public abstract class CompositeDiagram extends Diagram {
 
     /** The passed-in diagram will always be shown. */
     public CompositeDiagram(Diagram diagram) {
-        super(diagram.layout, diagram.interactables);
+        super(diagram.layout, diagram.slotInsertions, diagram.interactables);
     }
 
     @Override
@@ -38,6 +39,13 @@ public abstract class CompositeDiagram extends Diagram {
                 .forEach(diagram -> iterables.add(diagram.interactables(diagramState)));
 
         return Iterables.concat(iterables);
+    }
+
+    @Override
+    public Dimension dimension(DiagramState diagramState) {
+        return activeDiagrams(diagramState).stream()
+                .map(diagram -> diagram.dimension(diagramState))
+                .reduce(super.dimension(diagramState), Dimension::max);
     }
 
     @Override

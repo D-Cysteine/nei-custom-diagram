@@ -1,19 +1,16 @@
-package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialtools;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech5.materialtools;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
-import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInteractable;
-import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
-import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
+import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFormatting;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechDiagramUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
-import net.minecraft.init.Items;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,10 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 class DiagramFactory {
-    private static final ComponentLabel MATERIAL_INFO_ICON =
-            ComponentLabel.create(
-                    ItemComponent.create(Items.book, 0), LayoutHandler.MATERIAL_INFO_POSITION);
-
     private enum MaterialPart {
         TOOL_HEADS(LayoutHandler.SlotGroupKeys.TOOL_PARTS,
                 OrePrefixes.toolHeadSword, OrePrefixes.toolHeadPickaxe, OrePrefixes.toolHeadShovel,
@@ -40,19 +33,20 @@ class DiagramFactory {
         ARROWS(LayoutHandler.SlotGroupKeys.ARROWS,
                 OrePrefixes.arrowGtWood, OrePrefixes.arrowGtPlastic);
 
-        private final String slotKey;
+        private final Layout.Key slotKey;
         private final ImmutableList<OrePrefixes> prefixes;
 
-        MaterialPart(String slotKey, OrePrefixes... prefixes) {
+        MaterialPart(Layout.Key slotKey, OrePrefixes... prefixes) {
             this.slotKey = slotKey;
             this.prefixes = ImmutableList.copyOf(prefixes);
         }
 
         private void insertIntoSlot(Diagram.Builder builder, Materials material) {
             if (prefixes.size() == 1) {
-                builder.insertIntoSlot(slotKey, getPrefixComponents(prefixes, material));
+                builder.insertIntoSlot(
+                        (Layout.SlotKey) slotKey, getPrefixComponents(prefixes, material));
             } else {
-                builder.autoInsertIntoSlotGroup(slotKey)
+                builder.autoInsertIntoSlotGroup((Layout.SlotGroupKey) slotKey)
                         .insertEachSafe(getPrefixComponents(prefixes, material));
             }
         }
@@ -70,7 +64,9 @@ class DiagramFactory {
         Diagram.Builder diagramBuilder = Diagram.builder()
                 .addAllLayouts(layoutHandler.requiredLayouts())
                 .addAllOptionalLayouts(layoutHandler.optionalLayouts())
-                .addInteractable(buildMaterialInfoButton(material));
+                .addInteractable(
+                GregTechDiagramUtil.buildMaterialInfoButton(
+                        LayoutHandler.MATERIAL_INFO_POSITION, material));
 
         GregTechOreDictUtil.getComponent(OrePrefixes.stick, material.mHandleMaterial).ifPresent(
                 handle -> diagramBuilder
@@ -79,7 +75,7 @@ class DiagramFactory {
                                 DisplayComponent.builder(handle)
                                         .setAdditionalTooltip(
                                                 Tooltip.create(
-                                                        Lang.GREGTECH_MATERIAL_TOOLS.trans(
+                                                        Lang.GREGTECH_5_MATERIAL_TOOLS.trans(
                                                                 "handlelabel"),
                                                         Tooltip.INFO_FORMATTING))
                                         .build()));
@@ -112,23 +108,11 @@ class DiagramFactory {
                     DisplayComponent.builder(componentOptional.get())
                             .setAdditionalTooltip(
                                     Tooltip.create(
-                                            Lang.GREGTECH_MATERIAL_TOOLS.transf(
+                                            Lang.GREGTECH_5_MATERIAL_TOOLS.transf(
                                                     "prefixlabel", prefix.mRegularLocalName),
                                             Tooltip.INFO_FORMATTING))
                             .build());
         }
         return list;
-    }
-
-    private static Interactable buildMaterialInfoButton(Materials material) {
-        Tooltip.Builder tooltipBuilder =
-                Tooltip.builder()
-                        .addTextLine(GregTechFormatting.getMaterialDescription(material))
-                        .setFormatting(Tooltip.INFO_FORMATTING)
-                        .addTextLine(material.mChemicalFormula);
-
-        return CustomInteractable.builder(MATERIAL_INFO_ICON)
-                .setTooltip(tooltipBuilder.build())
-                .build();
     }
 }

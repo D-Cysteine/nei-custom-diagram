@@ -3,6 +3,7 @@ package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 import codechicken.lib.gui.GuiDraw;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.draw.BoundedDrawable;
+import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.google.auto.value.AutoValue;
@@ -38,17 +39,16 @@ public abstract class Text implements BoundedDrawable {
     public abstract boolean shadow();
 
     @Override
-    public int width() {
+    public Dimension dimension() {
         int width = GuiDraw.getStringWidth(text());
+        int height = Draw.TEXT_HEIGHT;
+
         if (small()) {
             width /= 2;
+            height /= 2;
         }
-        return width;
-    }
 
-    @Override
-    public int height() {
-        return small() ? Draw.TEXT_HEIGHT / 2 : Draw.TEXT_HEIGHT;
+        return Dimension.create(width, height);
     }
 
     @Override

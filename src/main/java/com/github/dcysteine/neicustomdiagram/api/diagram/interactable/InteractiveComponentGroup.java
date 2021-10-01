@@ -1,13 +1,16 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.interactable;
 
+import codechicken.nei.NEIClientUtils;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Slot;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
+import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
@@ -59,20 +62,42 @@ public class InteractiveComponentGroup implements Interactable {
         return components.get(currentIndex(diagramState));
     }
 
-    /**
-     * Returns a tooltip containing the current index and total number of components in this group.
-     */
-    public Tooltip indexTooltip(DiagramState diagramState) {
+    /** Returns a tooltip containing information about the group's component cycle. */
+    public Tooltip cycleTooltip(DiagramState diagramState) {
         if (components.size() <= 1) {
             return Tooltip.EMPTY_TOOLTIP;
         }
 
-        return Tooltip.builder()
-                .setFormatting(Tooltip.INFO_FORMATTING.toBuilder().setSmall(true).build())
-                .addTextLine(
-                        Lang.API.transf("componentindex",
-                                currentIndex(diagramState) + 1, components.size()))
-                .build();
+        int maxComponents = ConfigOptions.TOOLTIP_MAX_CYCLE_COUNT.get();
+        if (!NEIClientUtils.shiftKey() || maxComponents <= 0) {
+            String transKey = maxComponents > 0 ? "cycleindexwithshift" : "cycleindex";
+            return Tooltip.builder()
+                    .setFormatting(Tooltip.INFO_FORMATTING)
+                    .addTextLine(
+                            Lang.API.transf(transKey,
+                                    currentIndex(diagramState) + 1, components.size()))
+                    .build();
+        }
+
+        int numComponents = Math.min(components.size(), maxComponents);
+        List<DisplayComponent> tooltipComponents = components.subList(0, numComponents);
+        Tooltip.Builder builder =
+                Tooltip.builder()
+                        .setFormatting(Tooltip.INFO_FORMATTING)
+                        .addTextLine(
+                                Lang.API.transf("cycleindex",
+                                        currentIndex(diagramState) + 1, components.size()))
+                        .addSpacing()
+                        .addTextLine(Lang.API.trans("cyclecomponents"))
+                        .addAllDisplayComponents(tooltipComponents);
+
+        if (numComponents < components.size()) {
+            builder.addTextLine(
+                    Lang.API.transf("excesscyclecomponents",
+                            components.size() - numComponents));
+        }
+
+        return builder.build();
     }
 
     @Override
@@ -81,13 +106,8 @@ public class InteractiveComponentGroup implements Interactable {
     }
 
     @Override
-    public int width() {
-        return Draw.ICON_WIDTH;
-    }
-
-    @Override
-    public int height() {
-        return Draw.ICON_WIDTH;
+    public Dimension dimension() {
+        return Dimension.create(Draw.ICON_WIDTH);
     }
 
     @Override
@@ -127,8 +147,8 @@ public class InteractiveComponentGroup implements Interactable {
         }
 
         Tooltip.concat(
-                        component.descriptionTooltip(), indexTooltip(diagramState),
-                        slotTooltip, component.additionalTooltip(), itemStackTooltip)
+                        component.descriptionTooltip(), slotTooltip, component.additionalTooltip(),
+                        itemStackTooltip, cycleTooltip(diagramState))
                 .draw(mousePos);
     }
 }

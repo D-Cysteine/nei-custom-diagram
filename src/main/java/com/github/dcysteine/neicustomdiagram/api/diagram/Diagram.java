@@ -6,28 +6,66 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactiv
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Slot;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
+import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
+import com.github.dcysteine.neicustomdiagram.api.draw.Drawable;
+import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Multiset;
 
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 public class Diagram {
     protected final Layout layout;
+
+    /**
+     * Multiset of slot and slot group keys, tracking insertions into slots.
+     *
+     * <p>This data can be used by diagram generators to filter out empty diagrams.
+     *
+     * <p>{@link Diagram.Builder} will populate this, but other methods of constructing
+     * {@code Diagram} might not, causing this to be empty.
+     */
+    protected final ImmutableMultiset<Layout.Key> slotInsertions;
+
     protected final ImmutableList<? extends Interactable> interactables;
 
-    public Diagram(Layout layout, ImmutableList<? extends Interactable> interactables) {
+    public Diagram(
+            Layout layout, Multiset<Layout.Key> slotInsertions,
+            ImmutableList<? extends Interactable> interactables) {
         this.layout = layout;
+        this.slotInsertions = ImmutableMultiset.copyOf(slotInsertions);
         this.interactables = interactables;
+    }
+
+    public Diagram(Layout layout, ImmutableList<? extends Interactable> interactables) {
+        this(layout, ImmutableMultiset.of(), interactables);
+    }
+
+    /**
+     * Returns a multiset of slot and slot group keys, which tracks insertions into slots.
+     *
+     * <p>This data can be used by diagram generators to filter out empty diagrams.
+     *
+     * <p>{@link Diagram.Builder} will populate this, but other methods of constructing
+     * {@code Diagram} might not, causing this to be empty.
+     */
+    public ImmutableMultiset<Layout.Key> slotInsertions() {
+        return slotInsertions;
     }
 
     public Iterable<Interactable> interactables(DiagramState diagramState) {
         // Slots go at the end so that they get last priority.
         return Iterables.concat(interactables, layout.allSlots());
+    }
+
+    public Dimension dimension(DiagramState diagramState) {
+        return Dimension.max(layout.maxDimension(), Drawable.computeMaxDimension(interactables));
     }
 
     public void drawBackground(DiagramState diagramState) {
@@ -46,13 +84,17 @@ public class Diagram {
         /** Map of layout to whether it will be shown. */
         private final Map<Layout, Boolean> layouts;
 
+        /* Multiset of slot and slot group keys, tracking insertions into slots. */
+        private final Multiset<Layout.Key> slotInsertions;
+
         /** Map of slot group key to slot group auto sub-builder. */
-        private final Map<String, SlotGroupAutoSubBuilder> slotGroupAutoSubBuilders;
+        private final Map<Layout.SlotGroupKey, SlotGroupAutoSubBuilder> slotGroupAutoSubBuilders;
 
         private final ImmutableList.Builder<Interactable> interactablesBuilder;
 
         private Builder() {
             this.layouts = new HashMap<>();
+            this.slotInsertions = HashMultiset.create();
             this.slotGroupAutoSubBuilders = new HashMap<>();
             this.interactablesBuilder = ImmutableList.builder();
         }
@@ -66,7 +108,7 @@ public class Diagram {
          * @throws IllegalArgumentException if no slot with the specified key could be found in any
          *     layout in this builder.
          */
-        private Layout findLayoutContainingSlot(String key) {
+        private Layout findLayoutContainingSlot(Layout.SlotKey key) {
             for (Layout layout : layouts.keySet()) {
                 Optional<Slot> slot = layout.slot(key);
                 if (slot.isPresent()) {
@@ -86,7 +128,7 @@ public class Diagram {
          * @throws IllegalArgumentException if no slot group with the specified key could be found
          *     in any layout in this builder.
          */
-        private Layout findLayoutContainingSlotGroup(String key) {
+        private Layout findLayoutContainingSlotGroup(Layout.SlotGroupKey key) {
             for (Layout layout : layouts.keySet()) {
                 Optional<SlotGroup> slotGroup = layout.slotGroup(key);
                 if (slotGroup.isPresent()) {
@@ -147,7 +189,7 @@ public class Diagram {
          * @throws IllegalArgumentException if no slot with the specified key could be found in any
          *     layout in this builder.
          */
-        public Builder insertIntoSlot(String key, DisplayComponent... components) {
+        public Builder insertIntoSlot(Layout.SlotKey key, DisplayComponent... components) {
             if (components.length == 0) {
                 return this;
             }
@@ -156,6 +198,7 @@ public class Diagram {
             interactablesBuilder.add(
                     new InteractiveComponentGroup(layout.slot(key).get(), components));
             layouts.put(layout, true);
+            slotInsertions.add(key);
             return this;
         }
 
@@ -165,7 +208,7 @@ public class Diagram {
          * @throws IllegalArgumentException if no slot with the specified key could be found in any
          *     layout in this builder.
          */
-        public Builder insertIntoSlot(String key, Iterable<DisplayComponent> components) {
+        public Builder insertIntoSlot(Layout.SlotKey key, Iterable<DisplayComponent> components) {
             if (Iterables.isEmpty(components)) {
                 return this;
             }
@@ -174,6 +217,7 @@ public class Diagram {
             interactablesBuilder.add(
                     new InteractiveComponentGroup(layout.slot(key).get(), components));
             layouts.put(layout, true);
+            slotInsertions.add(key);
             return this;
         }
 
@@ -184,14 +228,14 @@ public class Diagram {
          * @throws IllegalArgumentException if no slot group with the specified key could be found
          *     in any layout in this builder.
          */
-        public SlotGroupAutoSubBuilder autoInsertIntoSlotGroup(String key) {
+        public SlotGroupAutoSubBuilder autoInsertIntoSlotGroup(Layout.SlotGroupKey key) {
             if (slotGroupAutoSubBuilders.containsKey(key)) {
                 return slotGroupAutoSubBuilders.get(key);
             }
 
             Layout layout = findLayoutContainingSlotGroup(key);
             SlotGroupAutoSubBuilder builder =
-                    new SlotGroupAutoSubBuilder(layout, layout.slotGroup(key).get());
+                    new SlotGroupAutoSubBuilder(layout, key, layout.slotGroup(key).get());
             slotGroupAutoSubBuilders.put(key, builder);
             return builder;
         }
@@ -206,9 +250,9 @@ public class Diagram {
          * @throws IllegalArgumentException if no slot group with the specified key could be found
          *     in any layout in this builder.
          */
-        public SlotGroupManualSubBuilder manualInsertIntoSlotGroup(String key) {
+        public SlotGroupManualSubBuilder manualInsertIntoSlotGroup(Layout.SlotGroupKey key) {
             Layout layout = findLayoutContainingSlotGroup(key);
-            return new SlotGroupManualSubBuilder(layout, layout.slotGroup(key).get());
+            return new SlotGroupManualSubBuilder(layout, key, layout.slotGroup(key).get());
         }
 
         public Builder addInteractable(Interactable interactable) {
@@ -217,11 +261,6 @@ public class Diagram {
         }
 
         public Diagram build() {
-            // TODO store a count of # of optional layouts that are slotted, so that we can filter
-            //  out empty diagrams.
-            //  Maybe add a config to filter these out? Requires a restart.
-            //  Will probably require adding a field to DiagramGroupInfo to control min # per group.
-            //  Or just have each DiagramGenerator filter it out. In that case maybe return slot key
             Layout.Builder layoutBuilder = Layout.builder();
             layouts.entrySet().stream()
                     .filter(Map.Entry::getValue)
@@ -231,16 +270,19 @@ public class Diagram {
             Layout layout = layoutBuilder.build();
             interactablesBuilder.addAll(layout.interactables());
 
-            return new Diagram(layout, interactablesBuilder.build());
+            return new Diagram(layout, slotInsertions, interactablesBuilder.build());
         }
 
         /** Sub-builder that helps with inserting into the next available slot in a slot group. */
         public final class SlotGroupAutoSubBuilder {
             private final Layout layout;
+            private final Layout.SlotGroupKey slotGroupKey;
             private final Iterator<Slot> slotIterator;
 
-            private SlotGroupAutoSubBuilder(Layout layout, SlotGroup slotGroup) {
+            private SlotGroupAutoSubBuilder(
+                    Layout layout, Layout.SlotGroupKey slotGroupKey, SlotGroup slotGroup) {
                 this.layout = layout;
+                this.slotGroupKey = slotGroupKey;
                 this.slotIterator = slotGroup.slots().iterator();
             }
 
@@ -330,7 +372,7 @@ public class Diagram {
                 Iterator<T> iterator =
                         StreamSupport.stream(components.spliterator(), false)
                                 .filter(iter -> !Iterables.isEmpty(iter))
-                                .collect(Collectors.toList()).iterator();
+                                .iterator();
 
                 while (slotIterator.hasNext() && iterator.hasNext()) {
                     Slot slot = slotIterator.next();
@@ -349,21 +391,26 @@ public class Diagram {
             private void insertIntoSlot(Slot slot, DisplayComponent... components) {
                 interactablesBuilder.add(new InteractiveComponentGroup(slot, components));
                 layouts.put(layout, true);
+                slotInsertions.add(slotGroupKey);
             }
 
             private void insertIntoSlot(Slot slot, Iterable<DisplayComponent> components) {
                 interactablesBuilder.add(new InteractiveComponentGroup(slot, components));
                 layouts.put(layout, true);
+                slotInsertions.add(slotGroupKey);
             }
         }
 
         /** Sub-builder that helps with inserting into specific slots in a slot group. */
         public final class SlotGroupManualSubBuilder {
             private final Layout layout;
+            private final Layout.SlotGroupKey slotGroupKey;
             private final SlotGroup slotGroup;
 
-            private SlotGroupManualSubBuilder(Layout layout, SlotGroup slotGroup) {
+            private SlotGroupManualSubBuilder(
+                    Layout layout, Layout.SlotGroupKey slotGroupKey, SlotGroup slotGroup) {
                 this.layout = layout;
+                this.slotGroupKey = slotGroupKey;
                 this.slotGroup = slotGroup;
             }
 
@@ -376,6 +423,7 @@ public class Diagram {
                 interactablesBuilder.add(
                         new InteractiveComponentGroup(slotGroup.slot(x, y), components));
                 layouts.put(layout, true);
+                slotInsertions.add(slotGroupKey);
                 return this;
             }
 
@@ -388,6 +436,7 @@ public class Diagram {
                 interactablesBuilder.add(
                         new InteractiveComponentGroup(slotGroup.slot(x, y), components));
                 layouts.put(layout, true);
+                slotInsertions.add(slotGroupKey);
                 return this;
             }
         }

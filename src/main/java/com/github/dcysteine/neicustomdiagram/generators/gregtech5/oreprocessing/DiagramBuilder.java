@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprocessing;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
@@ -6,14 +6,15 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayCompon
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInteractable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
+import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.github.dcysteine.neicustomdiagram.util.FluidDictUtil;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtil;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFluidDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MultimapBuilder;
@@ -83,23 +84,17 @@ class DiagramBuilder {
                         RecipeHandler.RecipeMap.MACERATOR, rawOre,
                         LayoutHandler.SlotGroupKeys.RAW_ORE_MACERATE);
 
-        Optional<ItemComponent> purifiedOreOptional =
-                crushedOreOptional.flatMap(
-                        crushedOre -> handleRecipes(
-                                RecipeHandler.RecipeMap.ORE_WASHER, crushedOre,
-                                LayoutHandler.SlotGroupKeys.CRUSHED_ORE_WASH));
-
         Optional<ItemComponent> impureDustOptional =
                 crushedOreOptional.flatMap(
                         crushedOre -> handleRecipes(
                                 RecipeHandler.RecipeMap.MACERATOR, crushedOre,
                                 LayoutHandler.SlotGroupKeys.CRUSHED_ORE_MACERATE));
 
-        Optional<ItemComponent> crushedOreThermalCentrifugeOptional =
+        Optional<ItemComponent> purifiedOreOptional =
                 crushedOreOptional.flatMap(
                         crushedOre -> handleRecipes(
-                                RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, crushedOre,
-                                LayoutHandler.SlotGroupKeys.CRUSHED_ORE_THERMAL_CENTRIFUGE));
+                                RecipeHandler.RecipeMap.ORE_WASHER, crushedOre,
+                                LayoutHandler.SlotGroupKeys.CRUSHED_ORE_WASH));
 
         Optional<ItemComponent> purifiedDustOptional =
                 purifiedOreOptional.flatMap(
@@ -107,11 +102,71 @@ class DiagramBuilder {
                                 RecipeHandler.RecipeMap.MACERATOR, purifiedOre,
                                 LayoutHandler.SlotGroupKeys.PURIFIED_ORE_MACERATE));
 
-        Optional<ItemComponent> purifiedOreThermalCentrifugeOptional =
-                purifiedOreOptional.flatMap(
-                        purifiedOre -> handleRecipes(
-                                RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, purifiedOre,
-                                LayoutHandler.SlotGroupKeys.PURIFIED_ORE_THERMAL_CENTRIFUGE));
+        // Both crushed ore and purified ore are inputs to the thermal centrifuge, and so we need to
+        // check that they produce the same output items.
+        Optional<ItemComponent> centrifugedOreOptional;
+        if (crushedOreOptional.isPresent() && purifiedOreOptional.isPresent()) {
+            ItemComponent crushedOre = crushedOreOptional.get();
+            ItemComponent purifiedOre = purifiedOreOptional.get();
+
+            Optional<ImmutableList<DisplayComponent>> crushedOreOutputs =
+                    recipeHandler.getUniqueRecipeOutput(
+                            RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, crushedOre);
+            Optional<ImmutableList<DisplayComponent>> purifiedOreOutputs =
+                    recipeHandler.getUniqueRecipeOutput(
+                            RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, purifiedOre);
+
+            // Need to filter out stone dust from crushedOreOutputs, as it won't be present in
+            // purifiedOreOutputs.
+            Optional<List<DisplayComponent>> filteredCrushedOreOutputs =
+                    crushedOreOutputs.map(Lists::newArrayList);
+            filteredCrushedOreOutputs.ifPresent(
+                    outputs -> ComponentTransformer.removeComponent(outputs, STONE_DUST));
+
+            if (filteredCrushedOreOutputs.equals(purifiedOreOutputs)) {
+                if (purifiedOreOutputs.isPresent()) {
+                    centrifugedOreOptional =
+                            handleRecipes(
+                                    RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, purifiedOre,
+                                    LayoutHandler.SlotGroupKeys.ORE_THERMAL_CENTRIFUGE);
+
+                    // Manually add the crushed ore to usage components, since we called
+                    // handleOutputs with the purified ore.
+                    usageComponents.addAll(
+                            GregTechOreDictUtil.getAssociatedComponents(crushedOre));
+                } else {
+                    centrifugedOreOptional = Optional.empty();
+                }
+            } else {
+                Logger.GREGTECH_5_ORE_PROCESSING.warn(
+                        "Crushed ore and purified ore have different thermal centrifuge outputs:"
+                                + "\n[{}]\n ->\n[{}]\n\n[{}]\n ->\n[{}]",
+                        crushedOre, crushedOreOutputs, purifiedOre, purifiedOreOutputs);
+                centrifugedOreOptional = Optional.empty();
+            }
+        } else {
+            centrifugedOreOptional =
+                    crushedOreOptional.flatMap(
+                            crushedOre -> {
+                                Logger.GREGTECH_5_ORE_PROCESSING.warn(
+                                        "Crushed ore had thermal centrifuge recipe,"
+                                                + " but no ore washer recipe: [{}]",
+                                        crushedOre);
+                                return handleRecipes(
+                                        RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, crushedOre,
+                                        LayoutHandler.SlotGroupKeys.ORE_THERMAL_CENTRIFUGE);
+                            });
+        }
+
+        crushedOreOptional.ifPresent(
+                crushedOre -> {
+                    handleChemicalBathFluid(
+                            RecipeHandler.ChemicalBathFluid.MERCURY, crushedOre,
+                            LayoutHandler.SlotGroupKeys.CRUSHED_ORE_BATH_MERCURY);
+                    handleChemicalBathFluid(
+                            RecipeHandler.ChemicalBathFluid.SODIUM_PERSULFATE, crushedOre,
+                            LayoutHandler.SlotGroupKeys.CRUSHED_ORE_BATH_SODIUM_PERSULFATE);
+                });
 
         purifiedOreOptional.ifPresent(
                 purifiedOre -> handleRecipes(
@@ -124,24 +179,19 @@ class DiagramBuilder {
                         LayoutHandler.SlotGroupKeys.IMPURE_DUST_CENTRIFUGE));
 
         purifiedDustOptional.ifPresent(
-                purifiedDust -> handleRecipes(
-                        RecipeHandler.RecipeMap.CENTRIFUGE, purifiedDust,
-                        LayoutHandler.SlotGroupKeys.PURIFIED_DUST_CENTRIFUGE));
+                purifiedDust -> {
+                    handleRecipes(
+                            RecipeHandler.RecipeMap.CENTRIFUGE, purifiedDust,
+                            LayoutHandler.SlotGroupKeys.PURIFIED_DUST_CENTRIFUGE);
+                    handleRecipes(
+                            RecipeHandler.RecipeMap.ELECTROMAGNETIC_SEPARATOR, purifiedDust,
+                            LayoutHandler.SlotGroupKeys.PURIFIED_DUST_ELECTROMAGNETIC_SEPARATE);
+                });
 
-        purifiedDustOptional.ifPresent(
-                purifiedDust -> handleRecipes(
-                        RecipeHandler.RecipeMap.ELECTROMAGNETIC_SEPARATOR, purifiedDust,
-                        LayoutHandler.SlotGroupKeys.PURIFIED_DUST_ELECTROMAGNETIC_SEPARATE));
-
-        crushedOreThermalCentrifugeOptional.ifPresent(
+        centrifugedOreOptional.ifPresent(
                 centrifugedOre -> handleRecipes(
                         RecipeHandler.RecipeMap.MACERATOR, centrifugedOre,
-                        LayoutHandler.SlotGroupKeys.CRUSHED_ORE_THERMAL_CENTRIFUGE_MACERATE));
-
-        purifiedOreThermalCentrifugeOptional.ifPresent(
-                centrifugedOre -> handleRecipes(
-                        RecipeHandler.RecipeMap.MACERATOR, centrifugedOre,
-                        LayoutHandler.SlotGroupKeys.PURIFIED_ORE_THERMAL_CENTRIFUGE_MACERATE));
+                        LayoutHandler.SlotGroupKeys.ORE_THERMAL_CENTRIFUGE_MACERATE));
 
         HashSet<Component> additionalRecipeOutputs = new HashSet<>();
         additionalRecipeOutputs.addAll(
@@ -149,8 +199,7 @@ class DiagramBuilder {
                         LabelHandler.ItemLabel.FURNACE,
                         LayoutHandler.AdditionalRecipeLabelPositions.FURNACE,
                         Optional.of(rawOre), crushedOreOptional, purifiedOreOptional,
-                        crushedOreThermalCentrifugeOptional, purifiedOreThermalCentrifugeOptional,
-                        impureDustOptional, purifiedDustOptional));
+                        centrifugedOreOptional, impureDustOptional, purifiedDustOptional));
 
         additionalRecipeOutputs.addAll(
                 addAdditionalRecipesInteractable(
@@ -158,13 +207,6 @@ class DiagramBuilder {
                         LayoutHandler.AdditionalRecipeLabelPositions.ELECTRIC_BLAST_FURNACE,
                         RecipeHandler.RecipeMap.BLAST_FURNACE,
                         Optional.of(rawOre)));
-
-        additionalRecipeOutputs.addAll(
-                addAdditionalRecipesInteractable(
-                        LabelHandler.ItemLabel.CHEMICAL_BATH,
-                        LayoutHandler.AdditionalRecipeLabelPositions.CHEMICAL_BATH,
-                        RecipeHandler.RecipeMap.CHEMICAL_BATH,
-                        crushedOreOptional));
 
         additionalRecipeOutputs.addAll(
                 addAdditionalRecipesInteractable(
@@ -215,7 +257,7 @@ class DiagramBuilder {
      * its first output.
      */
     private Optional<ItemComponent> handleRecipes(
-            RecipeHandler.RecipeMap recipeMap, ItemComponent input, String key) {
+            RecipeHandler.RecipeMap recipeMap, ItemComponent input, Layout.SlotGroupKey key) {
         Optional<ImmutableList<DisplayComponent>> outputsOptional =
                 recipeHandler.getUniqueRecipeOutput(recipeMap, input);
         if (!outputsOptional.isPresent()) {
@@ -225,7 +267,7 @@ class DiagramBuilder {
         List<DisplayComponent> outputs = new ArrayList<>(outputsOptional.get());
         ComponentTransformer.removeComponent(outputs, STONE_DUST);
         if (outputs.size() == 0) {
-            Logger.GREGTECH_ORE_PROCESSING.warn(
+            Logger.GREGTECH_5_ORE_PROCESSING.warn(
                     "Found no recipe outputs: [{}] [{}]", key, input);
 
             return Optional.empty();
@@ -238,9 +280,54 @@ class DiagramBuilder {
                     GregTechOreDictUtil.getAssociatedComponents(output.component()));
         }
 
+        return getFirstOutput(outputs, input, key);
+    }
+
+    /**
+     * Checks if there is exactly one recipe. If so, inserts its outputs into the slot and returns
+     * its first output.
+     */
+    private void handleChemicalBathFluid(
+            RecipeHandler.ChemicalBathFluid chemicalBathFluid, ItemComponent input,
+            Layout.SlotGroupKey key) {
+        Optional<ImmutableList<DisplayComponent>> outputsOptional =
+                recipeHandler.getUniqueChemicalBathOutput(chemicalBathFluid, input);
+        if (!outputsOptional.isPresent()) {
+            return;
+        }
+
+        DisplayComponent fluid = chemicalBathFluid.fluid;
+        Optional<DisplayComponent> fluidDisplayItem =
+                GregTechFluidDictUtil.getDisplayItem(fluid.component())
+                        .map(
+                                itemComponent ->
+                                        fluid.toBuilder().setComponent(itemComponent).build());
+
+        List<DisplayComponent> outputs = new ArrayList<>(outputsOptional.get());
+        ComponentTransformer.removeComponent(outputs, STONE_DUST);
+        if (outputs.size() == 0) {
+            Logger.GREGTECH_5_ORE_PROCESSING.warn(
+                    "Found no recipe outputs: [{}] [{}]", key, input);
+
+            return;
+        }
+        diagramBuilder.autoInsertIntoSlotGroup(key)
+                .insertIntoNextSlot(fluidDisplayItem.orElse(fluid))
+                .insertEachSafe(outputs);
+
+        usageComponents.addAll(GregTechOreDictUtil.getAssociatedComponents(input));
+        usageComponents.addAll(GregTechFluidDictUtil.getAssociatedComponents(fluid.component()));
+        for (DisplayComponent output : outputs) {
+            craftingComponents.addAll(
+                    GregTechOreDictUtil.getAssociatedComponents(output.component()));
+        }
+    }
+
+    private Optional<ItemComponent> getFirstOutput(
+            List<DisplayComponent> outputs, ItemComponent input, Layout.SlotGroupKey key) {
         Component firstOutput = outputs.get(0).component();
         if (firstOutput.type() == Component.ComponentType.FLUID) {
-            Logger.GREGTECH_ORE_PROCESSING.warn(
+            Logger.GREGTECH_5_ORE_PROCESSING.warn(
                     "Found unexpected fluid output: [{}] [{}] [{}]", key, input, outputs);
             return Optional.empty();
         }

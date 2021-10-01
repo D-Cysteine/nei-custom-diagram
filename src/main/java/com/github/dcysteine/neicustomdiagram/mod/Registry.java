@@ -9,16 +9,18 @@ import com.github.dcysteine.neicustomdiagram.generators.enderstorage.chestovervi
 import com.github.dcysteine.neicustomdiagram.generators.enderstorage.tankoverview.EnderStorageTankOverview;
 import com.github.dcysteine.neicustomdiagram.generators.forge.fluidcontainers.ForgeFluidContainers;
 import com.github.dcysteine.neicustomdiagram.generators.forge.oredictionary.ForgeOreDictionary;
-import com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts.GregTechMaterialParts;
-import com.github.dcysteine.neicustomdiagram.generators.gregtech.materialtools.GregTechMaterialTools;
-import com.github.dcysteine.neicustomdiagram.generators.gregtech.oredictionary.GregTechOreDictionary;
-import com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing.GregTechOreProcessing;
+import com.github.dcysteine.neicustomdiagram.generators.gregtech5.materialparts.GregTechMaterialParts;
+import com.github.dcysteine.neicustomdiagram.generators.gregtech5.materialtools.GregTechMaterialTools;
+import com.github.dcysteine.neicustomdiagram.generators.gregtech5.oredictionary.GregTechOreDictionary;
+import com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprefixes.GregTechOrePrefixes;
+import com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprocessing.GregTechOreProcessing;
 import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModContainer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,28 +40,73 @@ public final class Registry {
         // Add your diagram generator here!
         addGenerator("debug.ruler", DebugRuler::new);
         addGenerator(
-                "enderstorage.chestoverview", EnderStorageChestOverview::new, ModIds.ENDER_STORAGE);
+                "enderstorage.chestoverview", EnderStorageChestOverview::new,
+                ModDependency.ENDER_STORAGE);
         addGenerator(
-                "enderstorage.tankoverview", EnderStorageTankOverview::new, ModIds.ENDER_STORAGE);
+                "enderstorage.tankoverview", EnderStorageTankOverview::new,
+                ModDependency.ENDER_STORAGE);
         addGenerator("forge.fluidcontainers", ForgeFluidContainers::new);
         addGenerator("forge.oredictionary", ForgeOreDictionary::new);
-        addGenerator("gregtech.materialparts", GregTechMaterialParts::new, ModIds.GREGTECH);
-        addGenerator("gregtech.materialtools", GregTechMaterialTools::new, ModIds.GREGTECH);
-        addGenerator("gregtech.oredictionary", GregTechOreDictionary::new, ModIds.GREGTECH);
-        addGenerator("gregtech.oreprocessing", GregTechOreProcessing::new, ModIds.GREGTECH);
+        addGenerator(
+                "gregtech.materialparts", GregTechMaterialParts::new, ModDependency.GREGTECH_5);
+        addGenerator(
+                "gregtech.materialtools", GregTechMaterialTools::new, ModDependency.GREGTECH_5);
+        addGenerator(
+                "gregtech.oredictionary", GregTechOreDictionary::new, ModDependency.GREGTECH_5);
+        addGenerator("gregtech.oreprefixes", GregTechOrePrefixes::new, ModDependency.GREGTECH_5);
+        addGenerator(
+                "gregtech.oreprocessing", GregTechOreProcessing::new, ModDependency.GREGTECH_5);
     }
 
-    /** For convenience, some mod IDs stored as constants. */
-    public static final class ModIds {
+    public enum ModDependency {
         // If you're adding a new mod dependency here, don't forget to also add it to the list of
         // dependencies in NeiCustomDiagram.java (if necessary).
-        public static final String ENDER_STORAGE = "EnderStorage";
-        public static final String GREGTECH = "gregtech";
-        public static final String BARTWORKS = "bartworks";
-        public static final String DETRAV_SCANNER = "detravscannermod";
+        ENDER_STORAGE("EnderStorage"),
 
-        public static boolean isModLoaded(String modId) {
+        // GregTech 5 shares a mod ID with GregTech 6, so we must also check the mod version.
+        GREGTECH_5("gregtech") {
+            @Override
+            public boolean isLoaded() {
+                if (super.isLoaded()) {
+                    return !getVersion().startsWith("GT6");
+                } else {
+                    return false;
+                }
+            }
+        },
+
+        // GregTech5 add-ons
+        BARTWORKS("bartworks"),
+        DETRAV_SCANNER("detravscannermod"),
+
+        // GregTech 6 shares a mod ID with GregTech 5, so we must also check the mod version.
+        GREGTECH_6("gregtech") {
+            @Override
+            public boolean isLoaded() {
+                if (super.isLoaded()) {
+                    return getVersion().startsWith("GT6");
+                } else {
+                    return false;
+                }
+            }
+        };
+
+        public final String modId;
+
+        ModDependency(String modId) {
+            this.modId = modId;
+        }
+
+        public boolean isLoaded() {
             return Loader.isModLoaded(modId);
+        }
+
+        public String getVersion() {
+            return getMod().getVersion();
+        }
+
+        public ModContainer getMod() {
+            return Loader.instance().getIndexedModList().get(modId);
         }
     }
 
@@ -67,7 +114,7 @@ public final class Registry {
     protected abstract static class RegistryEntry {
         protected static RegistryEntry create(
                 String groupIdSuffix, Function<String, DiagramGenerator> generatorConstructor,
-                String... hardDependencies) {
+                ModDependency... hardDependencies) {
             return new AutoValue_Registry_RegistryEntry(
                     GROUP_ID_PREFIX + groupIdSuffix, generatorConstructor,
                     ImmutableSet.copyOf(hardDependencies));
@@ -75,15 +122,15 @@ public final class Registry {
 
         protected abstract String groupId();
         protected abstract Function<String, DiagramGenerator> generatorConstructor();
-        protected abstract ImmutableSet<String> hardDependencies();
+        protected abstract ImmutableSet<ModDependency> hardDependencies();
 
         protected DiagramGenerator get() {
             return generatorConstructor().apply(groupId());
         }
 
-        protected List<String> missingDependencies() {
+        protected List<ModDependency> missingDependencies() {
             return hardDependencies().stream()
-                    .filter(modId -> !ModIds.isModLoaded(modId))
+                    .filter(modDependency -> !modDependency.isLoaded())
                     .collect(Collectors.toList());
         }
     }
@@ -94,7 +141,7 @@ public final class Registry {
     /** This method must be called before mod initialization. */
     public static void addGenerator(
             String groupIdSuffix, Function<String, DiagramGenerator> generatorConstructor,
-            String... hardDependencies) {
+            ModDependency... hardDependencies) {
         entries.add(RegistryEntry.create(groupIdSuffix, generatorConstructor, hardDependencies));
     }
 
@@ -104,7 +151,7 @@ public final class Registry {
 
         ImmutableList.Builder<DiagramGroupInfo> infoBuilder = ImmutableList.builder();
         for (RegistryEntry entry : entries) {
-            List<String> missingDependencies = entry.missingDependencies();
+            List<ModDependency> missingDependencies = entry.missingDependencies();
             if (!missingDependencies.isEmpty()) {
                 Logger.MOD.warn(
                         "Diagram group [{}] is missing dependencies: {}",

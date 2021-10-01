@@ -1,6 +1,7 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.tooltip;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.google.auto.value.AutoValue;
@@ -150,6 +151,15 @@ public abstract class Tooltip {
             return this;
         }
 
+        public Builder addDisplayComponent(DisplayComponent displayComponent) {
+            return addLine(
+                    TooltipLine.builder()
+                            .addFormatting(currentFormatting)
+                            .addDisplayComponentIcon(displayComponent)
+                            .addComponentDescription(displayComponent.component())
+                            .build());
+        }
+
         public Builder addComponent(Component component) {
             return addLine(
                     TooltipLine.builder()
@@ -157,6 +167,12 @@ public abstract class Tooltip {
                             .addComponentIcon(component)
                             .addComponentDescription(component)
                             .build());
+        }
+
+        public Builder addAllDisplayComponents(
+                Iterable<? extends DisplayComponent> displayComponents) {
+            displayComponents.forEach(this::addDisplayComponent);
+            return this;
         }
 
         public Builder addAllComponents(Iterable<? extends Component> components) {

@@ -159,13 +159,13 @@ public final class Draw {
 
     /**
      * Draws stack size for a component centered on the given point.
-     *
-     * @param small Whether to draw half-scale text; use this for fluid stack sizes.
      */
-    public static void drawStackSize(int stackSize, Point pos, boolean small) {
+    public static void drawStackSize(int stackSize, Point pos) {
         String text = Formatter.smartFormatInteger(stackSize);
         int textWidth = GuiDraw.getStringWidth(text);
         int textHeight = TEXT_HEIGHT;
+
+        boolean small = stackSize >= 100;
         if (small) {
             textWidth /= 2;
             textHeight /= 2;

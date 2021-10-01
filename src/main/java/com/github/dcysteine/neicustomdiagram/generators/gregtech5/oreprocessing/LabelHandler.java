@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprocessing;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInteractable;
@@ -6,7 +6,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import gregtech.api.enums.ItemList;
 
 import java.util.EnumMap;
@@ -15,15 +15,15 @@ class LabelHandler {
     enum ItemLabel {
         MACERATOR(ItemList.Machine_HV_Macerator, "maceratorlabel"),
         ORE_WASHER(ItemList.Machine_HV_OreWasher, "orewasherlabel"),
+        CHEMICAL_BATH(ItemList.Machine_HV_ChemicalBath, "chemicalbathlabel"),
         CENTRIFUGE(ItemList.Machine_HV_Centrifuge, "centrifugelabel"),
-        THERMAL_CENTRIFUGE(ItemList.Machine_HV_ThermalCentrifuge, "thermalcentrifugelabel"),
         SIFTER(ItemList.Machine_HV_Sifter, "sifterlabel"),
         ELECTROMAGNETIC_SEPARATOR(
                 ItemList.Machine_HV_ElectromagneticSeparator, "electromagneticseparatorlabel"),
+        THERMAL_CENTRIFUGE(ItemList.Machine_HV_ThermalCentrifuge, "thermalcentrifugelabel"),
 
         FURNACE(ItemList.Machine_HV_E_Furnace, "furnacelabel"),
         ELECTRIC_BLAST_FURNACE(ItemList.Machine_Multi_BlastFurnace, "ebflabel"),
-        CHEMICAL_BATH(ItemList.Machine_HV_ChemicalBath, "chemicalbathlabel"),
         CHEMICAL_REACTOR(ItemList.Machine_HV_ChemicalReactor, "chemicalreactorlabel"),
         AUTOCLAVE(ItemList.Machine_HV_Autoclave, "autoclavelabel");
 
@@ -53,7 +53,7 @@ class LabelHandler {
         ComponentLabel label = ComponentLabel.create(componentMap.get(itemLabel), pos);
         Tooltip tooltip =
                 Tooltip.create(
-                        Lang.GREGTECH_ORE_PROCESSING.trans(itemLabel.tooltipKey),
+                        Lang.GREGTECH_5_ORE_PROCESSING.trans(itemLabel.tooltipKey),
                         Tooltip.INFO_FORMATTING);
 
         return CustomInteractable.builder(label)

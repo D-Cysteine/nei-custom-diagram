@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech5.materialparts;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
@@ -9,15 +9,17 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtil;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.DiagramUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFluidDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.objects.ItemData;
 import net.minecraft.init.Items;
 
+import java.util.List;
 import java.util.Optional;
 
 /** Generates part diagrams for GregTech materials. */
@@ -38,8 +40,13 @@ public final class GregTechMaterialParts implements DiagramGenerator {
     public GregTechMaterialParts(String groupId) {
         this.info =
                 DiagramGroupInfo.builder(
-                                Lang.GREGTECH_MATERIAL_PARTS.trans("groupname"),
+                                Lang.GREGTECH_5_MATERIAL_PARTS.trans("groupname"),
                                 groupId, ICON, 1)
+                        // No point in showing the diagram for a single item. So require at least 2.
+                        .setEmptyDiagramPredicate(DiagramUtil.buildEmptyDiagramPredicate(2))
+                        .setDescription(
+                                "This diagram displays GregTech crafting items for each"
+                                        + " GregTech material.")
                         .build();
 
         this.layoutHandler = new LayoutHandler(this.info);
@@ -73,7 +80,7 @@ public final class GregTechMaterialParts implements DiagramGenerator {
     }
 
     /** Returns either a single-element list, or an empty list. */
-    private ImmutableList<Diagram> getDiagram(Interactable.RecipeType unused, Component component) {
+    private List<Diagram> getDiagram(Interactable.RecipeType unused, Component component) {
         // Try handling fluids and fluid display stacks by converting into a filled cell.
         component = GregTechFluidDictUtil.fillCell(component)
                 .map(Component.class::cast).orElse(component);
@@ -82,9 +89,9 @@ public final class GregTechMaterialParts implements DiagramGenerator {
         if (itemDataOptional.isPresent() && itemDataOptional.get().mMaterial != null) {
             Materials material = itemDataOptional.get().mMaterial.mMaterial;
             return material == null
-                    ? ImmutableList.of() : ImmutableList.of(materialsMap.get(material));
+                    ? Lists.newArrayList() : Lists.newArrayList(materialsMap.get(material));
         }
 
-        return ImmutableList.of();
+        return Lists.newArrayList();
     }
 }
