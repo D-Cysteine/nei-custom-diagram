@@ -19,6 +19,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMa
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.util.DiagramUtil;
 import com.github.dcysteine.neicustomdiagram.util.enderstorage.EnderStorageFrequency;
 import com.github.dcysteine.neicustomdiagram.util.enderstorage.EnderStorageUtil;
 import com.google.common.collect.ImmutableList;
@@ -58,8 +59,10 @@ public final class EnderStorageChestOverview implements DiagramGenerator {
                                     Tooltip.INFO_FORMATTING))
                     .build();
 
-    private static final String SLOT_GROUP_FREQUENCY = "frequency";
-    private static final String SLOT_GROUP_INVENTORY = "inventory";
+    private static final Layout.SlotGroupKey SLOT_GROUP_FREQUENCY =
+            Layout.SlotGroupKey.create("frequency");
+    private static final Layout.SlotGroupKey SLOT_GROUP_INVENTORY =
+            Layout.SlotGroupKey.create("inventory");
 
     private final DiagramGroupInfo info;
     private Layout layout;
@@ -70,6 +73,9 @@ public final class EnderStorageChestOverview implements DiagramGenerator {
                 DiagramGroupInfo.builder(
                                 Lang.ENDER_STORAGE_CHEST_OVERVIEW.trans("groupname"),
                                 groupId, ICON, 4)
+                        .setDescription(
+                                "This diagram displays ender chest used frequencies and contents."
+                                        + "\nUnfortunately, it doesn't work well on servers.")
                         .build();
     }
 
@@ -83,7 +89,7 @@ public final class EnderStorageChestOverview implements DiagramGenerator {
         layout = buildLayout();
         noDataLayout = buildNoDataLayout();
 
-        ImmutableMap<String, Supplier<Iterable<Diagram>>> customBehaviorMap =
+        ImmutableMap<String, Supplier<Collection<Diagram>>> customBehaviorMap =
                 ImmutableMap.of(
                         info.groupId() + LOOKUP_GLOBAL_CHESTS_SUFFIX,
                         () -> generateDiagrams(EnderStorageUtil.Owner.GLOBAL),

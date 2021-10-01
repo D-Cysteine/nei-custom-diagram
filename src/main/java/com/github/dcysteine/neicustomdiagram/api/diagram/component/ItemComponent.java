@@ -1,6 +1,5 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.component;
 
-import codechicken.nei.ItemPanels;
 import codechicken.nei.recipe.GuiCraftingRecipe;
 import codechicken.nei.recipe.GuiUsageRecipe;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
@@ -120,10 +119,6 @@ public abstract class ItemComponent implements Component {
 
             case USAGE:
                 GuiUsageRecipe.openRecipeGui("item", itemStack);
-                break;
-
-            case BOOKMARK:
-                ItemPanels.bookmarkPanel.addOrRemoveItem(itemStack);
                 break;
         }
     }

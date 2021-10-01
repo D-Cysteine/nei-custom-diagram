@@ -108,10 +108,6 @@ public abstract class FluidComponent implements Component {
             case USAGE:
                 GuiUsageRecipe.openRecipeGui("liquid", fluidStack);
                 break;
-
-            case BOOKMARK:
-                // Can't bookmark fluids =(
-                break;
         }
     }
 

@@ -2,6 +2,7 @@ package com.github.dcysteine.neicustomdiagram.api.diagram.tooltip;
 
 import codechicken.lib.gui.GuiDraw;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
@@ -26,7 +27,7 @@ import com.google.auto.value.AutoOneOf;
 @AutoOneOf(TooltipElement.ElementType.class)
 public abstract class TooltipElement {
     public enum ElementType {
-        SPACING, TEXT, COMPONENT_ICON, COMPONENT_DESCRIPTION, FORMATTING;
+        SPACING, TEXT, DISPLAY_COMPONENT_ICON, COMPONENT_DESCRIPTION, FORMATTING;
     }
 
     public static TooltipElement ofSpacing(int spacing) {
@@ -37,8 +38,13 @@ public abstract class TooltipElement {
         return AutoOneOf_TooltipElement.text(text);
     }
 
+    public static TooltipElement ofDisplayComponentIcon(DisplayComponent displayComponent) {
+        return AutoOneOf_TooltipElement.displayComponentIcon(displayComponent);
+    }
+
     public static TooltipElement ofComponentIcon(Component component) {
-        return AutoOneOf_TooltipElement.componentIcon(component);
+        return AutoOneOf_TooltipElement.displayComponentIcon(
+                DisplayComponent.builder(component).build());
     }
 
     public static TooltipElement ofComponentDescription(Component component) {
@@ -52,7 +58,7 @@ public abstract class TooltipElement {
     public abstract ElementType type();
     public abstract int spacing();
     public abstract String text();
-    public abstract Component componentIcon();
+    public abstract DisplayComponent displayComponentIcon();
     public abstract Component componentDescription();
     public abstract TextFormatting formatting();
 
@@ -68,7 +74,7 @@ public abstract class TooltipElement {
                     return GuiDraw.getStringWidth(formatting.format(text()));
                 }
 
-            case COMPONENT_ICON:
+            case DISPLAY_COMPONENT_ICON:
                 return Grid.SLOT_WIDTH;
 
             case COMPONENT_DESCRIPTION:
@@ -95,7 +101,7 @@ public abstract class TooltipElement {
                     return Draw.TEXT_HEIGHT;
                 }
 
-            case COMPONENT_ICON:
+            case DISPLAY_COMPONENT_ICON:
                 return Grid.SLOT_WIDTH;
         }
 
@@ -117,9 +123,9 @@ public abstract class TooltipElement {
                         Draw.Color.WHITE, formatting.small(), true);
                 break;
 
-            case COMPONENT_ICON:
+            case DISPLAY_COMPONENT_ICON:
                 Draw.drawSlot(center);
-                componentIcon().draw(center);
+                displayComponentIcon().draw(center);
                 break;
 
             case COMPONENT_DESCRIPTION:

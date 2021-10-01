@@ -1,7 +1,9 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 
+import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
+import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.github.dcysteine.neicustomdiagram.api.draw.Drawable;
 import com.google.auto.value.AutoValue;
 import com.google.auto.value.extension.toprettystring.ToPrettyString;
@@ -22,17 +24,44 @@ import java.util.Optional;
  */
 @AutoValue
 public abstract class Layout implements Drawable {
+    /** Interface to act as a common ancestor of {@link SlotKey} and {@link SlotGroupKey}. */
+    public interface Key {
+        String key();
+    }
+
+    /** Class that wraps string; used to add type-checking of slot keys and slot group keys. */
+    @AutoValue
+    public abstract static class SlotKey implements Key {
+        public static SlotKey create(String key) {
+            return new AutoValue_Layout_SlotKey(key);
+        }
+
+        @Override
+        public abstract String key();
+    }
+
+    /** Class that wraps string; used to add type-checking of slot keys and slot group keys. */
+    @AutoValue
+    public abstract static class SlotGroupKey implements Key {
+        public static SlotGroupKey create(String key) {
+            return new AutoValue_Layout_SlotGroupKey(key);
+        }
+
+        @Override
+        public abstract String key();
+    }
+
     public abstract ImmutableList<Lines> lines();
     public abstract ImmutableList<Drawable> labels();
     public abstract ImmutableList<Interactable> interactables();
-    public abstract ImmutableMap<String, Slot> slots();
-    public abstract ImmutableMap<String, SlotGroup> slotGroups();
+    public abstract ImmutableMap<SlotKey, Slot> slots();
+    public abstract ImmutableMap<SlotGroupKey, SlotGroup> slotGroups();
 
-    public Optional<Slot> slot(String key) {
+    public Optional<Slot> slot(SlotKey key) {
         return Optional.ofNullable(slots().get(key));
     }
 
-    public Optional<SlotGroup> slotGroup(String key) {
+    public Optional<SlotGroup> slotGroup(SlotGroupKey key) {
         return Optional.ofNullable(slotGroups().get(key));
     }
 
@@ -46,12 +75,23 @@ public abstract class Layout implements Drawable {
     }
 
     @Override
+    public Dimension maxDimension() {
+        return Drawable.computeMaxDimension(drawables());
+    }
+
+    @Override
     public void draw(DiagramState diagramState) {
-        lines().forEach(Lines::draw);
-        slotGroups().values().forEach(slotGroup -> slotGroup.draw(diagramState));
-        slots().values().forEach(slot -> slot.draw(diagramState));
-        labels().forEach(label -> label.draw(diagramState));
-        // Interactables are drawn in the foreground, and will be handled by Diagram.draw()
+        drawables().forEach(drawable -> drawable.draw(diagramState));
+    }
+
+    /**
+     * Interactables are not included here, because they will be handled by {@link Diagram}.
+     *
+     * <p>This means that interactables <b>will not be included</b> in the calculations for
+     * {@link #maxX()} and {@link #maxY()}!
+     */
+    private Iterable<Drawable> drawables() {
+        return Iterables.concat(lines(), slotGroups().values(), slots().values(), labels());
     }
 
     @ToPrettyString
@@ -71,10 +111,10 @@ public abstract class Layout implements Drawable {
         public abstract ImmutableList.Builder<Drawable> labelsBuilder();
         public abstract Builder setInteractables(Iterable<? extends Interactable> interactables);
         public abstract ImmutableList.Builder<Interactable> interactablesBuilder();
-        public abstract Builder setSlots(Map<String, Slot> slots);
-        public abstract ImmutableMap.Builder<String, Slot> slotsBuilder();
-        public abstract Builder setSlotGroups(Map<String, SlotGroup> slotGroups);
-        public abstract ImmutableMap.Builder<String, SlotGroup> slotGroupsBuilder();
+        public abstract Builder setSlots(Map<SlotKey, Slot> slots);
+        public abstract ImmutableMap.Builder<SlotKey, Slot> slotsBuilder();
+        public abstract Builder setSlotGroups(Map<SlotGroupKey, SlotGroup> slotGroups);
+        public abstract ImmutableMap.Builder<SlotGroupKey, SlotGroup> slotGroupsBuilder();
 
         public Builder addLines(Lines lines) {
             linesBuilder().add(lines);
@@ -106,22 +146,22 @@ public abstract class Layout implements Drawable {
             return this;
         }
 
-        public Builder putSlot(String key, Slot slot) {
+        public Builder putSlot(SlotKey key, Slot slot) {
             slotsBuilder().put(key, slot);
             return this;
         }
 
-        public Builder putAllSlots(Map<String, Slot> slots) {
+        public Builder putAllSlots(Map<SlotKey, Slot> slots) {
             slotsBuilder().putAll(slots);
             return this;
         }
 
-        public Builder putSlotGroup(String key, SlotGroup slotGroup) {
+        public Builder putSlotGroup(SlotGroupKey key, SlotGroup slotGroup) {
             slotGroupsBuilder().put(key, slotGroup);
             return this;
         }
 
-        public Builder putAllSlotGroups(Map<String, SlotGroup> slotGroups) {
+        public Builder putAllSlotGroups(Map<SlotGroupKey, SlotGroup> slotGroups) {
             slotGroupsBuilder().putAll(slotGroups);
             return this;
         }

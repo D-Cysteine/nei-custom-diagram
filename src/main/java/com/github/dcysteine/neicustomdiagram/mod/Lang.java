@@ -7,7 +7,7 @@ public final class Lang {
     public static final Lang API = new Lang("neicustomdiagram.api.");
     public static final Lang UTIL = new Lang("neicustomdiagram.util.");
 
-    public static final Lang GREGTECH_UTIL = new Lang("neicustomdiagram.util.gregtech.");
+    public static final Lang GREGTECH_5_UTIL = new Lang("neicustomdiagram.util.gregtech5.");
 
     public static final Lang DEBUG_RULER = new Lang("neicustomdiagram.generators.debug.ruler.");
 
@@ -21,14 +21,16 @@ public final class Lang {
     public static final Lang FORGE_ORE_DICTIONARY =
             new Lang("neicustomdiagram.generators.forge.oredictionary.");
 
-    public static final Lang GREGTECH_MATERIAL_PARTS =
-            new Lang("neicustomdiagram.generators.gregtech.materialparts.");
-    public static final Lang GREGTECH_MATERIAL_TOOLS =
-            new Lang("neicustomdiagram.generators.gregtech.materialtools.");
-    public static final Lang GREGTECH_ORE_DICTIONARY =
-            new Lang("neicustomdiagram.generators.gregtech.oredictionary.");
-    public static final Lang GREGTECH_ORE_PROCESSING =
-            new Lang("neicustomdiagram.generators.gregtech.oreprocessing.");
+    public static final Lang GREGTECH_5_MATERIAL_PARTS =
+            new Lang("neicustomdiagram.generators.gregtech5.materialparts.");
+    public static final Lang GREGTECH_5_MATERIAL_TOOLS =
+            new Lang("neicustomdiagram.generators.gregtech5.materialtools.");
+    public static final Lang GREGTECH_5_ORE_DICTIONARY =
+            new Lang("neicustomdiagram.generators.gregtech5.oredictionary.");
+    public static final Lang GREGTECH_5_ORE_PREFIXES =
+            new Lang("neicustomdiagram.generators.gregtech5.oreprefixes.");
+    public static final Lang GREGTECH_5_ORE_PROCESSING =
+            new Lang("neicustomdiagram.generators.gregtech5.oreprocessing.");
 
     private final String prefix;
 

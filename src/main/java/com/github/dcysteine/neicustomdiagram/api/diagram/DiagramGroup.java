@@ -1,41 +1,44 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram;
 
-import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.NEIClientConfig;
+import codechicken.nei.NEIClientUtils;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.api.IRecipeOverlayRenderer;
-import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.recipe.GuiRecipe;
 import codechicken.nei.recipe.ICraftingHandler;
 import codechicken.nei.recipe.IUsageHandler;
+import codechicken.nei.recipe.RecipeItemInputHandler;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
+import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.InteractiveComponentGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.DiagramMatcher;
+import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
+import com.github.dcysteine.neicustomdiagram.api.draw.GuiManager;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Reflection;
 import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
-import org.lwjgl.opengl.GL11;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     protected final DiagramGroupInfo info;
     protected final DiagramMatcher matcher;
     protected final Supplier<DiagramState> diagramStateSupplier;
 
-    /**
-     * Diagrams to display in NEI.
-     */
+    protected final GuiManager guiManager;
     protected final DiagramState diagramState;
     protected final ImmutableList<Diagram> diagrams;
 
@@ -46,6 +49,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         this.matcher = matcher;
         this.diagramStateSupplier = diagramStateSupplier;
 
+        this.guiManager = new GuiManager();
         this.diagramState = diagramStateSupplier.get();
         this.diagrams = ImmutableList.of();
     }
@@ -59,6 +63,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         this.matcher = parent.matcher;
         this.diagramStateSupplier = parent.diagramStateSupplier;
 
+        this.guiManager = new GuiManager();
         this.diagramState = this.diagramStateSupplier.get();
         this.diagrams = ImmutableList.copyOf(diagrams);
     }
@@ -94,12 +99,32 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
 
     public DiagramGroup loadDiagrams(
             String id, Interactable.RecipeType recipeType, Object... stacks) {
+        Collection<Diagram> matchingDiagrams = matchDiagrams(id, recipeType, stacks);
+
+        if (!ConfigOptions.SHOW_EMPTY_DIAGRAMS.get()) {
+            matchingDiagrams =
+                    matchingDiagrams.stream()
+                            .filter(diagram -> !info.emptyDiagramPredicate().test(diagram))
+                            .collect(Collectors.toList());
+        }
+
+        return newInstance(matchingDiagrams);
+    }
+
+    /**
+     * Helper method responsible for finding all matching diagrams.
+     *
+     * <p>Subclasses should generally override / extend this method, leaving the general logic in
+     * {@link #loadDiagrams(String, Interactable.RecipeType, Object...)} un-overridden.
+     */
+    protected Collection<Diagram> matchDiagrams(
+            String id, Interactable.RecipeType recipeType, Object... stacks) {
         if (id.equals(info.groupId())) {
-            return newInstance(matcher.all());
+            return matcher.all();
         }
 
         if (!ConfigOptions.getDiagramGroupVisibility(info).isShown()) {
-            return newInstance(ImmutableList.of());
+            return ImmutableList.of();
         }
 
         switch (id) {
@@ -110,7 +135,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
                                 ? ItemComponent.create(itemStack)
                                 : ItemComponent.createWithNbt(itemStack);
 
-                return newInstance(matcher.match(recipeType, itemComponent));
+                return matcher.match(recipeType, itemComponent);
 
             case "liquid":
             case "fluid":
@@ -120,10 +145,10 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
                                 ? FluidComponent.create(fluidStack)
                                 : FluidComponent.createWithNbt(fluidStack);
 
-                return newInstance(matcher.match(recipeType, fluidComponent));
+                return matcher.match(recipeType, fluidComponent);
         }
 
-        return newInstance(ImmutableList.of());
+        return ImmutableList.of();
     }
 
     @Override
@@ -139,49 +164,51 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     @OverridingMethodsMustInvokeSuper
     @Override
     public void onUpdate() {
+        guiManager.tick();
         diagramState.tick();
     }
 
     @Override
     public void drawBackground(int recipe) {
-        GL11.glColor4f(1, 1, 1, 1);
-        diagrams.get(recipe).drawBackground(diagramState);
+        Diagram diagram = diagrams.get(recipe);
+        Dimension diagramDimension = diagram.dimension(diagramState);
+        guiManager.checkScrollState(diagramDimension);
+        guiManager.beforeDraw(diagramDimension);
+
+        diagram.drawBackground(diagramState);
+
+        guiManager.afterDraw(diagramDimension);
     }
 
     @Override
     public void drawForeground(int recipe) {
-        GL11.glColor4f(1, 1, 1, 1);
-        diagrams.get(recipe).drawForeground(diagramState);
+        Diagram diagram = diagrams.get(recipe);
+        Dimension diagramDimension = diagram.dimension(diagramState);
+        guiManager.beforeDraw(diagramDimension);
 
-        GuiContainer window = GuiContainerManager.getManager().window;
-        if (window instanceof GuiRecipe) {
-            Point mousePos = computeMousePosition((GuiRecipe) window, recipe);
-            Optional<Interactable> interactable = findHoveredInteractable(mousePos, recipe);
-            interactable.ifPresent(i -> i.drawOverlay(diagramState));
-        }
+        diagram.drawForeground(diagramState);
+        Optional<Interactable> interactable = findHoveredInteractable(recipe);
+        interactable.ifPresent(i -> i.drawOverlay(diagramState));
+
+        guiManager.afterDraw(diagramDimension);
     }
 
     public void drawTooltip(GuiRecipe gui, int recipe) {
-        Point mousePos = computeMousePosition(gui, recipe);
-        Optional<Interactable> interactable = findHoveredInteractable(mousePos, recipe);
-        interactable.ifPresent(i -> i.drawTooltip(diagramState, absoluteMousePosition()));
+        Diagram diagram = diagrams.get(recipe);
+        Dimension diagramDimension = diagram.dimension(diagramState);
+        guiManager.drawScrollbar(diagramDimension);
+
+        Optional<Interactable> interactable = findHoveredInteractable(recipe);
+        interactable.ifPresent(
+                i -> i.drawTooltip(diagramState, guiManager.getAbsoluteMousePosition()));
     }
 
-    protected Point absoluteMousePosition() {
-        java.awt.Point mouse = GuiDraw.getMousePosition();
-        return Point.create(mouse.x, mouse.y);
-    }
+    protected Optional<Interactable> findHoveredInteractable(int recipe) {
+        if (!mouseInBounds()) {
+            return Optional.empty();
+        }
 
-    protected Point computeMousePosition(GuiRecipe gui, int recipe) {
-        java.awt.Point mouse = GuiDraw.getMousePosition();
-        java.awt.Point offset = gui.getRecipePosition(recipe);
-
-        int x = mouse.x - (Reflection.GUI_LEFT.get(gui) + offset.x);
-        int y = mouse.y - (Reflection.GUI_TOP.get(gui) + offset.y);
-        return Point.create(x, y);
-    }
-
-    protected Optional<Interactable> findHoveredInteractable(Point mousePos, int recipe) {
+        Point mousePos = guiManager.getRelativeMousePosition(recipe);
         for (Interactable interactable : diagrams.get(recipe).interactables(diagramState)) {
             if (interactable.checkBoundingBox(mousePos)) {
                 return Optional.of(interactable);
@@ -191,10 +218,12 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         return Optional.empty();
     }
 
-    public boolean interact(GuiRecipe gui, int recipe, Interactable.RecipeType recipeType) {
-        Point mousePos = computeMousePosition(gui, recipe);
-        Optional<Interactable> interactable = findHoveredInteractable(mousePos, recipe);
+    public boolean mouseInBounds() {
+        return guiManager.mouseInBounds();
+    }
 
+    public boolean interact(int recipe, Interactable.RecipeType recipeType) {
+        Optional<Interactable> interactable = findHoveredInteractable(recipe);
         if (interactable.isPresent()) {
             interactable.get().interact(diagramState, recipeType);
             return true;
@@ -203,32 +232,80 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         }
     }
 
+    /**
+     * Note that for item components, the code here seems to be getting overridden (more precisely,
+     * intercepted and handled first) by the code in {@link RecipeItemInputHandler}.
+     */
     @Override
     public boolean keyTyped(GuiRecipe gui, char keyChar, int keyCode, int recipe) {
         if (keyCode == NEIClientConfig.getKeyBinding("gui.recipe")) {
-            return interact(gui, recipe, Interactable.RecipeType.CRAFTING);
+            return interact(recipe, Interactable.RecipeType.CRAFTING);
 
         } else if (keyCode == NEIClientConfig.getKeyBinding("gui.usage")) {
-            return interact(gui, recipe, Interactable.RecipeType.USAGE);
+            return interact(recipe, Interactable.RecipeType.USAGE);
+        }
 
-        } else if (keyCode == NEIClientConfig.getKeyBinding("gui.bookmark")) {
-            return interact(gui, recipe, Interactable.RecipeType.BOOKMARK);
+        return false;
+    }
+
+    /**
+     * Note that for item components, the code here seems to be getting overridden (more precisely,
+     * intercepted and handled first) by the code in {@link RecipeItemInputHandler}.
+     */
+    @Override
+    public boolean mouseClicked(GuiRecipe gui, int button, int recipe) {
+        switch (button) {
+            case 0:
+                return interact(recipe, Interactable.RecipeType.CRAFTING);
+
+            case 1:
+                return interact(recipe, Interactable.RecipeType.USAGE);
         }
 
         return false;
     }
 
     @Override
-    public boolean mouseClicked(GuiRecipe gui, int button, int recipe) {
-        switch (button) {
-            case 0:
-                return interact(gui, recipe, Interactable.RecipeType.CRAFTING);
+    public boolean mouseScrolled(GuiRecipe gui, int scroll, int recipe) {
+        if (!mouseInBounds()) {
+            return false;
+        }
+        GuiManager.ScrollDirection direction =
+                scroll > 0 ? GuiManager.ScrollDirection.UP : GuiManager.ScrollDirection.DOWN;
 
-            case 1:
-                return interact(gui, recipe, Interactable.RecipeType.USAGE);
+        if (NEIClientUtils.shiftKey()) {
+            diagramState.scroll(direction);
+            return true;
         }
 
-        return false;
+        Diagram diagram = diagrams.get(recipe);
+        Dimension diagramDimension = diagram.dimension(diagramState);
+        if (guiManager.isScrollable(diagramDimension)) {
+            guiManager.scroll(direction);
+            return true;
+        } else {
+            return ConfigOptions.DISABLE_PAGE_SCROLL.get();
+        }
+    }
+
+    public Optional<ItemStack> getStackUnderMouse(int recipe) {
+        Optional<Interactable> interactableOptional = findHoveredInteractable(recipe);
+        if (!interactableOptional.isPresent()) {
+            return Optional.empty();
+        }
+
+        Interactable interactable = interactableOptional.get();
+        if (!(interactable instanceof InteractiveComponentGroup)) {
+            return Optional.empty();
+        }
+
+        DisplayComponent component =
+                ((InteractiveComponentGroup) interactable).currentComponent(diagramState);
+        if (component.type() == Component.ComponentType.ITEM) {
+            return Optional.of((ItemStack) component.stack());
+        } else {
+            return Optional.empty();
+        }
     }
 
     @Override

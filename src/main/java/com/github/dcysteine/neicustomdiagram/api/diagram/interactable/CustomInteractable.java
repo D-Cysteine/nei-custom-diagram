@@ -7,6 +7,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponen
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.BoundedDrawable;
+import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 
 import java.util.function.Consumer;
@@ -55,13 +56,8 @@ public class CustomInteractable implements Interactable {
     }
 
     @Override
-    public int width() {
-        return drawable.width();
-    }
-
-    @Override
-    public int height() {
-        return drawable.height();
+    public Dimension dimension() {
+        return drawable.dimension();
     }
 
     @Override

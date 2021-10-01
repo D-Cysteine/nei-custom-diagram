@@ -16,6 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
+import java.util.Comparator;
 import java.util.Optional;
 
 /**
@@ -26,7 +27,11 @@ import java.util.Optional;
  * match, including tooltip!
  */
 @AutoValue
-public abstract class DisplayComponent {
+public abstract class DisplayComponent implements Comparable<DisplayComponent> {
+    public static final Comparator<DisplayComponent> COMPARATOR =
+            Comparator.<DisplayComponent, Component>comparing(DisplayComponent::component)
+                    .thenComparing(d -> d.stackSize().orElse(-1));
+
     /** NBT strings will be split if they are too long. */
     private static final Splitter NBT_SPLITTER = Splitter.fixedLength(64);
 
@@ -98,12 +103,12 @@ public abstract class DisplayComponent {
                     // also avoids covering up display of things like Tinker's Construct tools with
                     // ammo counts.
                     if (ConfigOptions.SHOW_STACK_SIZE_ONE.get() || stackSize != 1) {
-                        Draw.drawStackSize(stackSize, pos, false);
+                        Draw.drawStackSize(stackSize, pos);
                     }
                     break;
 
                 case FLUID:
-                    Draw.drawStackSize(stackSize, pos, true);
+                    Draw.drawStackSize(stackSize, pos);
                     break;
             }
         }
@@ -114,6 +119,14 @@ public abstract class DisplayComponent {
 
     @ToPrettyString
     public abstract String toPrettyString();
+
+    @Override
+    public int compareTo(DisplayComponent other) {
+        if (other == null) {
+            return 1;
+        }
+        return COMPARATOR.compare(this, other);
+    }
 
     public static Builder builder(Component component) {
         return new AutoValue_DisplayComponent.Builder()

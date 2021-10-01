@@ -54,7 +54,7 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
         public Builder() {
             matchDataBuilder = new EnumMap<>(Interactable.RecipeType.class);
 
-            for (Interactable.RecipeType recipeType : Interactable.RecipeType.VALID_TYPES) {
+            for (Interactable.RecipeType recipeType : Interactable.RecipeType.values()) {
                 matchDataBuilder.put(recipeType, ImmutableSetMultimap.builder());
             }
         }
@@ -84,7 +84,7 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
              * {@code component}.
              */
             public DiagramSubBuilder addComponent(Component component) {
-                for (Interactable.RecipeType recipeType : Interactable.RecipeType.VALID_TYPES) {
+                for (Interactable.RecipeType recipeType : Interactable.RecipeType.values()) {
                     this.addComponent(recipeType, component);
                 }
                 return this;
@@ -95,7 +95,7 @@ public class ComponentDiagramMatcher implements DiagramMatcher {
              * {@code components}.
              */
             public DiagramSubBuilder addAllComponents(Iterable<? extends Component> components) {
-                for (Interactable.RecipeType recipeType : Interactable.RecipeType.VALID_TYPES) {
+                for (Interactable.RecipeType recipeType : Interactable.RecipeType.values()) {
                     this.addAllComponents(recipeType, components);
                 }
                 return this;

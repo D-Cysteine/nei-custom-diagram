@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech5.materialparts;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;

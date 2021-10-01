@@ -5,6 +5,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactab
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.DiagramMatcher;
 import com.google.common.collect.ImmutableMap;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -30,12 +31,12 @@ public class CustomDiagramGroup extends DiagramGroup {
      * <p>To avoid collisions with any other NEI handlers, it is strongly recommended that the
      * diagram group's group ID be a prefix of all custom behavior IDs.
      */
-    private final ImmutableMap<String, Supplier<Iterable<Diagram>>> customBehaviorMap;
+    private final ImmutableMap<String, Supplier<Collection<Diagram>>> customBehaviorMap;
 
     public CustomDiagramGroup(
             DiagramGroupInfo info, DiagramMatcher matcher,
             Supplier<DiagramState> diagramStateSupplier,
-            Map<String, Supplier<Iterable<Diagram>>> customBehaviorMap) {
+            Map<String, Supplier<Collection<Diagram>>> customBehaviorMap) {
         super(info, matcher, diagramStateSupplier);
 
         this.customBehaviorMap = ImmutableMap.copyOf(customBehaviorMap);
@@ -43,7 +44,7 @@ public class CustomDiagramGroup extends DiagramGroup {
 
     public CustomDiagramGroup(
             DiagramGroupInfo info, DiagramMatcher matcher,
-            Map<String, Supplier<Iterable<Diagram>>> customBehaviorMap) {
+            Map<String, Supplier<Collection<Diagram>>> customBehaviorMap) {
         super(info, matcher);
 
         this.customBehaviorMap = ImmutableMap.copyOf(customBehaviorMap);
@@ -61,12 +62,12 @@ public class CustomDiagramGroup extends DiagramGroup {
     }
 
     @Override
-    public DiagramGroup loadDiagrams(
+    protected Collection<Diagram> matchDiagrams(
             String id, Interactable.RecipeType recipeType, Object... stacks) {
         if (customBehaviorMap.containsKey(id)) {
-            return newInstance(customBehaviorMap.get(id).get());
+            return customBehaviorMap.get(id).get();
         }
 
-        return super.loadDiagrams(id, recipeType, stacks);
+        return super.matchDiagrams(id, recipeType, stacks);
     }
 }

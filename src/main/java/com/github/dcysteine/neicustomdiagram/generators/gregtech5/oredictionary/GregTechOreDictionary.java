@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.generators.gregtech.oredictionary;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech5.oredictionary;
 
 import codechicken.lib.gui.GuiDraw;
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
@@ -18,8 +18,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFormatting;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFormatting;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.Lists;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
@@ -39,17 +39,20 @@ public final class GregTechOreDictionary implements DiagramGenerator {
     public static final ItemComponent ICON =
             GregTechOreDictUtil.getComponent(ItemList.Book_Written_01);
 
-    private static final String SLOT_GROUP_UNIFY = "unify";
-    private static final String SLOT_GROUP_ALL = "all";
+    private static final Layout.SlotGroupKey SLOT_GROUP_UNIFY = Layout.SlotGroupKey.create("unify");
+    private static final Layout.SlotGroupKey SLOT_GROUP_ALL = Layout.SlotGroupKey.create("all");
 
     private final DiagramGroupInfo info;
 
     public GregTechOreDictionary(String groupId) {
         this.info =
                 DiagramGroupInfo.builder(
-                                Lang.GREGTECH_ORE_DICTIONARY.trans("groupname"),
+                                Lang.GREGTECH_5_ORE_DICTIONARY.trans("groupname"),
                                 groupId, ICON, 2)
                         .setDefaultVisibility(DiagramGroupVisibility.DISABLED)
+                        .setDescription(
+                                "This diagram displays GregTech ore dictionary synonyms."
+                                        + "\nMostly useful for modpack development.")
                         .build();
 
     }
@@ -92,7 +95,7 @@ public final class GregTechOreDictionary implements DiagramGenerator {
                         SlotGroup.builder(2, 6, Grid.GRID.grid(1, 3), Grid.Direction.S)
                                 .setDefaultTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_ORE_DICTIONARY.trans("unifyslot"),
+                                                Lang.GREGTECH_5_ORE_DICTIONARY.trans("unifyslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .putSlotGroup(
@@ -100,7 +103,7 @@ public final class GregTechOreDictionary implements DiagramGenerator {
                         SlotGroup.builder(6, 6, Grid.GRID.grid(4, 3), Grid.Direction.SE)
                                 .setDefaultTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_ORE_DICTIONARY.trans("allslot"),
+                                                Lang.GREGTECH_5_ORE_DICTIONARY.trans("allslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build());
 
@@ -119,7 +122,7 @@ public final class GregTechOreDictionary implements DiagramGenerator {
                     CustomInteractable.builder(materialNameText)
                             .setTooltip(
                                     Tooltip.create(
-                                            Lang.GREGTECH_ORE_DICTIONARY.trans("materialnamelabel"),
+                                            Lang.GREGTECH_5_ORE_DICTIONARY.trans("materialnamelabel"),
                                             Tooltip.SLOT_FORMATTING))
                             .build();
 
@@ -131,7 +134,7 @@ public final class GregTechOreDictionary implements DiagramGenerator {
                     CustomInteractable.builder(prefixNameText)
                             .setTooltip(
                                     Tooltip.create(
-                                            Lang.GREGTECH_ORE_DICTIONARY.trans("prefixnamelabel"),
+                                            Lang.GREGTECH_5_ORE_DICTIONARY.trans("prefixnamelabel"),
                                             Tooltip.SLOT_FORMATTING))
                             .build();
 

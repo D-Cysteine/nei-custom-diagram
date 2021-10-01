@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.generators.gregtech.oreprocessing;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprocessing;
 
 import com.github.bartimaeusnek.bartworks.system.material.Werkstoff;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
@@ -9,8 +9,9 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagra
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.mod.Registry;
+import com.github.dcysteine.neicustomdiagram.util.DiagramUtil;
 import com.github.dcysteine.neicustomdiagram.util.bartworks.BartWorksOreDictUtil;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
@@ -42,8 +43,12 @@ public final class GregTechOreProcessing implements DiagramGenerator {
     public GregTechOreProcessing(String groupId) {
         this.info =
                 DiagramGroupInfo.builder(
-                                Lang.GREGTECH_ORE_PROCESSING.trans("groupname"),
+                                Lang.GREGTECH_5_ORE_PROCESSING.trans("groupname"),
                                 groupId, ICON, 1)
+                        // We'll always insert the ore block itself, so require at least 2
+                        // components to be inserted to be non-empty.
+                        .setEmptyDiagramPredicate(DiagramUtil.buildEmptyDiagramPredicate(2))
+                        .setDescription("This diagram displays GregTech ore processing products.")
                         .build();
 
         this.labelHandler = new LabelHandler();
@@ -84,7 +89,7 @@ public final class GregTechOreProcessing implements DiagramGenerator {
             buildDiagram(matcherBuilder, rawOres);
         }
 
-        if (Registry.ModIds.isModLoaded(Registry.ModIds.BARTWORKS)) {
+        if (Registry.ModDependency.BARTWORKS.isLoaded()) {
             for (Werkstoff werkstoff : Werkstoff.werkstoffHashSet) {
                 Optional<ItemComponent> rawOre =
                         BartWorksOreDictUtil.getComponent(OrePrefixes.ore, werkstoff);
@@ -112,7 +117,7 @@ public final class GregTechOreProcessing implements DiagramGenerator {
                 new DiagramBuilder(layoutHandler, labelHandler, recipeHandler, rawOres);
         diagramBuilder.buildDiagram(matcherBuilder);
 
-        Logger.GREGTECH_ORE_PROCESSING.debug("Generated diagram [{}]", rawOres.get(0));
+        Logger.GREGTECH_5_ORE_PROCESSING.debug("Generated diagram [{}]", rawOres.get(0));
     }
 
     static boolean isGregTechOreBlock(ItemComponent itemComponent) {

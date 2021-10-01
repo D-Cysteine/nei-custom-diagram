@@ -1,12 +1,12 @@
-package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialparts;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech5.materialparts;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFormatting;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFormatting;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -122,7 +122,7 @@ class RelatedMaterialsHandler {
                         .map(Optional::get)
                         .findFirst();
         if (!representation.isPresent()) {
-            Logger.GREGTECH_MATERIAL_PARTS.error(
+            Logger.GREGTECH_5_MATERIAL_PARTS.error(
                     "Could not find representation for material [{}]. Checked prefixes [{}].",
                     material, REPRESENTATION_PREFIXES);
             representation = Optional.of(ItemComponent.create(Items.iron_ingot, 0));
@@ -131,7 +131,7 @@ class RelatedMaterialsHandler {
         return DisplayComponent.builder(representation.get())
                 .setAdditionalTooltip(
                         Tooltip.create(
-                                Lang.GREGTECH_MATERIAL_PARTS.transf(
+                                Lang.GREGTECH_5_MATERIAL_PARTS.transf(
                                         "materiallabel",
                                         GregTechFormatting.getMaterialDescription(material)),
                                 Tooltip.INFO_FORMATTING))

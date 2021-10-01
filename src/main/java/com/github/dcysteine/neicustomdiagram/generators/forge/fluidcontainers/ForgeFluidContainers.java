@@ -8,6 +8,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
+import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.AllDiagramsButton;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
@@ -18,11 +19,13 @@ import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.github.dcysteine.neicustomdiagram.mod.Registry;
 import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.github.dcysteine.neicustomdiagram.util.FluidDictUtil;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFluidDictUtil;
+import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
 import net.minecraft.init.Items;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,11 +38,15 @@ import java.util.Optional;
 public final class ForgeFluidContainers implements DiagramGenerator {
     public static final ItemComponent ICON = ItemComponent.create(Items.water_bucket, 0);
 
-    private static final String SLOT_GROUP_FLUIDS = "fluids";
-    private static final String SLOT_GROUP_CONTAINERS = "containers";
+    private static final Layout.SlotGroupKey SLOT_GROUP_FLUIDS =
+            Layout.SlotGroupKey.create("fluids");
+    private static final Layout.SlotGroupKey SLOT_GROUP_CONTAINERS =
+            Layout.SlotGroupKey.create("containers");
 
     private final DiagramGroupInfo info;
+
     private Layout layout;
+    private ImmutableBiMap<FluidComponent, Diagram> fluidsMap;
 
     public ForgeFluidContainers(String groupId) {
         this.info =
@@ -47,6 +54,9 @@ public final class ForgeFluidContainers implements DiagramGenerator {
                                 Lang.FORGE_FLUID_CONTAINERS.trans("groupname"),
                                 groupId, ICON, 2)
                         .setDefaultVisibility(DiagramGroupVisibility.DISABLED)
+                        .setDescription(
+                                "This diagram displays Forge registered fluids"
+                                        + " and fluid containers.")
                         .build();
     }
 
@@ -58,24 +68,19 @@ public final class ForgeFluidContainers implements DiagramGenerator {
     @Override
     public DiagramGroup generate() {
         layout = buildLayout();
+
+        ImmutableBiMap.Builder<FluidComponent, Diagram> fluidsMapBuilder = ImmutableBiMap.builder();
+        for (Fluid fluid : FluidRegistry.getRegisteredFluids().values()) {
+            FluidComponent fluidComponent = FluidComponent.create(fluid);
+            fluidsMapBuilder.put(fluidComponent, generateDiagram(fluidComponent));
+        }
+        fluidsMap = fluidsMapBuilder.build();
+
         return new DiagramGroup(
-                info, new CustomDiagramMatcher(this::generateDiagrams));
+                info, new CustomDiagramMatcher(fluidsMap.values(), this::getDiagram));
     }
 
-    private Collection<Diagram> generateDiagrams(
-            Interactable.RecipeType recipeType, Component component) {
-        Optional<FluidComponent> fluidOptional = FluidDictUtil.getFluidContents(component);
-        if (!fluidOptional.isPresent() && Registry.ModIds.isModLoaded(Registry.ModIds.GREGTECH)) {
-            // Try looking up GregTech fluid display stack.
-            if (component.type() == Component.ComponentType.ITEM) {
-                fluidOptional = GregTechFluidDictUtil.displayItemToFluid((ItemComponent) component);
-            }
-        }
-        if (!fluidOptional.isPresent()) {
-            return Lists.newArrayList();
-        }
-
-        FluidComponent fluid = fluidOptional.get();
+    private Diagram generateDiagram(FluidComponent fluid) {
         List<DisplayComponent> fluidContainers = FluidDictUtil.getFluidContainers(fluid);
         // Remove the first element, which is the fluid.
         fluidContainers = fluidContainers.subList(1, fluidContainers.size());
@@ -105,7 +110,7 @@ public final class ForgeFluidContainers implements DiagramGenerator {
                                                         Tooltip.SLOT_FORMATTING))
                                         .build()));
 
-        if (Registry.ModIds.isModLoaded(Registry.ModIds.GREGTECH)) {
+        if (Registry.ModDependency.GREGTECH_5.isLoaded()) {
             Optional<ItemComponent> displayItemOptional =
                     GregTechFluidDictUtil.fluidToDisplayItem(fluid);
             displayItemOptional.ifPresent(
@@ -120,18 +125,34 @@ public final class ForgeFluidContainers implements DiagramGenerator {
                                             .build()));
         }
 
-        return Lists.newArrayList(builder.build());
+        return builder.build();
     }
 
-    private static Layout buildLayout() {
+    private List<Diagram> getDiagram(Interactable.RecipeType unused, Component component) {
+        Optional<FluidComponent> fluidOptional = FluidDictUtil.getFluidContents(component);
+        if (!fluidOptional.isPresent() && Registry.ModDependency.GREGTECH_5.isLoaded()) {
+            // Try looking up GregTech fluid display stack.
+            if (component.type() == Component.ComponentType.ITEM) {
+                fluidOptional = GregTechFluidDictUtil.displayItemToFluid((ItemComponent) component);
+            }
+        }
+        if (!fluidOptional.isPresent()) {
+            return Lists.newArrayList();
+        }
+
+        return Lists.newArrayList(fluidsMap.get(fluidOptional.get()));
+    }
+
+    private Layout buildLayout() {
         return Layout.builder()
+                .addInteractable(new AllDiagramsButton(info, Grid.GRID.grid(0, 0)))
                 .putSlotGroup(
                         SLOT_GROUP_FLUIDS,
-                        SlotGroup.builder(1, 6, Grid.GRID.grid(1, 0), Grid.Direction.S)
+                        SlotGroup.builder(1, 6, Grid.GRID.grid(1, 2), Grid.Direction.S)
                                 .build())
                 .putSlotGroup(
                         SLOT_GROUP_CONTAINERS,
-                        SlotGroup.builder(6, 6, Grid.GRID.grid(3, 0), Grid.Direction.SE)
+                        SlotGroup.builder(6, 6, Grid.GRID.grid(3, 2), Grid.Direction.SE)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.FORGE_FLUID_CONTAINERS.trans("containersslot"),

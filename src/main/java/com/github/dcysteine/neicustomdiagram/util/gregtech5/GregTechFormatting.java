@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.util.gregtech;
+package com.github.dcysteine.neicustomdiagram.util.gregtech5;
 
 import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 import gregtech.api.enums.Materials;

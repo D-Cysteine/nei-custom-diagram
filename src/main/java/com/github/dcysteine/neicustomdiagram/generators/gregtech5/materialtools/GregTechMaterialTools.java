@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.generators.gregtech.materialtools;
+package com.github.dcysteine.neicustomdiagram.generators.gregtech5.materialtools;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
@@ -9,16 +9,18 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechFluidDictUtil;
-import com.github.dcysteine.neicustomdiagram.util.gregtech.GregTechOreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.DiagramUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFluidDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import gregtech.api.enums.Materials;
 import gregtech.api.items.GT_MetaGenerated_Tool;
 import gregtech.api.objects.ItemData;
 import gregtech.common.items.GT_MetaGenerated_Tool_01;
 import net.minecraft.item.ItemStack;
 
+import java.util.List;
 import java.util.Optional;
 
 public final class GregTechMaterialTools implements DiagramGenerator {
@@ -39,9 +41,15 @@ public final class GregTechMaterialTools implements DiagramGenerator {
     public GregTechMaterialTools(String groupId) {
         this.info =
                 DiagramGroupInfo.builder(
-                                Lang.GREGTECH_MATERIAL_TOOLS.trans("groupname"),
+                                Lang.GREGTECH_5_MATERIAL_TOOLS.trans("groupname"),
                                 groupId, ICON, 1)
                         .setIgnoreNbt(false)
+                        // We'll almost always insert the handle item, so require at least 2
+                        // components to be inserted to be non-empty.
+                        .setEmptyDiagramPredicate(DiagramUtil.buildEmptyDiagramPredicate(2))
+                        .setDescription(
+                                "This diagram displays craftable GregTech tools for each"
+                                        + " GregTech material.")
                         .build();
 
         this.layoutHandler = new LayoutHandler(this.info);
@@ -72,7 +80,7 @@ public final class GregTechMaterialTools implements DiagramGenerator {
     }
 
     /** Returns either a single-element list, or an empty list. */
-    private ImmutableList<Diagram> getDiagram(Interactable.RecipeType unused, Component component) {
+    private List<Diagram> getDiagram(Interactable.RecipeType unused, Component component) {
         // Try handling fluids and fluid display stacks by converting into a filled cell.
         component = GregTechFluidDictUtil.fillCell(component)
                 .map(Component.class::cast).orElse(component);
@@ -89,6 +97,7 @@ public final class GregTechMaterialTools implements DiagramGenerator {
             }
         }
 
-        return material == null ? ImmutableList.of() : ImmutableList.of(materialsMap.get(material));
+        return material == null
+                ? Lists.newArrayList() : Lists.newArrayList(materialsMap.get(material));
     }
 }

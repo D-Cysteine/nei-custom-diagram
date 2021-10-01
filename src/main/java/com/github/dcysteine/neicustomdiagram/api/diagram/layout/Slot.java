@@ -3,6 +3,7 @@ package com.github.dcysteine.neicustomdiagram.api.diagram.layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramState;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
+import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.google.auto.value.AutoValue;
@@ -29,13 +30,8 @@ public abstract class Slot implements Interactable {
     public abstract BiConsumer<DiagramState, Point> drawFunction();
 
     @Override
-    public int width() {
-        return Draw.ICON_WIDTH;
-    }
-
-    @Override
-    public int height() {
-        return Draw.ICON_WIDTH;
+    public Dimension dimension() {
+        return Dimension.create(Draw.ICON_WIDTH);
     }
 
     @Override

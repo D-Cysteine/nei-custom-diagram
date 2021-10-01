@@ -58,19 +58,12 @@ repositories {
     mavenLocal()
     maven("http://chickenbones.net/maven/") { this.name = "ChickenBones" }
     ivy {
-        this.name = "gtnh_download_source_stupid_underscore_typo"
-        this.artifactPattern(
-            "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]_[revision].[ext]")
-    }
-    ivy {
         this.name = "gtnh_download_source"
         this.artifactPattern(
-            "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]-[revision].[ext]")
+            "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]-[revision]-[classifier].[ext]")
     }
     maven("https://jitpack.io") { this.name = "jitpack.io" }
-    maven("https://gregtech.overminddl1.com/") { this.name = "GregTech" }
-    maven("http://www.ryanliptak.com/maven/") { this.name = "AppleCore" }
-    maven("http://maven.ic2.player.to/") { this.name = "IC2" }
+    //maven("https://gregtech.overminddl1.com/") { this.name = "GregTech" }
 }
 
 dependencies {
@@ -84,15 +77,17 @@ dependencies {
     compile("codechicken:CodeChickenCore:$minecraftVersion-$codeChickenCoreVersion:dev")
     compile("codechicken:CodeChickenLib:$minecraftVersion-$codeChickenLibVersion:dev")
 
-    val gregTechVersion: String by project
+    val gregTech5Version: String by project
+    val enderIoVersion: String by project
     val forestryVersion: String by project
     val railcraftVersion: String by project
-    compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTechVersion:dev") {
-        this.isChanging = true
+    compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
+        this.isTransitive = false
     }
     // The following are compile-time dependencies of GT5.
+    compileOnly("crazypants.enderio:EnderIO-$minecraftVersion:${enderIoVersion}_beta:dev")
     compileOnly("net.sengir.forestry:forestry_$minecraftVersion:$forestryVersion:dev")
-    compileOnly("mods.railcraft:Railcraft_1.7.10:$railcraftVersion:dev")
+    compileOnly("mods.railcraft:Railcraft_$minecraftVersion:$railcraftVersion:dev")
 
     val bartworksVersion: String by project
     compile("com.github.GTNewHorizons:bartworks:$bartworksVersion:dev") {
@@ -101,6 +96,11 @@ dependencies {
 
     val enderStorageVersion: String by project
     compile("com.github.GTNewHorizons:EnderStorage:$enderStorageVersion:dev")
+
+    /*
+    val gregTech6Version: String by project
+    compile("com.gregoriust.gregtech:gregtech_$minecraftVersion:$gregTech6Version:dev")
+    */
 }
 
 tasks.withType<Jar> {

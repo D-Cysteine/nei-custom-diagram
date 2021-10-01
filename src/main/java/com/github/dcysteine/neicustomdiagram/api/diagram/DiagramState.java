@@ -1,6 +1,7 @@
 package com.github.dcysteine.neicustomdiagram.api.diagram;
 
 import codechicken.nei.NEIClientUtils;
+import com.github.dcysteine.neicustomdiagram.api.draw.GuiManager;
 import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 
 /**
@@ -18,6 +19,7 @@ public class DiagramState {
      */
     public static final int TICKS_PER_CYCLE = 20;
 
+    /** Due to backwards scrolling, {@code ticks} may be negative! */
     private int ticks;
 
     public DiagramState() {
@@ -35,26 +37,30 @@ public class DiagramState {
         } else if (!NEIClientUtils.shiftKey()) {
             ticks++;
         }
-
-        // Prevent going too far backwards, as well as handle the unlikely case of overflow.
-        //
-        // Note that Java's implementation of modulus returns a negative result for negative
-        // numbers, so having ticks < 0 would probably cause IndexOutOfBoundsException for callers
-        // of cycleIndex().
-        if (ticks < 0) {
-            ticks = 0;
-        }
     }
 
+    /** "Scrolls" the tick counter by one cycle at a time. */
+    public void scroll(GuiManager.ScrollDirection direction) {
+        ticks += direction.factor * TICKS_PER_CYCLE;
+    }
+
+    /** Due to backwards scrolling, {@code ticks()} may be negative! */
     public int ticks() {
         return ticks;
     }
 
+    /** Due to backwards scrolling, {@code cycle()} may be negative! */
     public int cycle() {
         return ticks / TICKS_PER_CYCLE;
     }
 
     public int cycleIndex(int maxIndex) {
-        return cycle() % maxIndex;
+        // Because cycle() can be negative, we must not use the modulus (%) operator here.
+        //
+        // In Java, modulus of a negative number and a positive number may return a negative value,
+        // which would cause ArrayIndexOutOfBoundsException to be thrown downstream.
+        //
+        // Math.floorMod() will always return a non-negative value.
+        return Math.floorMod(cycle(), maxIndex);
     }
 }

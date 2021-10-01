@@ -166,7 +166,8 @@ public final class EnderStorageUtil {
      * ({@code 2021-09}), the client instance will only refresh data for ender chests when they are
      * opened by the player, and data for ender tanks is missing entirely.
      *
-     * TODO add link to GitHub issue here
+     * @see <a href=https://github.com/GTNewHorizons/GT-New-Horizons-Modpack/issues/7860#issuecomment-925382503>
+     *     GitHub issue</a>
      */
     private static EnderStorageManager getManager() {
         return EnderStorageManager.instance(!Minecraft.getMinecraft().isSingleplayer());
