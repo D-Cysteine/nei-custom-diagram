@@ -93,7 +93,7 @@ class DiagramBuilder {
         Optional<ItemComponent> purifiedOreOptional =
                 crushedOreOptional.flatMap(
                         crushedOre -> handleRecipes(
-                                RecipeHandler.RecipeMap.ORE_WASHER, crushedOre,
+                                RecipeHandler.RecipeMap.ORE_WASHING_PLANT, crushedOre,
                                 LayoutHandler.SlotGroupKeys.CRUSHED_ORE_WASH));
 
         Optional<ItemComponent> purifiedDustOptional =
@@ -150,7 +150,7 @@ class DiagramBuilder {
                             crushedOre -> {
                                 Logger.GREGTECH_5_ORE_PROCESSING.warn(
                                         "Crushed ore had thermal centrifuge recipe,"
-                                                + " but no ore washer recipe: [{}]",
+                                                + " but no ore washing plant recipe: [{}]",
                                         crushedOre);
                                 return handleRecipes(
                                         RecipeHandler.RecipeMap.THERMAL_CENTRIFUGE, crushedOre,

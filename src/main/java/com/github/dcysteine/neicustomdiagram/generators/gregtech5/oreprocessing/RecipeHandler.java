@@ -29,10 +29,9 @@ import java.util.stream.Collectors;
 
 /** Class that caches GregTech recipe data and stores it in a map, for fast lookup later. */
 class RecipeHandler {
-
     enum RecipeMap {
         MACERATOR(GT_Recipe.GT_Recipe_Map.sMaceratorRecipes),
-        ORE_WASHER(GT_Recipe.GT_Recipe_Map.sOreWasherRecipes),
+        ORE_WASHING_PLANT(GT_Recipe.GT_Recipe_Map.sOreWasherRecipes),
         THERMAL_CENTRIFUGE(GT_Recipe.GT_Recipe_Map.sThermalCentrifugeRecipes),
         SIFTER(GT_Recipe.GT_Recipe_Map.sSifterRecipes),
         CENTRIFUGE(GT_Recipe.GT_Recipe_Map.sCentrifugeRecipes),
@@ -43,7 +42,7 @@ class RecipeHandler {
         ELECTROMAGNETIC_SEPARATOR(GT_Recipe.GT_Recipe_Map.sElectroMagneticSeparatorRecipes),
         AUTOCLAVE(GT_Recipe.GT_Recipe_Map.sAutoclaveRecipes);
 
-        private final GT_Recipe.GT_Recipe_Map recipeMap;
+        final GT_Recipe.GT_Recipe_Map recipeMap;
 
         RecipeMap(GT_Recipe.GT_Recipe_Map recipeMap) {
             this.recipeMap = recipeMap;

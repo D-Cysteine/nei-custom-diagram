@@ -109,16 +109,17 @@ public final class GregTechRecipeUtil {
     }
 
     public static List<DisplayComponent> buildComponents(ItemStack[] itemStacks) {
+        // TODO maybe add unification result to tooltip here? GregTechOreDictUtil.reverseUnify()
         return Arrays.stream(itemStacks)
                 .filter(Objects::nonNull)
-                .map(itemStack -> DisplayComponent.builder(itemStack).build())
+                .map(itemStack -> DisplayComponent.builderWithNbt(itemStack).build())
                 .collect(Collectors.toList());
     }
 
     public static List<DisplayComponent> buildComponents(FluidStack[] fluidStacks) {
         return Arrays.stream(fluidStacks)
                 .filter(Objects::nonNull)
-                .map(fluidStack -> DisplayComponent.builder(fluidStack).build())
+                .map(fluidStack -> DisplayComponent.builderWithNbt(fluidStack).build())
                 .collect(Collectors.toList());
     }
 
@@ -144,7 +145,7 @@ public final class GregTechRecipeUtil {
                 continue;
             }
 
-            DisplayComponent.Builder builder = DisplayComponent.builder(recipe.mOutputs[i]);
+            DisplayComponent.Builder builder = DisplayComponent.builderWithNbt(recipe.mOutputs[i]);
             List<String> additionalInfoStrings = new ArrayList<>();
             List<Tooltip> tooltips = new ArrayList<>();
 
@@ -192,7 +193,8 @@ public final class GregTechRecipeUtil {
                 continue;
             }
 
-            DisplayComponent.Builder builder = DisplayComponent.builder(recipe.mFluidOutputs[i]);
+            DisplayComponent.Builder builder =
+                    DisplayComponent.builderWithNbt(recipe.mFluidOutputs[i]);
             Optional<Tooltip> specialConditionsTooltipOptional =
                     buildSpecialConditionsTooltip(recipe);
             if (specialConditionsTooltipOptional.isPresent()) {

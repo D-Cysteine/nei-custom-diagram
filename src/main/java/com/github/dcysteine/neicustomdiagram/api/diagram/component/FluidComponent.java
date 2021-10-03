@@ -61,6 +61,10 @@ public abstract class FluidComponent implements Component {
     @Override
     public abstract Optional<ImmutableNbtWrapper> nbtWrapper();
 
+    public int fluidId() {
+        return fluid().getID();
+    }
+
     @Override
     public ComponentType type() {
         return ComponentType.FLUID;
@@ -91,7 +95,7 @@ public abstract class FluidComponent implements Component {
     @Override
     public String description() {
         if (ConfigOptions.SHOW_IDS.get()) {
-            return String.format("%s (#%d)", stack().getLocalizedName(), fluid().getID());
+            return String.format("%s (#%d)", stack().getLocalizedName(), fluidId());
         } else {
             return stack().getLocalizedName();
         }

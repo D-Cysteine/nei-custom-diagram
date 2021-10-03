@@ -16,12 +16,22 @@ public final class GuiManager {
     private static final int BOTTOM_MARGIN = 5;
     private static final int SIDE_MARGIN = 4;
 
-    // Increase the scrollable height, to make sure that everything is fully scrollable into view.
+    /**
+     * Increases the scrollable height, to make sure that everything is fully scrollable into view.
+     */
     private static final int VERTICAL_PADDING = 2;
+
+    /**
+     * Specifies # of pixels of leeway (in all four directions) for scrollbar mouseover detection.
+     */
+    private static final int SCROLLBAR_MOUSEOVER_PADDING = 2;
 
     /** The scrollbar will fade away over this many ticks. */
     private static final int SCROLLBAR_FADE_TICKS = 24;
+
+    // Colors from: https://www.canva.com/colors/color-palettes/mermaid-lagoon/
     private static final int SCROLLBAR_FOREGROUND_COLOR = 0x145DA0;
+    private static final int SCROLLBAR_FOREGROUND_SELECTED_COLOR = 0x2E8BC0;
     private static final int SCROLLBAR_BACKGROUND_COLOR = 0xB1D4E0;
     private static final int SCROLLBAR_FOREGROUND_COLOR_OPACITY = 0xF0;
     private static final int SCROLLBAR_BACKGROUND_COLOR_OPACITY = 0x90;
@@ -38,16 +48,23 @@ public final class GuiManager {
         }
     }
 
+    public enum MouseButton {
+        LEFT, RIGHT;
+    }
+
     /** Horizontal scrolling is not fully implemented; there isn't a way to change this value. */
     private int scrollX;
     private int scrollY;
+
+    private boolean scrollbarSelected;
     private int scrollbarFade;
 
     public GuiManager() {
         this.scrollX = 0;
         this.scrollY = 0;
 
-        // Draw the scrollbar upon initialization of the diagram.
+        this.scrollbarSelected = false;
+        // Draw the scrollbar upon initialization of the diagram, if it is scrollable.
         this.scrollbarFade = SCROLLBAR_FADE_TICKS;
     }
 
@@ -60,14 +77,22 @@ public final class GuiManager {
     /**
      * Checks for bad scroll state due to things like resizes or switching diagrams.
      *
-     * <p>{@link #scroll(boolean)} does not check bounds, because we will check them here.
+     * <p>{@link #scroll(ScrollDirection)} does not check bounds, because we will check them here.
      */
     public void checkScrollState(Dimension diagramDimension) {
         int scrollableHeight = computeScrollableHeight(diagramDimension);
         if (scrollableHeight <= 0) {
             scrollY = 0;
+            scrollbarSelected = false;
             scrollbarFade = 0;
             return;
+        }
+
+        if (mouseInScrollBounds()) {
+            scrollbarFade = SCROLLBAR_FADE_TICKS;
+        }
+        if (scrollbarSelected) {
+            scrollToMouse(diagramDimension);
         }
 
         if (scrollY > scrollableHeight) {
@@ -90,19 +115,23 @@ public final class GuiManager {
         GL11.glPopMatrix();
     }
 
-    /**
-     * This needs to be called with absolute coordinate context, such as when drawing tooltips.
-     */
+    /** This needs to be called with absolute coordinate context, such as when drawing tooltips. */
     public void drawScrollbar(Dimension diagramDimension) {
         if (scrollbarFade <= 0) {
             return;
         }
 
+        // TODO move all of this to yet another helper class. Maybe in new gui/ directory.
+        //  Also move related methods in this class.
+        //  Maybe when / if we add a horizontal scrollbar?
         // We'll keep the scrollbar at 100% opacity for half the fade duration, then have it fade.
         int fade = Math.min(2 * scrollbarFade, SCROLLBAR_FADE_TICKS);
         int fgOpacity = SCROLLBAR_FOREGROUND_COLOR_OPACITY * fade / SCROLLBAR_FADE_TICKS;
         int bgOpacity = SCROLLBAR_BACKGROUND_COLOR_OPACITY * fade / SCROLLBAR_FADE_TICKS;
-        int fgColor = SCROLLBAR_FOREGROUND_COLOR | fgOpacity << 24;
+        int fgColor =
+                scrollbarSelected
+                        ? SCROLLBAR_FOREGROUND_SELECTED_COLOR : SCROLLBAR_FOREGROUND_COLOR;
+        fgColor |= fgOpacity << 24;
         int bgColor = SCROLLBAR_BACKGROUND_COLOR | bgOpacity << 24;
 
         Point viewportPos = getViewportPosition();
@@ -151,6 +180,21 @@ public final class GuiManager {
                 && yDiff >= 0 && yDiff <= viewportDim.height();
     }
 
+    public boolean mouseInScrollBounds() {
+        Point viewportPos = getViewportPosition();
+        Dimension viewportDim = getViewportDimension();
+        int scrollbarX = viewportPos.x() + viewportDim.width() + 5 - SCROLLBAR_MOUSEOVER_PADDING;
+        int scrollbarY = viewportPos.y() - SCROLLBAR_MOUSEOVER_PADDING;
+        int scrollbarWidth = 4 + 2 * SCROLLBAR_MOUSEOVER_PADDING;
+        int scrollbarHeight = viewportDim.height() + 2 * SCROLLBAR_MOUSEOVER_PADDING;
+
+        Point mousePos = getAbsoluteMousePosition();
+        int xDiff = mousePos.x() - scrollbarX;
+        int yDiff = mousePos.y() - scrollbarY;
+
+        return xDiff >= 0 && xDiff <= scrollbarWidth && yDiff >= 0 && yDiff <= scrollbarHeight;
+    }
+
     public Point getAbsoluteMousePosition() {
         java.awt.Point mouse = GuiDraw.getMousePosition();
         return Point.create(mouse.x, mouse.y);
@@ -174,6 +218,40 @@ public final class GuiManager {
     public void scroll(ScrollDirection direction) {
         int scrollAmount = direction.factor * ConfigOptions.SCROLL_SPEED.get();
         scrollY += scrollAmount;
+        scrollbarFade = SCROLLBAR_FADE_TICKS;
+    }
+
+    /** Returns whether the click was handled. */
+    public boolean mouseClickScrollbar(MouseButton button, Dimension diagramDimension) {
+        if (!mouseInScrollBounds() && !scrollbarSelected) {
+            return false;
+        }
+
+        switch (button) {
+            case LEFT:
+                scrollbarSelected = !scrollbarSelected;
+                return true;
+
+            case RIGHT:
+                scrollToMouse(diagramDimension);
+                return true;
+        }
+
+        return false;
+    }
+
+    /** Does not check bounds! Bounds checks are done by {@link #checkScrollState(Dimension)}. */
+    public void scrollToMouse(Dimension diagramDimension) {
+        Dimension viewportDim = getViewportDimension();
+        int scrollbarCursorHeight =
+                viewportDim.height() * viewportDim.height() / diagramDimension.height();
+
+        int mouseOffset =
+                getAbsoluteMousePosition().y()
+                        - (getViewportPosition().y() + scrollbarCursorHeight / 2);
+        int scrollbarHeight = viewportDim.height() - scrollbarCursorHeight;
+
+        scrollY = mouseOffset * computeScrollableHeight(diagramDimension) / scrollbarHeight;
         scrollbarFade = SCROLLBAR_FADE_TICKS;
     }
 

@@ -7,16 +7,32 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponen
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 public final class FluidDictUtil {
+    // TODO if we need more memoization, move this to a Memoized class or something
+    /**
+     * Memoize the fluid container data, because
+     * {@link FluidContainerRegistry#getRegisteredFluidContainerData()} makes a copy every time.
+     */
+    public static final Supplier<ImmutableList<FluidContainerRegistry.FluidContainerData>>
+            FORGE_FLUID_CONTAINER_DATA_SUPPLIER =
+            () -> Suppliers.memoize(
+                            () -> ImmutableList.copyOf(
+                                    FluidContainerRegistry.getRegisteredFluidContainerData()))
+                    .get();
+
     // Static class.
     private FluidDictUtil() {}
 
@@ -39,25 +55,6 @@ public final class FluidDictUtil {
         }
 
         return FluidComponent.create(block);
-    }
-
-    /**
-     * Returns a {@link DisplayComponent} for the given fluid container, complete with capacity
-     * information.
-     *
-     * <p>This method doesn't check that {@code container} actually is a fluid container; you will
-     * just get capacity {@code 0} if it isn't.
-     */
-    public static DisplayComponent displayFluidContainer(ItemStack container) {
-        int capacity = FluidContainerRegistry.getContainerCapacity(container);
-        return DisplayComponent.builder(container)
-                .clearStackSize()
-                .setAdditionalInfo(Formatter.smartFormatInteger(capacity))
-                .setAdditionalTooltip(
-                        Tooltip.create(
-                                Lang.UTIL.transf("capacity", capacity),
-                                Tooltip.INFO_FORMATTING))
-                .build();
     }
 
     /**
@@ -84,12 +81,12 @@ public final class FluidDictUtil {
                     return fluidOptional;
                 }
 
-                for (FluidContainerRegistry.FluidContainerData data
-                        : FluidContainerRegistry.getRegisteredFluidContainerData()) {
-                    if (component.equals(ItemComponent.create(data.filledContainer))) {
-                        return Optional.of(FluidComponent.create(data.fluid));
-                    }
+                FluidStack containedFluid =
+                        FluidContainerRegistry.getFluidForFilledItem((ItemStack) component.stack());
+                if (containedFluid != null) {
+                    return Optional.of(FluidComponent.create(containedFluid));
                 }
+
                 return Optional.empty();
 
             case FLUID:
@@ -97,6 +94,31 @@ public final class FluidDictUtil {
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * Returns a {@link DisplayComponent} for the given fluid container data, complete with
+     * capacity, contained fluid, and empty container tooltips.
+     */
+    public static DisplayComponent displayFluidContainer(
+            FluidContainerRegistry.FluidContainerData data) {
+        int capacity = data.fluid.amount;
+        return DisplayComponent.builder(data.filledContainer)
+                .clearStackSize()
+                .setAdditionalInfo(Formatter.smartFormatInteger(capacity))
+                .setAdditionalTooltip(
+                        Tooltip.builder()
+                                .setFormatting(Tooltip.INFO_FORMATTING)
+                                .addTextLine(
+                                        Lang.UTIL.transf("capacity", capacity))
+                                .addSpacing()
+                                .addTextLine(Lang.UTIL.transf("fluidcontainercontents"))
+                                .addDisplayComponent(DisplayComponent.builder(data.fluid).build())
+                                .addSpacing()
+                                .addTextLine(Lang.UTIL.transf("emptyfluidcontainer"))
+                                .addComponent(ItemComponent.create(data.emptyContainer))
+                                .build())
+                .build();
     }
 
     /**
@@ -127,13 +149,41 @@ public final class FluidDictUtil {
             Fluid fluid = fluidOptional.get().fluid();
 
             for (FluidContainerRegistry.FluidContainerData data
-                    : FluidContainerRegistry.getRegisteredFluidContainerData()) {
+                    : FORGE_FLUID_CONTAINER_DATA_SUPPLIER.get()) {
                 if (fluid == data.fluid.getFluid()) {
-                    results.add(displayFluidContainer(data.filledContainer));
+                    results.add(displayFluidContainer(data));
                 }
             }
         }
 
         return results;
+    }
+
+    /**
+     * Returns the empty fluid container for {@code component}.
+     *
+     * <p>Has three modes:
+     * <ul>
+     *     <li>If {@code component} is a filled fluid container, then returns the empty fluid
+     *     container.
+     *
+     *     <li>If {@code component} is an empty fluid container, then returns {@code component}.
+     *
+     *     <li>Otherwise, returns an empty optional.
+     * </ul>
+     */
+    public static Optional<ItemComponent> getEmptyContainer(Component component) {
+        if (component.type() != Component.ComponentType.ITEM) {
+            return Optional.empty();
+        }
+
+        ItemComponent itemComponent = (ItemComponent) component;
+        ItemStack itemStack = itemComponent.stack();
+        if (FluidContainerRegistry.isEmptyContainer(itemStack)) {
+            return Optional.of(itemComponent);
+        } else {
+            ItemStack emptyContainer = FluidContainerRegistry.drainFluidContainer(itemStack);
+            return Optional.ofNullable(emptyContainer).map(ItemComponent::create);
+        }
     }
 }

@@ -2,7 +2,6 @@ package com.github.dcysteine.neicustomdiagram.mod.config;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.google.common.collect.ImmutableList;
-import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 
 import java.util.ArrayList;
@@ -32,6 +31,17 @@ public final class ConfigOptions {
                             + "\nand want to avoid accidentally scrolling through pages."
                             + "\nYou can still scroll through pages while mousing over the page"
                             + " number.")
+                    .register();
+
+    public static final Option<Boolean> GENERATE_DIAGRAMS_ON_CLIENT_CONNECT =
+            new BooleanOption(
+                    Category.OPTIONS, "generate_diagrams_on_client_connect", false,
+                    "If this option is enabled, diagrams will be generated the first time"
+                            + " you join a world."
+                            + "\nThis option must be enabled for diagrams to be affected by"
+                            + " MineTweaker scripts."
+                            + "\nChanging this option requires a restart to take effect.",
+                    true)
                     .register();
 
     public static final Option<Integer> SCROLL_SPEED =
@@ -114,8 +124,8 @@ public final class ConfigOptions {
             return this;
         }
 
-        public void initialize(Configuration config) {
-            property = getProperty(config);
+        public void initialize() {
+            property = getProperty();
             property.setRequiresMcRestart(requiresRestart);
 
             // Load this option, so that it gets saved if it's missing from the config.
@@ -124,9 +134,9 @@ public final class ConfigOptions {
 
         /**
          * Sadly, this abstract method is needed because we cannot in-line getting the property in
-         * {@link #initialize(Configuration)} due to type shenanigans.
+         * {@link #initialize()} due to type shenanigans.
          */
-        abstract Property getProperty(Configuration config);
+        abstract Property getProperty();
 
         @Override
         public abstract T get();
@@ -144,8 +154,8 @@ public final class ConfigOptions {
         }
 
         @Override
-        Property getProperty(Configuration config) {
-            return Config.getConfig().get(category.toString(), key, defaultValue, comment);
+        Property getProperty() {
+            return Config.CONFIG.get(category.toString(), key, defaultValue, comment);
         }
 
         @Override
@@ -166,8 +176,8 @@ public final class ConfigOptions {
         }
 
         @Override
-        Property getProperty(Configuration config) {
-            return Config.getConfig().get(category.toString(), key, defaultValue, comment);
+        Property getProperty() {
+            return Config.CONFIG.get(category.toString(), key, defaultValue, comment);
         }
 
         @Override
@@ -180,8 +190,8 @@ public final class ConfigOptions {
     private ConfigOptions() {}
 
     /** This method is only intended to be called during mod initialization. */
-    static void setCategoryComments(Configuration config) {
-        config.setCategoryComment(
+    static void setCategoryComments() {
+        Config.CONFIG.setCategoryComment(
                 Category.OPTIONS.toString(),
                 "General usage options."
                         + " These should be safe to change without requiring a restart.");
@@ -198,7 +208,7 @@ public final class ConfigOptions {
         Arrays.stream(DiagramGroupVisibility.values()).forEach(
                 visibility -> diagramGroupCategoryCommentBuilder
                         .append("\n * ").append(visibility.toString()));
-        config.setCategoryComment(
+        Config.CONFIG.setCategoryComment(
                 Category.DIAGRAM_GROUPS.toString(), diagramGroupCategoryCommentBuilder.toString());
     }
 
@@ -208,7 +218,7 @@ public final class ConfigOptions {
 
     public static DiagramGroupVisibility getDiagramGroupVisibility(DiagramGroupInfo info) {
         String visibilityName =
-                Config.getConfig().get(
+                Config.CONFIG.get(
                                 Category.DIAGRAM_GROUPS.toString(), info.groupId(),
                                 info.defaultVisibility().toString(),
                                 buildDiagramGroupVisibilityComment(info))

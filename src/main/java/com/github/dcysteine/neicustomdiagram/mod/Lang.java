@@ -31,6 +31,8 @@ public final class Lang {
             new Lang("neicustomdiagram.generators.gregtech5.oreprefixes.");
     public static final Lang GREGTECH_5_ORE_PROCESSING =
             new Lang("neicustomdiagram.generators.gregtech5.oreprocessing.");
+    public static final Lang GREGTECH_5_RECIPE_DEBUGGER =
+            new Lang("neicustomdiagram.generators.gregtech5.recipedebugger.");
 
     private final String prefix;
 
