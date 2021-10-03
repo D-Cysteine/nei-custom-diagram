@@ -14,6 +14,7 @@ import com.github.dcysteine.neicustomdiagram.generators.gregtech5.materialtools.
 import com.github.dcysteine.neicustomdiagram.generators.gregtech5.oredictionary.GregTechOreDictionary;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprefixes.GregTechOrePrefixes;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprocessing.GregTechOreProcessing;
+import com.github.dcysteine.neicustomdiagram.generators.gregtech5.recipedebugger.GregTechRecipeDebugger;
 import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
 import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.google.auto.value.AutoValue;
@@ -22,40 +23,62 @@ import com.google.common.collect.ImmutableSet;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.ModContainer;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /** Registry of diagram generators. Add your diagram generator here! */
-public final class Registry {
+public enum Registry {
+    // Singleton class; enforced by being an enum.
+    INSTANCE;
+
     /** This will be prepended to all group IDs, to ensure that they are globally unique. */
     public static final String GROUP_ID_PREFIX = "neicustomdiagram.diagramgroup.";
 
-    private static final List<RegistryEntry> entries = new ArrayList<>();
-    private static final List<DiagramGenerator> generators = new ArrayList<>();
-    private static ImmutableList<DiagramGroupInfo> info = null;
+    private static final ImmutableList<RegistryEntry> entries;
 
     static {
+        ImmutableList.Builder<RegistryEntry> entriesBuilder = ImmutableList.builder();
+
         // Add your diagram generator here!
-        addGenerator("debug.ruler", DebugRuler::new);
-        addGenerator(
-                "enderstorage.chestoverview", EnderStorageChestOverview::new,
-                ModDependency.ENDER_STORAGE);
-        addGenerator(
-                "enderstorage.tankoverview", EnderStorageTankOverview::new,
-                ModDependency.ENDER_STORAGE);
-        addGenerator("forge.fluidcontainers", ForgeFluidContainers::new);
-        addGenerator("forge.oredictionary", ForgeOreDictionary::new);
-        addGenerator(
-                "gregtech.materialparts", GregTechMaterialParts::new, ModDependency.GREGTECH_5);
-        addGenerator(
-                "gregtech.materialtools", GregTechMaterialTools::new, ModDependency.GREGTECH_5);
-        addGenerator(
-                "gregtech.oredictionary", GregTechOreDictionary::new, ModDependency.GREGTECH_5);
-        addGenerator("gregtech.oreprefixes", GregTechOrePrefixes::new, ModDependency.GREGTECH_5);
-        addGenerator(
-                "gregtech.oreprocessing", GregTechOreProcessing::new, ModDependency.GREGTECH_5);
+        entriesBuilder.add(RegistryEntry.create("debug.ruler", DebugRuler::new));
+        entriesBuilder.add(
+                RegistryEntry.create(
+                        "enderstorage.chestoverview", EnderStorageChestOverview::new,
+                        ModDependency.ENDER_STORAGE));
+        entriesBuilder.add(
+                RegistryEntry.create(
+                        "enderstorage.tankoverview", EnderStorageTankOverview::new,
+                        ModDependency.ENDER_STORAGE));
+        entriesBuilder.add(
+                RegistryEntry.create("forge.fluidcontainers", ForgeFluidContainers::new));
+        entriesBuilder.add(RegistryEntry.create("forge.oredictionary", ForgeOreDictionary::new));
+        entriesBuilder.add(
+                RegistryEntry.create(
+                        "gregtech.materialparts", GregTechMaterialParts::new,
+                        ModDependency.GREGTECH_5));
+        entriesBuilder.add(
+                RegistryEntry.create(
+                        "gregtech.materialtools", GregTechMaterialTools::new,
+                        ModDependency.GREGTECH_5));
+        entriesBuilder.add(
+                RegistryEntry.create(
+                        "gregtech.oredictionary", GregTechOreDictionary::new,
+                        ModDependency.GREGTECH_5));
+        entriesBuilder.add(
+                RegistryEntry.create(
+                        "gregtech.oreprefixes", GregTechOrePrefixes::new,
+                        ModDependency.GREGTECH_5));
+        entriesBuilder.add(
+                RegistryEntry.create(
+                        "gregtech.oreprocessing", GregTechOreProcessing::new,
+                        ModDependency.GREGTECH_5));
+        entriesBuilder.add(
+                RegistryEntry.create(
+                        "gregtech.recipedebugger", GregTechRecipeDebugger::new,
+                        ModDependency.GREGTECH_5));
+
+        entries = entriesBuilder.build();
     }
 
     public enum ModDependency {
@@ -135,21 +158,15 @@ public final class Registry {
         }
     }
 
-    // Static class.
-    private Registry() {};
-
-    /** This method must be called before mod initialization. */
-    public static void addGenerator(
-            String groupIdSuffix, Function<String, DiagramGenerator> generatorConstructor,
-            ModDependency... hardDependencies) {
-        entries.add(RegistryEntry.create(groupIdSuffix, generatorConstructor, hardDependencies));
-    }
+    private ImmutableList<DiagramGenerator> generators;
+    private ImmutableList<DiagramGroupInfo> infoList;
 
     /** This method is only intended to be called during mod initialization. */
-    public static void initialize() {
+    public void initialize() {
         Logger.MOD.info("Initializing diagram groups...");
 
-        ImmutableList.Builder<DiagramGroupInfo> infoBuilder = ImmutableList.builder();
+        ImmutableList.Builder<DiagramGenerator> generatorsBuilder = ImmutableList.builder();
+        ImmutableList.Builder<DiagramGroupInfo> infoListBuilder = ImmutableList.builder();
         for (RegistryEntry entry : entries) {
             List<ModDependency> missingDependencies = entry.missingDependencies();
             if (!missingDependencies.isEmpty()) {
@@ -160,20 +177,21 @@ public final class Registry {
             }
 
             DiagramGenerator generator = entry.get();
-            infoBuilder.add(generator.info());
-            generators.add(generator);
+            infoListBuilder.add(generator.info());
+            generatorsBuilder.add(generator);
             Logger.MOD.info("Initialized diagram group [{}]!", entry.groupId());
         }
-        info = infoBuilder.build();
+        generators = generatorsBuilder.build();
+        infoList = infoListBuilder.build();
 
         Logger.MOD.info("Initialization complete!");
     }
 
-    public static ImmutableList<DiagramGroupInfo> info() {
-        return info;
+    public ImmutableList<DiagramGroupInfo> infoList() {
+        return infoList;
     }
 
-    public static void generateDiagramGroups() {
+    public void generateDiagramGroups() {
         Logger.MOD.info("Generating diagram groups...");
 
         for (DiagramGenerator generator : generators) {
@@ -183,6 +201,7 @@ public final class Registry {
                 continue;
             }
 
+            // TODO display time elapsed?
             Logger.MOD.info("Generating diagram group [{}]...", info.groupId());
             DiagramGroup diagramGroup = generator.generate();
             API.registerRecipeHandler(diagramGroup);
@@ -201,10 +220,7 @@ public final class Registry {
      * used after diagram generation. This method will clear references to them so that they can be
      * garbage-collected.
      */
-    public static void cleanUp() {
-        entries.clear();
-        generators.clear();
-        // info() is not cleared because it is used asynchronously by NEIRegisterHandlerInfosEvent,
-        // and that could potentially (though unlikely) happen after cleanUp() is called.
+    public void cleanUp() {
+        generators = null;
     }
 }

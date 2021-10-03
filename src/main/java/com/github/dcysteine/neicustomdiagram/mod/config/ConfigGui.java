@@ -33,7 +33,7 @@ public final class ConfigGui extends GuiConfig {
         return Arrays.stream(ConfigOptions.Category.values())
                 .map(
                         category -> new ConfigElement(
-                                Config.getConfig().getCategory(category.toString())))
+                                Config.CONFIG.getCategory(category.toString())))
                 .collect(Collectors.toList());
     }
 }

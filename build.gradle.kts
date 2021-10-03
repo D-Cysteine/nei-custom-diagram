@@ -78,13 +78,20 @@ dependencies {
     compile("codechicken:CodeChickenLib:$minecraftVersion-$codeChickenLibVersion:dev")
 
     val gregTech5Version: String by project
-    val enderIoVersion: String by project
-    val forestryVersion: String by project
-    val railcraftVersion: String by project
+    compile("gregtech:gregtech:$gregTech5Version:dev") {
+        this.isTransitive = false
+    }
+    /*
+     * If we need to get this from Jenkins instead:
     compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
         this.isTransitive = false
     }
+     */
+
     // The following are compile-time dependencies of GT5.
+    val enderIoVersion: String by project
+    val forestryVersion: String by project
+    val railcraftVersion: String by project
     compileOnly("crazypants.enderio:EnderIO-$minecraftVersion:${enderIoVersion}_beta:dev")
     compileOnly("net.sengir.forestry:forestry_$minecraftVersion:$forestryVersion:dev")
     compileOnly("mods.railcraft:Railcraft_$minecraftVersion:$railcraftVersion:dev")

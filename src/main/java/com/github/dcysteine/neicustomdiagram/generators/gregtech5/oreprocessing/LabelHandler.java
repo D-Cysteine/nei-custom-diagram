@@ -1,6 +1,6 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprocessing;
 
-import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInteractable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
@@ -14,7 +14,7 @@ import java.util.EnumMap;
 class LabelHandler {
     enum ItemLabel {
         MACERATOR(ItemList.Machine_HV_Macerator, "maceratorlabel"),
-        ORE_WASHER(ItemList.Machine_HV_OreWasher, "orewasherlabel"),
+        ORE_WASHING_PLANT(ItemList.Machine_HV_OreWasher, "orewashingplantlabel"),
         CHEMICAL_BATH(ItemList.Machine_HV_ChemicalBath, "chemicalbathlabel"),
         CENTRIFUGE(ItemList.Machine_HV_Centrifuge, "centrifugelabel"),
         SIFTER(ItemList.Machine_HV_Sifter, "sifterlabel"),
@@ -23,7 +23,7 @@ class LabelHandler {
         THERMAL_CENTRIFUGE(ItemList.Machine_HV_ThermalCentrifuge, "thermalcentrifugelabel"),
 
         FURNACE(ItemList.Machine_HV_E_Furnace, "furnacelabel"),
-        ELECTRIC_BLAST_FURNACE(ItemList.Machine_Multi_BlastFurnace, "ebflabel"),
+        ELECTRIC_BLAST_FURNACE(ItemList.Machine_Multi_BlastFurnace, "electricblastfurnacelabel"),
         CHEMICAL_REACTOR(ItemList.Machine_HV_ChemicalReactor, "chemicalreactorlabel"),
         AUTOCLAVE(ItemList.Machine_HV_Autoclave, "autoclavelabel");
 
@@ -36,7 +36,7 @@ class LabelHandler {
         }
     }
 
-    private final EnumMap<ItemLabel, Component> componentMap;
+    private final EnumMap<ItemLabel, ItemComponent> componentMap;
 
     LabelHandler() {
         componentMap = new EnumMap<>(ItemLabel.class);

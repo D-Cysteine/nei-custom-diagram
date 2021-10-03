@@ -170,13 +170,13 @@ class LayoutHandler {
 
         CustomInteractable label =
                 labelHandler.buildLabel(
-                        LabelHandler.ItemLabel.ORE_WASHER, Grid.GRID.grid(8, 8));
+                        LabelHandler.ItemLabel.ORE_WASHING_PLANT, Grid.GRID.grid(8, 8));
 
         SlotGroup outputSlots =
                 SlotGroup.builder(1, 2, Grid.GRID.grid(8, 10), Grid.Direction.S)
                         .setDefaultTooltip(
                                 Tooltip.create(
-                                        Lang.GREGTECH_5_ORE_PROCESSING.trans("orewasherslot"),
+                                        Lang.GREGTECH_5_ORE_PROCESSING.trans("orewashingplantslot"),
                                         Tooltip.SLOT_FORMATTING))
                         .build();
 

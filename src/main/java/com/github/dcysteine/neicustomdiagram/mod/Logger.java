@@ -11,6 +11,8 @@ public final class Logger {
             LogManager.getLogger(buildGroupName(Lang.GREGTECH_5_MATERIAL_PARTS));
     public static final org.apache.logging.log4j.Logger GREGTECH_5_ORE_PROCESSING =
             LogManager.getLogger(buildGroupName(Lang.GREGTECH_5_ORE_PROCESSING));
+    public static final org.apache.logging.log4j.Logger GREGTECH_5_RECIPE_DEBUGGER =
+            LogManager.getLogger(buildGroupName(Lang.GREGTECH_5_RECIPE_DEBUGGER));
 
     private static String buildGroupName(Lang lang) {
         return NeiCustomDiagram.MOD_NAME + "/" + lang.trans("groupname");

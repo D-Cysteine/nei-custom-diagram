@@ -254,6 +254,14 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
      */
     @Override
     public boolean mouseClicked(GuiRecipe gui, int button, int recipe) {
+        boolean handled =
+            guiManager.mouseClickScrollbar(
+                    button == 0 ? GuiManager.MouseButton.LEFT : GuiManager.MouseButton.RIGHT,
+                    diagrams.get(recipe).dimension(diagramState));
+        if (handled) {
+            return true;
+        }
+
         switch (button) {
             case 0:
                 return interact(recipe, Interactable.RecipeType.CRAFTING);
@@ -267,7 +275,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
 
     @Override
     public boolean mouseScrolled(GuiRecipe gui, int scroll, int recipe) {
-        if (!mouseInBounds()) {
+        if (!mouseInBounds() && !guiManager.mouseInScrollBounds()) {
             return false;
         }
         GuiManager.ScrollDirection direction =

@@ -68,6 +68,10 @@ public abstract class ItemComponent implements Component {
     @Override
     public abstract Optional<ImmutableNbtWrapper> nbtWrapper();
 
+    public int itemId() {
+        return Item.getIdFromItem(item());
+    }
+
     public boolean hasWildcardDamage() {
         return damage() == OreDictionary.WILDCARD_VALUE;
     }
@@ -102,8 +106,7 @@ public abstract class ItemComponent implements Component {
     @Override
     public String description() {
         if (ConfigOptions.SHOW_IDS.get()) {
-            return String.format("%s (#%d/%d)",
-                    stack().getDisplayName(), Item.getIdFromItem(item()), damage());
+            return String.format("%s (#%d/%d)", stack().getDisplayName(), itemId(), damage());
         } else {
             return stack().getDisplayName();
         }

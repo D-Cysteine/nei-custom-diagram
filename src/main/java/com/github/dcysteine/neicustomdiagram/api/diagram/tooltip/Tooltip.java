@@ -169,6 +169,14 @@ public abstract class Tooltip {
                             .build());
         }
 
+        public Builder addComponentDescription(Component component) {
+            return addLine(
+                    TooltipLine.builder()
+                            .addFormatting(currentFormatting)
+                            .addComponentDescription(component)
+                            .build());
+        }
+
         public Builder addAllDisplayComponents(
                 Iterable<? extends DisplayComponent> displayComponents) {
             displayComponents.forEach(this::addDisplayComponent);

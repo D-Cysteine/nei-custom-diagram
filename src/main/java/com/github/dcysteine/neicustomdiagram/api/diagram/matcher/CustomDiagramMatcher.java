@@ -13,14 +13,14 @@ import java.util.function.BiFunction;
  * instances.
  */
 public class CustomDiagramMatcher implements DiagramMatcher {
-    protected final ImmutableList<Diagram> diagrams;
+    protected final ImmutableList<Diagram> allDiagrams;
     protected final BiFunction<
             Interactable.RecipeType, Component, Collection<Diagram>> diagramFunction;
 
     public CustomDiagramMatcher(
-            Iterable<? extends Diagram> diagrams,
+            Iterable<? extends Diagram> allDiagrams,
             BiFunction<Interactable.RecipeType, Component, Collection<Diagram>> diagramFunction) {
-        this.diagrams = ImmutableList.copyOf(diagrams);
+        this.allDiagrams = ImmutableList.copyOf(allDiagrams);
         this.diagramFunction = diagramFunction;
     }
 
@@ -43,7 +43,7 @@ public class CustomDiagramMatcher implements DiagramMatcher {
 
     @Override
     public Collection<Diagram> all() {
-        return diagrams;
+        return allDiagrams;
     }
 
     @Override

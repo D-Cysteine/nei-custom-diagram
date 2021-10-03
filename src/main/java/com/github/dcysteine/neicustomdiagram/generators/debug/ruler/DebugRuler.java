@@ -95,16 +95,20 @@ public final class DebugRuler implements DiagramGenerator {
             Lines.Builder linesBuilder =
                     i % (2 * RULER_SEGMENT_PIXELS) > 0 ? rulerColor1 : rulerColor2;
 
-            linesBuilder.move(Point.create(i, 0));
-            linesBuilder.addSegment(Point.create(i - RULER_SEGMENT_PIXELS, 0));
+            // To account for lines having thickness 2,
+            // we must shorten both ends by 1 pixel to avoid overlap.
+            linesBuilder.move(Point.create(i + 1 - RULER_SEGMENT_PIXELS, 0));
+            linesBuilder.addSegment(Point.create(i - 1, 0));
         }
 
         for (int i = RULER_SEGMENT_PIXELS; i <= RULER_HEIGHT_PIXELS; i += RULER_SEGMENT_PIXELS) {
             Lines.Builder linesBuilder =
                     i % (2 * RULER_SEGMENT_PIXELS) > 0 ? rulerColor1 : rulerColor2;
 
-            linesBuilder.move(Point.create(0, i));
-            linesBuilder.addSegment(Point.create(0, i - RULER_SEGMENT_PIXELS));
+            // To account for lines having thickness 2,
+            // we must shorten both ends by 1 pixel to avoid overlap.
+            linesBuilder.move(Point.create(0, i + 1 - RULER_SEGMENT_PIXELS));
+            linesBuilder.addSegment(Point.create(0, i - 1));
         }
 
         for (int i = 0; i < RULER_WIDTH_SLOTS; i++) {

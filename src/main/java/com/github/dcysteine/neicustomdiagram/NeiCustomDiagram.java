@@ -1,21 +1,19 @@
 package com.github.dcysteine.neicustomdiagram;
 
-import codechicken.nei.event.NEIRegisterHandlerInfosEvent;
-import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.mod.NeiIntegration;
-import com.github.dcysteine.neicustomdiagram.mod.Reflection;
 import com.github.dcysteine.neicustomdiagram.mod.Registry;
 import com.github.dcysteine.neicustomdiagram.mod.config.Config;
 import com.github.dcysteine.neicustomdiagram.mod.config.ConfigGuiFactory;
 import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
-import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.network.FMLNetworkEvent;
 import cpw.mods.fml.relauncher.Side;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -32,55 +30,68 @@ public final class NeiCustomDiagram {
     public static final String MOD_VERSION = "@version@";
     public static final String MOD_DEPENDENCIES =
             "required-after:NotEnoughItems;"
-                + "after:gregtech;"
-                + "after:bartworks;"
-                + "after:detravscannermod;";
+                    + "after:MineTweaker3;"
+                    + "after:gregtech;"
+                    + "after:bartworks;"
+                    + "after:detravscannermod;";
 
     @Instance(MOD_ID)
     public static NeiCustomDiagram instance;
 
+    private boolean hasGenerated;
+
+    public NeiCustomDiagram() {
+        this.hasGenerated = false;
+    }
+
     @EventHandler
+    @SuppressWarnings("unused")
     public void onInitialization(FMLInitializationEvent event) {
         if (event.getSide() != Side.CLIENT) {
             return;
         }
         Logger.MOD.info("Mod initialization starting...");
 
-        Reflection.initialize();
-        Registry.initialize();
-        Config.initialize();
-        NeiIntegration.initialize();
-        MinecraftForge.EVENT_BUS.register(NeiCustomDiagram.this);
+        Registry.INSTANCE.initialize();
+        Config.initialize(Registry.INSTANCE.infoList());
+        NeiIntegration.INSTANCE.initialize(Registry.INSTANCE.infoList());
+
+        MinecraftForge.EVENT_BUS.register(NeiIntegration.INSTANCE);
+        if (ConfigOptions.GENERATE_DIAGRAMS_ON_CLIENT_CONNECT.get()) {
+            FMLCommonHandler.instance().bus().register(this);
+        }
 
         Logger.MOD.info("Mod initialization complete!");
     }
 
     @EventHandler
+    @SuppressWarnings("unused")
     public void onLoadComplete(FMLLoadCompleteEvent event) {
-        if (event.getSide() != Side.CLIENT) {
+        if (event.getSide() != Side.CLIENT
+                || ConfigOptions.GENERATE_DIAGRAMS_ON_CLIENT_CONNECT.get()) {
             return;
         }
         Logger.MOD.info("Mod post-load starting...");
 
-        Registry.generateDiagramGroups();
-        Registry.cleanUp();
+        Registry.INSTANCE.generateDiagramGroups();
+        Registry.INSTANCE.cleanUp();
+        hasGenerated = true;
 
         Logger.MOD.info("Mod post-load complete!");
     }
 
     @SubscribeEvent
-    public void registerHandlers(NEIRegisterHandlerInfosEvent event) {
-        Logger.MOD.info("Registering handlers for diagram groups...");
-
-        for (DiagramGroupInfo info : Registry.info()) {
-            if (ConfigOptions.getDiagramGroupVisibility(info) == DiagramGroupVisibility.DISABLED) {
-                continue;
-            }
-
-            event.registerHandlerInfo(info.groupId(), MOD_NAME, MOD_ID, info::buildHandlerInfo);
-            Logger.MOD.info("Registered handler for diagram group [{}]!", info.groupId());
+    @SuppressWarnings("unused")
+    public void onClientConnected(FMLNetworkEvent.ClientConnectedToServerEvent event) {
+        if (!ConfigOptions.GENERATE_DIAGRAMS_ON_CLIENT_CONNECT.get() || hasGenerated) {
+            return;
         }
+        Logger.MOD.info("Mod pre-connect starting...");
 
-        Logger.MOD.info("Registration complete!");
+        Registry.INSTANCE.generateDiagramGroups();
+        Registry.INSTANCE.cleanUp();
+        hasGenerated = true;
+
+        Logger.MOD.info("Mod pre-connect complete!");
     }
 }
