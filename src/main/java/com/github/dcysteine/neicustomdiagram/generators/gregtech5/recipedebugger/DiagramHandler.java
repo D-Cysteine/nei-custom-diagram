@@ -3,7 +3,6 @@ package com.github.dcysteine.neicustomdiagram.generators.gregtech5.recipedebugge
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
-import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInteractable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
@@ -13,13 +12,11 @@ import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MultimapBuilder;
-import gregtech.api.util.GT_Utility;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 class DiagramHandler {
     private final DiagramGroupInfo info;
@@ -112,8 +109,7 @@ class DiagramHandler {
                 Diagram.builder().addLayout(layoutFactory.buildProgrammedCircuitsLayout());
 
         List<DisplayComponent> programmedCircuits =
-                IntStream.range(0, 25)
-                        .mapToObj(i -> ItemComponent.create(GT_Utility.getIntegratedCircuit(i)))
+                RecipeHandler.PROGRAMMED_CIRCUITS.stream()
                         .map(ComponentTransformer::transformToDisplay)
                         .collect(Collectors.toList());
         builder.autoInsertIntoSlotGroup(LayoutFactory.SlotGroupKeys.PROGRAMMED_CIRCUITS)

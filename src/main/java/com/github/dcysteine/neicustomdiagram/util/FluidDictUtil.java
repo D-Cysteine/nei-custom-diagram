@@ -28,10 +28,9 @@ public final class FluidDictUtil {
      */
     public static final Supplier<ImmutableList<FluidContainerRegistry.FluidContainerData>>
             FORGE_FLUID_CONTAINER_DATA_SUPPLIER =
-            () -> Suppliers.memoize(
-                            () -> ImmutableList.copyOf(
-                                    FluidContainerRegistry.getRegisteredFluidContainerData()))
-                    .get();
+            Suppliers.memoize(
+                    () -> ImmutableList.copyOf(
+                            FluidContainerRegistry.getRegisteredFluidContainerData()))::get;
 
     // Static class.
     private FluidDictUtil() {}

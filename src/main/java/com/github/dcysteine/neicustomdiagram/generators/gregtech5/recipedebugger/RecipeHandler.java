@@ -10,12 +10,14 @@ import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechRecipeUtil;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import gregtech.api.enums.ItemList;
 import gregtech.api.util.GT_ModHandler;
 import gregtech.api.util.GT_OreDictUnificator;
 import gregtech.api.util.GT_Recipe;
+import gregtech.api.util.GT_Utility;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -27,11 +29,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 class RecipeHandler {
     static final Item PROGRAMMED_CIRCUIT = ItemList.Circuit_Integrated.getItem();
-    static final ImmutableList<ItemComponent> SCHEMATICS =
-            ImmutableList.<ItemComponent>builder()
+    static final ImmutableSet<ItemComponent> PROGRAMMED_CIRCUITS =
+            ImmutableSet.copyOf(
+                    IntStream.range(0, 25)
+                            .mapToObj(i -> ItemComponent.create(GT_Utility.getIntegratedCircuit(i)))
+                            .collect(Collectors.toList()));
+    static final ImmutableSet<ItemComponent> SCHEMATICS =
+            ImmutableSet.<ItemComponent>builder()
                     .add(GregTechOreDictUtil.getComponent(ItemList.Schematic_1by1))
                     .add(GregTechOreDictUtil.getComponent(ItemList.Schematic_2by2))
                     .add(GregTechOreDictUtil.getComponent(ItemList.Schematic_3by3))
@@ -337,10 +345,7 @@ class RecipeHandler {
     }
 
     static Set<Component> filterCircuits(Set<Component> components) {
-        return Sets.filter(
-                components,
-                component -> component.type() != Component.ComponentType.ITEM
-                        || ((ItemComponent) component).item() != PROGRAMMED_CIRCUIT);
+        return Sets.difference(components, PROGRAMMED_CIRCUITS);
     }
 
     /**
@@ -385,8 +390,7 @@ class RecipeHandler {
                 continue;
             }
 
-            ItemComponent itemComponent = (ItemComponent) component;
-            if ((itemComponent.item() == PROGRAMMED_CIRCUIT || SCHEMATICS.contains(itemComponent))
+            if ((PROGRAMMED_CIRCUITS.contains(component) || SCHEMATICS.contains(component))
                     && entry.getValue() > 0) {
                 return true;
             }
@@ -397,11 +401,11 @@ class RecipeHandler {
 
     private static boolean unnecessaryCircuit(Recipe recipe, Iterable<Recipe> recipes) {
         Set<Component> inputs = recipe.inputs().keySet();
-        Set<Component> filteredInputs = filterCircuits(inputs);
-        if (inputs.size() == filteredInputs.size()) {
+        if (inputs.stream().noneMatch(PROGRAMMED_CIRCUITS::contains)) {
             return false;
         }
 
+        Set<Component> filteredInputs = filterCircuits(inputs);
         for (Recipe otherRecipe : recipes) {
             if (recipe == otherRecipe) {
                 continue;

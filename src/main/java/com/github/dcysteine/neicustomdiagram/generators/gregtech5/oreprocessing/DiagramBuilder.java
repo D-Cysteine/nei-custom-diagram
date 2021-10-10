@@ -3,6 +3,7 @@ package com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprocessing
 import com.github.dcysteine.neicustomdiagram.api.diagram.Diagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInteractable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
@@ -12,7 +13,6 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
-import com.github.dcysteine.neicustomdiagram.util.FluidDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFluidDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;
@@ -225,27 +225,26 @@ class DiagramBuilder {
         additionalRecipeOutputs.removeIf(STONE_DUST::equals);
         for (Component component : ImmutableList.copyOf(additionalRecipeOutputs)) {
             craftingComponents.addAll(GregTechOreDictUtil.getAssociatedComponents(component));
-            craftingComponents.addAll(
-                    ComponentTransformer.transformFromDisplay(
-                            FluidDictUtil.getFluidContainers(component)));
 
-            Optional<ItemComponent> displayItem = GregTechFluidDictUtil.getDisplayItem(component);
-            if (displayItem.isPresent()) {
-                craftingComponents.add(displayItem.get());
+            Optional<FluidComponent> fluidOptional =
+                    GregTechFluidDictUtil.getFluidContents(component);
+            if (fluidOptional.isPresent()) {
+                FluidComponent fluid = fluidOptional.get();
+                craftingComponents.addAll(GregTechFluidDictUtil.getAssociatedComponents(fluid));
 
-                // Replace fluids with their GregTech cell form (or, failing that, fluid display
-                // item form), since it's more convenient when looking up recipes.
-                ItemComponent replacementItem = displayItem.get();
-                replacementItem =
-                        GregTechFluidDictUtil.fillCell(replacementItem).orElse(replacementItem);
-                additionalRecipeOutputs.remove(component);
-                additionalRecipeOutputs.add(replacementItem);
+                // component should already be a GregTech fluid display item (if possible).
+                // However, filled cells are even more convenient for looking up recipes, so try to
+                // show that if possible.
+                Optional<ItemComponent> cell = GregTechFluidDictUtil.fillCell(fluid);
+                if (cell.isPresent()) {
+                    additionalRecipeOutputs.remove(component);
+                    additionalRecipeOutputs.add(cell.get());
+                }
             }
         }
         diagramBuilder.autoInsertIntoSlotGroup(
                         LayoutHandler.SlotGroupKeys.ADDITIONAL_RECIPE_OUTPUTS)
-                .insertEachSafe(
-                        ComponentTransformer.transformToDisplay(additionalRecipeOutputs));
+                .insertEachSafe(ComponentTransformer.transformToDisplay(additionalRecipeOutputs));
 
         matcherBuilder.addDiagram(diagramBuilder.build())
                 .addAllComponents(Interactable.RecipeType.CRAFTING, craftingComponents)

@@ -9,6 +9,10 @@ public final class Logger {
             LogManager.getLogger(NeiCustomDiagram.MOD_NAME);
     public static final org.apache.logging.log4j.Logger GREGTECH_5_MATERIAL_PARTS =
             LogManager.getLogger(buildGroupName(Lang.GREGTECH_5_MATERIAL_PARTS));
+    public static final org.apache.logging.log4j.Logger GREGTECH_5_MATERIAL_TOOLS =
+            LogManager.getLogger(buildGroupName(Lang.GREGTECH_5_MATERIAL_TOOLS));
+    public static final org.apache.logging.log4j.Logger GREGTECH_5_ORE_PREFIXES =
+            LogManager.getLogger(buildGroupName(Lang.GREGTECH_5_ORE_PREFIXES));
     public static final org.apache.logging.log4j.Logger GREGTECH_5_ORE_PROCESSING =
             LogManager.getLogger(buildGroupName(Lang.GREGTECH_5_ORE_PROCESSING));
     public static final org.apache.logging.log4j.Logger GREGTECH_5_RECIPE_DEBUGGER =

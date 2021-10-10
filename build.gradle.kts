@@ -82,7 +82,7 @@ dependencies {
         this.isTransitive = false
     }
     /*
-     * If we need to get this from Jenkins instead:
+     * If we need to get this from Jitpack instead:
     compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
         this.isTransitive = false
     }

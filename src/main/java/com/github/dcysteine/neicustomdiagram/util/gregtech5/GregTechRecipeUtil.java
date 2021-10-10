@@ -3,6 +3,7 @@ package com.github.dcysteine.neicustomdiagram.util.gregtech5;
 import com.github.dcysteine.neicustomdiagram.api.Formatter;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.google.common.base.Joiner;
@@ -117,10 +118,22 @@ public final class GregTechRecipeUtil {
     }
 
     public static List<DisplayComponent> buildComponents(FluidStack[] fluidStacks) {
-        return Arrays.stream(fluidStacks)
-                .filter(Objects::nonNull)
-                .map(fluidStack -> DisplayComponent.builderWithNbt(fluidStack).build())
-                .collect(Collectors.toList());
+        List<DisplayComponent> list = new ArrayList<>();
+        for (FluidStack fluidStack : fluidStacks) {
+            if (fluidStack == null) {
+                continue;
+            }
+
+            FluidComponent fluidComponent = FluidComponent.createWithNbt(fluidStack);
+            Component component =
+                    GregTechFluidDictUtil.fluidToDisplayItem(fluidComponent)
+                            .map(Component.class::cast)
+                            .orElse(fluidComponent);
+
+            list.add(DisplayComponent.builder(component).setStackSize(fluidStack.amount).build());
+        }
+
+        return list;
     }
 
     public static List<DisplayComponent> buildComponentsFromInputs(GT_Recipe recipe) {
@@ -141,11 +154,12 @@ public final class GregTechRecipeUtil {
         List<DisplayComponent> results = new ArrayList<>();
 
         for (int i = 0; i < recipe.mOutputs.length; i++) {
-            if (recipe.mOutputs[i] == null) {
+            ItemStack itemStack = recipe.mOutputs[i];
+            if (itemStack == null) {
                 continue;
             }
 
-            DisplayComponent.Builder builder = DisplayComponent.builderWithNbt(recipe.mOutputs[i]);
+            DisplayComponent.Builder builder = DisplayComponent.builderWithNbt(itemStack);
             List<String> additionalInfoStrings = new ArrayList<>();
             List<Tooltip> tooltips = new ArrayList<>();
 
@@ -189,12 +203,20 @@ public final class GregTechRecipeUtil {
         List<DisplayComponent> results = new ArrayList<>();
 
         for (int i = 0; i < recipe.mFluidOutputs.length; i++) {
-            if (recipe.mFluidOutputs[i] == null) {
+            FluidStack fluidStack = recipe.mFluidOutputs[i];
+            if (fluidStack == null) {
                 continue;
             }
 
+            FluidComponent fluidComponent = FluidComponent.createWithNbt(fluidStack);
+            Component component =
+                    GregTechFluidDictUtil.fluidToDisplayItem(fluidComponent)
+                            .map(Component.class::cast)
+                            .orElse(fluidComponent);
+
             DisplayComponent.Builder builder =
-                    DisplayComponent.builderWithNbt(recipe.mFluidOutputs[i]);
+                    DisplayComponent.builder(component).setStackSize(fluidStack.amount);
+
             Optional<Tooltip> specialConditionsTooltipOptional =
                     buildSpecialConditionsTooltip(recipe);
             if (specialConditionsTooltipOptional.isPresent()) {
