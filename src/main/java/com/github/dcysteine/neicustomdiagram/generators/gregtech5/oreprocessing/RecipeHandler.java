@@ -1,7 +1,6 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprocessing;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
-import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechRecipeUtil;
@@ -14,6 +13,7 @@ import com.google.common.collect.SetMultimap;
 import gregtech.api.enums.Materials;
 import gregtech.api.util.GT_OreDictUnificator;
 import gregtech.api.util.GT_Recipe;
+import gregtech.api.util.GT_Utility;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
 
@@ -52,12 +52,13 @@ class RecipeHandler {
     /** Enum containing fluids that we will look up crushed ore recipes for in the chemical bath. */
     enum ChemicalBathFluid {
         MERCURY(
-                DisplayComponent.builder(FluidComponent.create(Materials.Mercury.mFluid))
+                DisplayComponent.builder(GT_Utility.getFluidDisplayStack(Materials.Mercury.mFluid))
                         .setStackSize(1000)
                         .build()),
 
         SODIUM_PERSULFATE(
-                DisplayComponent.builder(FluidComponent.create(Materials.SodiumPersulfate.mFluid))
+                DisplayComponent.builder(
+                                GT_Utility.getFluidDisplayStack(Materials.SodiumPersulfate.mFluid))
                         .setStackSize(100)
                         .build());
 
@@ -67,6 +68,10 @@ class RecipeHandler {
             this.fluid = fluid;
         }
 
+        /**
+         * Note that the keys are GregTech fluid display items, not fluids. This is for convenience,
+         * because {@link GregTechRecipeUtil} returns GregTech fluid display items (when possible).
+         */
         static final ImmutableMap<DisplayComponent, ChemicalBathFluid> VALUES_MAP =
                 ImmutableMap.copyOf(
                         Arrays.stream(values())

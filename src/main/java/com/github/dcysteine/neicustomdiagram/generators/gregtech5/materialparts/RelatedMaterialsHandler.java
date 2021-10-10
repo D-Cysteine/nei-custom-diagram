@@ -58,8 +58,7 @@ class RelatedMaterialsHandler {
                 MultimapBuilder.hashKeys().hashSetValues().build();
         Map<Materials, DisplayComponent> materialRepresentations = new HashMap<>();
 
-        Map<String, Materials> allMaterials = Materials.getMaterialsMap();
-        for (Materials material : allMaterials.values()) {
+        for (Materials material : Materials.getAll()) {
             if (EXCLUDED_MATERIALS.contains(material)) {
                 continue;
             }

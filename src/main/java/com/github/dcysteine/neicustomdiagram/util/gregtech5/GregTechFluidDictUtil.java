@@ -80,6 +80,9 @@ public final class GregTechFluidDictUtil {
                                 .orElse(component));
     }
 
+    // TODO should we move the non-GregTech part of this into a new method in FluidDictUtil?
+    //  Maybe when we add a diagram that actually needs it?
+    //  Also, should this method also return all fluid containers containing the fluid?
     /**
      * Returns a list of some fluid-related components associated with {@code component};
      * {@code component} should itself be either a fluid or a fluid-related component.

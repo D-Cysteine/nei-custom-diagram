@@ -15,10 +15,12 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.github.dcysteine.neicustomdiagram.util.DiagramUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechDiagramUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFluidDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFormatting;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
@@ -113,8 +115,15 @@ public final class GregTechOrePrefixes implements DiagramGenerator {
         Optional<ItemData> itemDataOptional = GregTechOreDictUtil.getItemData(component);
         if (itemDataOptional.isPresent() && itemDataOptional.get().mMaterial != null) {
             Materials material = itemDataOptional.get().mMaterial.mMaterial;
-            return material == null
-                    ? Lists.newArrayList() : Lists.newArrayList(materialsMap.get(material));
+            if (material != null) {
+                if (materialsMap.containsKey(material)) {
+                    return Lists.newArrayList(materialsMap.get(material));
+                } else {
+                    Logger.GREGTECH_5_ORE_PREFIXES.error(
+                            "Did not generate diagram for material: {}",
+                            GregTechFormatting.getMaterialDescription(material));
+                }
+            }
         }
 
         return Lists.newArrayList();

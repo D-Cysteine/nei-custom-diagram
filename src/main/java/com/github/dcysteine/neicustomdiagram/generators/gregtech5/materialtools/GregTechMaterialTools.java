@@ -9,8 +9,10 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.util.DiagramUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFluidDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFormatting;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.Lists;
@@ -97,7 +99,16 @@ public final class GregTechMaterialTools implements DiagramGenerator {
             }
         }
 
-        return material == null
-                ? Lists.newArrayList() : Lists.newArrayList(materialsMap.get(material));
+        if (material != null) {
+            if (materialsMap.containsKey(material)) {
+                return Lists.newArrayList(materialsMap.get(material));
+            } else {
+                Logger.GREGTECH_5_MATERIAL_TOOLS.error(
+                        "Did not generate diagram for material: {}",
+                        GregTechFormatting.getMaterialDescription(material));
+            }
+        }
+
+        return Lists.newArrayList();
     }
 }
