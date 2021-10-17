@@ -263,6 +263,7 @@ class RecipeHandler {
     abstract static class BaseTool implements Comparable<BaseTool> {
         private static final Comparator<BaseTool> COMPARATOR =
                 Comparator.<BaseTool, Integer>comparing(b -> b.primaryMaterial().mMetaItemSubID)
+                        .thenComparing(b -> b.primaryMaterial().mName)
                         .thenComparing(BaseTool::itemComponent);
 
         private static BaseTool create(ItemStack itemStack) {

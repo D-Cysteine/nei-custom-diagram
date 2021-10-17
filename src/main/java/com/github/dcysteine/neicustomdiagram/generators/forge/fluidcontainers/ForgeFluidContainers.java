@@ -21,7 +21,10 @@ import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
 import com.github.dcysteine.neicustomdiagram.util.FluidDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFluidDictUtil;
 import com.google.common.collect.ImmutableBiMap;
+import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.SetMultimap;
 import net.minecraft.init.Items;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -32,8 +35,7 @@ import java.util.Optional;
 /**
  * Generates diagrams showing all Forge-registered fluid containers for a given fluid.
  *
- * <p>This diagram generator generates its diagrams dynamically, and so does not support showing all
- * diagrams.
+ * <p>This diagram group also supports showing all fluids that an empty fluid container can contain.
  */
 public final class ForgeFluidContainers implements DiagramGenerator {
     public static final ItemComponent ICON = ItemComponent.create(Items.water_bucket, 0);
@@ -47,6 +49,7 @@ public final class ForgeFluidContainers implements DiagramGenerator {
 
     private Layout layout;
     private ImmutableBiMap<FluidComponent, Diagram> fluidsMap;
+    private ImmutableListMultimap<ItemComponent, Diagram> emptyContainersMultimap;
 
     public ForgeFluidContainers(String groupId) {
         this.info =
@@ -70,17 +73,25 @@ public final class ForgeFluidContainers implements DiagramGenerator {
         layout = buildLayout();
 
         ImmutableBiMap.Builder<FluidComponent, Diagram> fluidsMapBuilder = ImmutableBiMap.builder();
+        // We use a set multimap here to get free deduping, but we'll need to convert this to a list
+        // multimap later because we need to return lists.
+        SetMultimap<ItemComponent, Diagram> emptyContainersSetMultimap =
+                MultimapBuilder.hashKeys().hashSetValues().build();
         for (Fluid fluid : FluidRegistry.getRegisteredFluids().values()) {
             FluidComponent fluidComponent = FluidComponent.create(fluid);
-            fluidsMapBuilder.put(fluidComponent, generateDiagram(fluidComponent));
+            fluidsMapBuilder.put(
+                    fluidComponent,
+                    generateDiagram(fluidComponent, emptyContainersSetMultimap));
         }
         fluidsMap = fluidsMapBuilder.build();
+        emptyContainersMultimap = ImmutableListMultimap.copyOf(emptyContainersSetMultimap);
 
         return new DiagramGroup(
                 info, new CustomDiagramMatcher(fluidsMap.values(), this::getDiagram));
     }
 
-    private Diagram generateDiagram(FluidComponent fluid) {
+    private Diagram generateDiagram(
+            FluidComponent fluid, SetMultimap<ItemComponent, Diagram> emptyContainersMultimap) {
         List<DisplayComponent> fluidContainers = FluidDictUtil.getFluidContainers(fluid);
         // Remove the first element, which is the fluid.
         fluidContainers = fluidContainers.subList(1, fluidContainers.size());
@@ -125,10 +136,16 @@ public final class ForgeFluidContainers implements DiagramGenerator {
                                             .build()));
         }
 
-        return builder.build();
+        Diagram diagram = builder.build();
+        fluidContainers.forEach(
+                displayComponent -> FluidDictUtil.getEmptyContainer(displayComponent.component())
+                        .ifPresent(container -> emptyContainersMultimap.put(container, diagram)));
+        return diagram;
     }
 
     private List<Diagram> getDiagram(Interactable.RecipeType unused, Component component) {
+        // TODO if component is an empty fluid container, return all diagrams for fluids that it can
+        //  contain. Do this by pre-computing a multimap of empty fluid container to diagrams...?
         Optional<FluidComponent> fluidOptional = FluidDictUtil.getFluidContents(component);
         if (!fluidOptional.isPresent() && Registry.ModDependency.GREGTECH_5.isLoaded()) {
             // Try looking up GregTech fluid display stack.
@@ -136,11 +153,15 @@ public final class ForgeFluidContainers implements DiagramGenerator {
                 fluidOptional = GregTechFluidDictUtil.displayItemToFluid((ItemComponent) component);
             }
         }
-        if (!fluidOptional.isPresent()) {
-            return Lists.newArrayList();
+        if (fluidOptional.isPresent()) {
+            return Lists.newArrayList(fluidsMap.get(fluidOptional.get()));
         }
 
-        return Lists.newArrayList(fluidsMap.get(fluidOptional.get()));
+        if (component.type() == Component.ComponentType.ITEM) {
+            return emptyContainersMultimap.get((ItemComponent) component);
+        } else {
+            return Lists.newArrayList();
+        }
     }
 
     private Layout buildLayout() {
