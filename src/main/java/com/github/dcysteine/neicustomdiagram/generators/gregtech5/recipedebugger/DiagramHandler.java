@@ -9,6 +9,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MultimapBuilder;
@@ -51,7 +52,7 @@ class DiagramHandler {
                 buildRecipeDiagrams(recipeHandler.unnecessaryCircuitRecipes));
         diagramListMultimap.putAll(
                 GregTechRecipeDebugger.View.COLLIDING_RECIPES,
-                buildRecipeDiagrams(recipeHandler.collidingRecipes));
+                buildRecipeDiagrams(ImmutableList.copyOf(recipeHandler.collidingRecipes)));
         diagramListMultimap.putAll(
                 GregTechRecipeDebugger.View.VOIDING_RECIPES,
                 buildRecipeDiagrams(recipeHandler.voidingRecipes));

@@ -78,12 +78,12 @@ dependencies {
     compile("codechicken:CodeChickenLib:$minecraftVersion-$codeChickenLibVersion:dev")
 
     val gregTech5Version: String by project
-    compile("gregtech:gregtech:$gregTech5Version:dev") {
+    compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
         this.isTransitive = false
     }
     /*
-     * If we need to get this from Jitpack instead:
-    compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
+     * If we need to get this from downloads.gtnewhorizons.com instead:
+    compile("gregtech:gregtech:$gregTech5Version:dev") {
         this.isTransitive = false
     }
      */

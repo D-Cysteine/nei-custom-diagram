@@ -11,7 +11,6 @@ import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import gregtech.api.enums.ItemList;
 import gregtech.api.util.GT_ModHandler;
@@ -24,7 +23,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -266,25 +265,17 @@ class RecipeHandler {
     final Map<RecipeMap, RecipePartitioner> allRecipes;
     final List<Recipe> consumeCircuitRecipes;
     final List<Recipe> unnecessaryCircuitRecipes;
-    final List<Recipe> collidingRecipes;
+    final Set<Recipe> collidingRecipes;
     final List<Recipe> voidingRecipes;
     final List<Recipe> unequalCellRecipes;
-
-    /**
-     * We'll also put colliding recipes into a set, to ensure that we don't add the same recipe more
-     * than once.
-     */
-    private final Set<Recipe> collidingRecipesSet;
 
     RecipeHandler() {
         this.allRecipes = new HashMap<>();
         this.consumeCircuitRecipes = new ArrayList<>();
         this.unnecessaryCircuitRecipes = new ArrayList<>();
-        this.collidingRecipes = new ArrayList<>();
+        this.collidingRecipes = new LinkedHashSet<>();
         this.voidingRecipes = new ArrayList<>();
         this.unequalCellRecipes = new ArrayList<>();
-
-        this.collidingRecipesSet = new HashSet<>();
     }
 
     /** This method must be called before any other methods are called. */
@@ -324,14 +315,7 @@ class RecipeHandler {
                     unnecessaryCircuitRecipes.add(recipe);
                 }
 
-                for (Recipe collidingRecipe : findCollidingRecipes(recipe, matchingRecipes)) {
-                    if (collidingRecipesSet.contains(collidingRecipe)) {
-                        continue;
-                    }
-
-                    collidingRecipes.add(collidingRecipe);
-                    collidingRecipesSet.add(collidingRecipe);
-                }
+                collidingRecipes.addAll(findCollidingRecipes(recipe, matchingRecipes));
 
                 if (voidingRecipe(recipe)) {
                     voidingRecipes.add(recipe);
@@ -419,15 +403,18 @@ class RecipeHandler {
         return true;
     }
 
-    private static List<Recipe> findCollidingRecipes(Recipe recipe, Iterable<Recipe> recipes) {
-        List<Recipe> collidingRecipes = Lists.newArrayList(recipe);
+    // TODO this won't find cases where we have multiple identical recipes
+    //  (maybe differing in recipe time or voltage or something). Do we care?
+    private static Set<Recipe> findCollidingRecipes(Recipe recipe, Iterable<Recipe> recipes) {
+        Set<Recipe> collidingRecipes = Sets.newLinkedHashSet();
+        collidingRecipes.add(recipe);
+
         for (Recipe otherRecipe : recipes) {
             if (recipe == otherRecipe) {
                 continue;
             }
 
-            if (isSubset(recipe.inputs().keySet(), otherRecipe.inputs().keySet())
-                    && !recipe.outputs().equals(otherRecipe.outputs())) {
+            if (isSubset(recipe.inputs().keySet(), otherRecipe.inputs().keySet())) {
                 collidingRecipes.add(otherRecipe);
             }
         }
@@ -435,7 +422,7 @@ class RecipeHandler {
         if (collidingRecipes.size() > 1) {
             return collidingRecipes;
         } else {
-            return Lists.newArrayList();
+            return Sets.newHashSet();
         }
     }
 
