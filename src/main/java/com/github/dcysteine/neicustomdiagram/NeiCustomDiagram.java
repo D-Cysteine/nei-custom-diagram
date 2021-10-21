@@ -52,8 +52,10 @@ public final class NeiCustomDiagram {
         }
         Logger.MOD.info("Mod initialization starting...");
 
+        Config.initialize();
         Registry.INSTANCE.initialize();
-        Config.initialize(Registry.INSTANCE.infoList());
+        Config.initializeDiagramGroupVisibility(Registry.INSTANCE.infoList());
+        Config.saveConfig();
         NeiIntegration.INSTANCE.initialize(Registry.INSTANCE.infoList());
 
         MinecraftForge.EVENT_BUS.register(NeiIntegration.INSTANCE);

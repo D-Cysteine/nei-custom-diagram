@@ -44,6 +44,24 @@ public final class ConfigOptions {
                     true)
                     .register();
 
+    public static final Option<String[]> HARD_DISABLED_DIAGRAM_GROUPS =
+            new StringArrayOption(
+                    Category.OPTIONS, "hard_disabled_diagram_groups", new String[0],
+                    "Add a diagram group ID here to disable that diagram group before"
+                            + " initialization."
+                            + "\nThis option is intended to fix compatibility with old versions of"
+                            + " mods,"
+                            + "\nwhere diagram groups have their dependencies satisfied, but crash"
+                            + " on initialization."
+                            + "\nYou should not need to modify this option unless you are getting a"
+                            + " crash."
+                            + "\nEntries in this option should have the form (no spaces, all"
+                            + " lower-case):"
+                            + "\n  neicustomdiagram.diagramgroup.<mod name>.<diagram group name>"
+                            + "\nChanging this option requires a restart to take effect.",
+                    true)
+                    .register();
+
     public static final Option<Integer> SCROLL_SPEED =
             new IntegerOption(
                     Category.OPTIONS, "scroll_speed", 12,
@@ -186,6 +204,28 @@ public final class ConfigOptions {
         }
     }
 
+    public static final class StringArrayOption extends Option<String[]> {
+        private StringArrayOption(Category category, String key, String[] defaultValue, String comment) {
+            super(category, key, defaultValue, comment);
+        }
+
+        private StringArrayOption(
+                Category category, String key, String[] defaultValue, String comment,
+                boolean requiresRestart) {
+            super(category, key, defaultValue, comment, requiresRestart);
+        }
+
+        @Override
+        Property getProperty() {
+            return Config.CONFIG.get(category.toString(), key, defaultValue, comment);
+        }
+
+        @Override
+        public String[] get() {
+            return property.getStringList();
+        }
+    }
+
     // Static class.
     private ConfigOptions() {}
 
@@ -228,7 +268,15 @@ public final class ConfigOptions {
     }
 
     private static String buildDefaultComment(Object defaultValue) {
-        return String.format("\nDefault: %s", defaultValue);
+        String toString;
+        if (defaultValue instanceof String[]) {
+            // String[] does not have a nice default toString() implementation.
+             toString = Arrays.toString((String[]) defaultValue);
+        } else {
+            toString = defaultValue.toString();
+        }
+
+        return String.format("\nDefault: %s", toString);
     }
 
     private static String buildDiagramGroupVisibilityComment(DiagramGroupInfo info) {

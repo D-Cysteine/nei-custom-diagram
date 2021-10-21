@@ -165,6 +165,8 @@ public enum Registry {
     public void initialize() {
         Logger.MOD.info("Initializing diagram groups...");
 
+        ImmutableSet<String> hardDisabledDiagramGroups =
+                ImmutableSet.copyOf(ConfigOptions.HARD_DISABLED_DIAGRAM_GROUPS.get());
         ImmutableList.Builder<DiagramGenerator> generatorsBuilder = ImmutableList.builder();
         ImmutableList.Builder<DiagramGroupInfo> infoListBuilder = ImmutableList.builder();
         for (RegistryEntry entry : entries) {
@@ -173,6 +175,10 @@ public enum Registry {
                 Logger.MOD.warn(
                         "Diagram group [{}] is missing dependencies: {}",
                         entry.groupId(), missingDependencies);
+                continue;
+            }
+            if (hardDisabledDiagramGroups.contains(entry.groupId())) {
+                Logger.MOD.warn("Diagram group [{}] is hard-disabled.", entry.groupId());
                 continue;
             }
 
