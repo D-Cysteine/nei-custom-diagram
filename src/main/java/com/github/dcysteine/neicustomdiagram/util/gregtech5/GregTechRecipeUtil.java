@@ -27,6 +27,7 @@ public final class GregTechRecipeUtil {
     // Static class.
     private GregTechRecipeUtil() {}
 
+    // TODO these findRecipe* methods are slow and inefficient, and also unused. Maybe delete them?
     /** Compares ignoring stack size. */
     public static List<GT_Recipe> findRecipeByInput(
             GT_Recipe.GT_Recipe_Map recipes, Component... inputs) {
@@ -138,9 +139,17 @@ public final class GregTechRecipeUtil {
 
     public static List<DisplayComponent> buildComponentsFromInputs(GT_Recipe recipe) {
         List<DisplayComponent> components = new ArrayList<>();
-        components.addAll(buildComponents(recipe.mInputs));
-        components.addAll(buildComponents(recipe.mFluidInputs));
+        components.addAll(buildComponentsFromItemInputs(recipe));
+        components.addAll(buildComponentsFromFluidInputs(recipe));
         return components;
+    }
+
+    public static List<DisplayComponent> buildComponentsFromItemInputs(GT_Recipe recipe) {
+        return buildComponents(recipe.mInputs);
+    }
+
+    public static List<DisplayComponent> buildComponentsFromFluidInputs(GT_Recipe recipe) {
+        return buildComponents(recipe.mFluidInputs);
     }
 
     public static List<DisplayComponent> buildComponentsFromOutputs(GT_Recipe recipe) {
@@ -230,13 +239,19 @@ public final class GregTechRecipeUtil {
         return results;
     }
 
+    // TODO these special values only apply for certain recipe types.
+    //  Do we ever run into cases where they don't apply?
+    public static boolean requiresCleanroom(GT_Recipe recipe) {
+        return recipe.mSpecialValue == -200 || recipe.mSpecialValue == -300;
+    }
+
+    public static boolean requiresLowGravity(GT_Recipe recipe) {
+        return recipe.mSpecialValue == -100 || recipe.mSpecialValue == -300;
+    }
+
     private static Optional<Tooltip> buildSpecialConditionsTooltip(GT_Recipe recipe) {
-        // TODO these special values only apply for certain recipe types.
-        //  Do we ever run into cases where they don't apply?
-        boolean requiresCleanroom =
-                recipe.mSpecialValue == -100 || recipe.mSpecialValue == -300;
-        boolean requiresLowGravity =
-                recipe.mSpecialValue == -200 || recipe.mSpecialValue == -300;
+        boolean requiresCleanroom = requiresCleanroom(recipe);
+        boolean requiresLowGravity = requiresLowGravity(recipe);
         if (requiresCleanroom || requiresLowGravity) {
             Tooltip.Builder tooltipBuilder =
                     Tooltip.builder().setFormatting(Tooltip.INFO_FORMATTING);

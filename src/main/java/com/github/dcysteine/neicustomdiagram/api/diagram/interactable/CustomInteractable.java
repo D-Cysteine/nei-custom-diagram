@@ -27,6 +27,14 @@ public class CustomInteractable implements Interactable {
     protected final Consumer<Point> drawBackground;
 
     /**
+     * This function will be called after {@code label.draw()}, with {@code position} as a
+     * parameter.
+     *
+     * <p>You can use this to do something like draw additional info text over the label.
+     */
+    protected final Consumer<Point> drawForeground;
+
+    /**
      * This function will be called when mousing over this interactable, with {@code position} as a
      * parameter.
      */
@@ -34,11 +42,13 @@ public class CustomInteractable implements Interactable {
 
     protected CustomInteractable(
             BoundedDrawable drawable, Tooltip tooltip, Consumer<RecipeType> interact,
-            Consumer<Point> drawBackground, Consumer<Point> drawOverlay) {
+            Consumer<Point> drawBackground, Consumer<Point> drawForeground,
+            Consumer<Point> drawOverlay) {
         this.drawable = drawable;
         this.tooltip = tooltip;
         this.interact = interact;
         this.drawBackground = drawBackground;
+        this.drawForeground = drawForeground;
         this.drawOverlay = drawOverlay;
     }
 
@@ -69,6 +79,7 @@ public class CustomInteractable implements Interactable {
     public void draw(DiagramState diagramState) {
         drawBackground.accept(position());
         drawable.draw(diagramState);
+        drawForeground.accept(position());
     }
 
     @Override
@@ -105,6 +116,7 @@ public class CustomInteractable implements Interactable {
         private Tooltip tooltip;
         private Consumer<RecipeType> interact;
         private Consumer<Point> drawBackground;
+        private Consumer<Point> drawForeground;
         private Consumer<Point> drawOverlay;
 
         private Builder(BoundedDrawable drawable) {
@@ -114,6 +126,7 @@ public class CustomInteractable implements Interactable {
             // Initialize all method handlers to do nothing by default.
             this.interact = recipeType -> {};
             this.drawBackground = position -> {};
+            this.drawForeground = position -> {};
             this.drawOverlay = position -> {};
         }
 
@@ -152,6 +165,17 @@ public class CustomInteractable implements Interactable {
         }
 
         /**
+         * This function will be called after {@code label.draw()}, with {@code position} as a
+         * parameter.
+         *
+         * <p>You can use this to do something like draw additional info text over the label.
+         */
+        public Builder setDrawForeground(Consumer<Point> drawForeground) {
+            this.drawForeground = drawForeground;
+            return this;
+        }
+
+        /**
          * This function will be called when mousing over this interactable, with {@code position}
          * as a parameter.
          */
@@ -161,7 +185,8 @@ public class CustomInteractable implements Interactable {
         }
 
         public CustomInteractable build() {
-            return new CustomInteractable(drawable, tooltip, interact, drawBackground, drawOverlay);
+            return new CustomInteractable(
+                    drawable, tooltip, interact, drawBackground, drawForeground, drawOverlay);
         }
     }
 }
