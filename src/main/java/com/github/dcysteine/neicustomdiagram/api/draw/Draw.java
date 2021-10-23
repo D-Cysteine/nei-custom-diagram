@@ -3,6 +3,7 @@ package com.github.dcysteine.neicustomdiagram.api.draw;
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.guihook.GuiContainerManager;
 import com.github.dcysteine.neicustomdiagram.api.Formatter;
+import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Grid;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.TooltipLine;
 import com.google.auto.value.AutoValue;
@@ -159,21 +160,13 @@ public final class Draw {
 
     /**
      * Draws stack size for a component centered on the given point.
+     *
+     * <p>This will be drawn in the bottom-right corner of the component. Keep this short!
      */
     public static void drawStackSize(int stackSize, Point pos) {
         String text = Formatter.smartFormatInteger(stackSize);
-        int textWidth = GuiDraw.getStringWidth(text);
-        int textHeight = TEXT_HEIGHT;
-
         boolean small = stackSize >= 100;
-        if (small) {
-            textWidth /= 2;
-            textHeight /= 2;
-        }
-
-        Point textCenter =
-                pos.translate((ICON_WIDTH - textWidth) / 2, (ICON_WIDTH - textHeight) / 2);
-        drawText(text, textCenter, Color.WHITE, small, true);
+        drawTextOverIcon(text, pos, Grid.Direction.SE, Color.WHITE, small, true);
     }
 
     /**
@@ -182,6 +175,12 @@ public final class Draw {
      * <p>This will be drawn in the top-left corner of the component. Keep this short!
      */
     public static void drawAdditionalInfo(String text, Point pos, boolean small) {
+        drawTextOverIcon(text, pos, Grid.Direction.NW, Color.YELLOW, small, true);
+    }
+
+    /** Draws text offset in the specified direction over an icon. */
+    public static void drawTextOverIcon(
+            String text, Point pos, Grid.Direction dir, int color, boolean small, boolean shadow) {
         int textWidth = GuiDraw.getStringWidth(text);
         int textHeight = TEXT_HEIGHT;
         if (small) {
@@ -190,8 +189,10 @@ public final class Draw {
         }
 
         Point textCenter =
-                pos.translate((textWidth - ICON_WIDTH) / 2, (textHeight - ICON_WIDTH) / 2);
-        drawText(text, textCenter, Color.YELLOW, small, true);
+                pos.translate(
+                        dir.xFactor * (ICON_WIDTH - textWidth) / 2,
+                        dir.yFactor * (ICON_WIDTH - textHeight) / 2);
+        drawText(text, textCenter, color, small, shadow);
     }
 
     /**

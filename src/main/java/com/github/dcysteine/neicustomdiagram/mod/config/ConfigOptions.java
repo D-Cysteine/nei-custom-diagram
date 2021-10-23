@@ -1,6 +1,7 @@
 package com.github.dcysteine.neicustomdiagram.mod.config;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
+import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.google.common.collect.ImmutableList;
 import net.minecraftforge.common.config.Property;
 
@@ -35,7 +36,7 @@ public final class ConfigOptions {
 
     public static final Option<Boolean> GENERATE_DIAGRAMS_ON_CLIENT_CONNECT =
             new BooleanOption(
-                    Category.OPTIONS, "generate_diagrams_on_client_connect", false,
+                    Category.OPTIONS, "generate_diagrams_on_client_connect", true,
                     "If this option is enabled, diagrams will be generated the first time"
                             + " you join a world."
                             + "\nThis option must be enabled for diagrams to be affected by"
@@ -257,12 +258,27 @@ public final class ConfigOptions {
     }
 
     public static DiagramGroupVisibility getDiagramGroupVisibility(DiagramGroupInfo info) {
-        String visibilityName =
+        Property property =
                 Config.CONFIG.get(
-                                Category.DIAGRAM_GROUPS.toString(), info.groupId(),
-                                info.defaultVisibility().toString(),
-                                buildDiagramGroupVisibilityComment(info))
-                        .getString();
+                        Category.DIAGRAM_GROUPS.toString(), info.groupId(),
+                        info.defaultVisibility().toString(),
+                        buildDiagramGroupVisibilityComment(info));
+        String visibilityName = property.getString();
+
+        // Handle old boolean config values from before v0.8.1
+        if (visibilityName.equals("true") || visibilityName.equals("false")) {
+            Logger.MOD.warn(
+                    "Detected old boolean config value [{}] for diagram group [{}]!"
+                            + " Updating...",
+                    visibilityName, info.groupId());
+
+            DiagramGroupVisibility visibility =
+                    Boolean.parseBoolean(visibilityName)
+                            ? DiagramGroupVisibility.ALWAYS_SHOWN
+                            : DiagramGroupVisibility.DISABLED;
+            property.set(visibility.name());
+            return visibility;
+        }
 
         return DiagramGroupVisibility.getByName(visibilityName);
     }

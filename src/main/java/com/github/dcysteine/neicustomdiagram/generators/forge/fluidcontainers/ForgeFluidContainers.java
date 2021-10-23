@@ -90,6 +90,25 @@ public final class ForgeFluidContainers implements DiagramGenerator {
                 info, new CustomDiagramMatcher(fluidsMap.values(), this::getDiagram));
     }
 
+    private List<Diagram> getDiagram(Interactable.RecipeType unused, Component component) {
+        Optional<FluidComponent> fluidOptional = FluidDictUtil.getFluidContents(component);
+        if (!fluidOptional.isPresent() && Registry.ModDependency.GREGTECH_5.isLoaded()) {
+            // Try looking up GregTech fluid display stack.
+            if (component.type() == Component.ComponentType.ITEM) {
+                fluidOptional = GregTechFluidDictUtil.displayItemToFluid((ItemComponent) component);
+            }
+        }
+        if (fluidOptional.isPresent()) {
+            return Lists.newArrayList(fluidsMap.get(fluidOptional.get()));
+        }
+
+        if (component.type() == Component.ComponentType.ITEM) {
+            return emptyContainersMultimap.get((ItemComponent) component);
+        } else {
+            return Lists.newArrayList();
+        }
+    }
+
     private Diagram generateDiagram(
             FluidComponent fluid, SetMultimap<ItemComponent, Diagram> emptyContainersMultimap) {
         List<DisplayComponent> fluidContainers = FluidDictUtil.getFluidContainers(fluid);
@@ -104,9 +123,16 @@ public final class ForgeFluidContainers implements DiagramGenerator {
         fluidsBuilder.insertIntoNextSlot(
                 DisplayComponent.builder(fluid)
                         .setAdditionalTooltip(
-                                Tooltip.create(
-                                        Lang.FORGE_FLUID_CONTAINERS.trans("fluidlabel"),
-                                        Tooltip.SLOT_FORMATTING))
+                                Tooltip.builder()
+                                        .setFormatting(Tooltip.SLOT_FORMATTING)
+                                        .addTextLine(
+                                                Lang.FORGE_FLUID_CONTAINERS.trans("fluidlabel"))
+                                        .addSpacing()
+                                        .setFormatting(Tooltip.INFO_FORMATTING)
+                                        .addTextLine(
+                                                Lang.FORGE_FLUID_CONTAINERS.transf(
+                                                        "fluidnamelabel", fluid.fluid().getName()))
+                                        .build())
                         .build());
 
         Optional<ItemComponent> blockOptional = FluidDictUtil.fluidToItem(fluid);
@@ -141,27 +167,6 @@ public final class ForgeFluidContainers implements DiagramGenerator {
                 displayComponent -> FluidDictUtil.getEmptyContainer(displayComponent.component())
                         .ifPresent(container -> emptyContainersMultimap.put(container, diagram)));
         return diagram;
-    }
-
-    private List<Diagram> getDiagram(Interactable.RecipeType unused, Component component) {
-        // TODO if component is an empty fluid container, return all diagrams for fluids that it can
-        //  contain. Do this by pre-computing a multimap of empty fluid container to diagrams...?
-        Optional<FluidComponent> fluidOptional = FluidDictUtil.getFluidContents(component);
-        if (!fluidOptional.isPresent() && Registry.ModDependency.GREGTECH_5.isLoaded()) {
-            // Try looking up GregTech fluid display stack.
-            if (component.type() == Component.ComponentType.ITEM) {
-                fluidOptional = GregTechFluidDictUtil.displayItemToFluid((ItemComponent) component);
-            }
-        }
-        if (fluidOptional.isPresent()) {
-            return Lists.newArrayList(fluidsMap.get(fluidOptional.get()));
-        }
-
-        if (component.type() == Component.ComponentType.ITEM) {
-            return emptyContainersMultimap.get((ItemComponent) component);
-        } else {
-            return Lists.newArrayList();
-        }
     }
 
     private Layout buildLayout() {

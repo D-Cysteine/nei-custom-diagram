@@ -46,9 +46,7 @@ class LayoutHandler {
 
     /** This method must be called before any other methods are called. */
     void initialize() {
-        ImmutableList.Builder<Layout> requiredLayoutsBuilder = new ImmutableList.Builder<>();
-        requiredLayoutsBuilder.add(buildHeaderLayout());
-        requiredLayouts = requiredLayoutsBuilder.build();
+        requiredLayouts = ImmutableList.of(buildHeaderLayout());
 
         ImmutableList.Builder<Layout> optionalLayoutsBuilder = new ImmutableList.Builder<>();
         optionalLayoutsBuilder.add(buildToolPartsLayout());
