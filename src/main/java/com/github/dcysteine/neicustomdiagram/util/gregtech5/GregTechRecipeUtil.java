@@ -4,6 +4,7 @@ import com.github.dcysteine.neicustomdiagram.api.Formatter;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.FluidComponent;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.google.common.base.Joiner;
@@ -17,9 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public final class GregTechRecipeUtil {
     private static final Joiner STRING_JOINER = Joiner.on(' ');
@@ -110,12 +109,50 @@ public final class GregTechRecipeUtil {
         return true;
     }
 
+    public static List<DisplayComponent> buildComponentsFromInputs(GT_Recipe recipe) {
+        List<DisplayComponent> components = new ArrayList<>();
+        components.addAll(buildComponentsFromItemInputs(recipe));
+        components.addAll(buildComponentsFromFluidInputs(recipe));
+        return components;
+    }
+
+    public static List<DisplayComponent> buildComponentsFromItemInputs(GT_Recipe recipe) {
+        return buildComponents(recipe.mInputs);
+    }
+
+    public static List<DisplayComponent> buildComponentsFromFluidInputs(GT_Recipe recipe) {
+        return buildComponents(recipe.mFluidInputs);
+    }
+
     public static List<DisplayComponent> buildComponents(ItemStack[] itemStacks) {
-        // TODO maybe add unification result to tooltip here? GregTechOreDictUtil.reverseUnify()
-        return Arrays.stream(itemStacks)
-                .filter(Objects::nonNull)
-                .map(itemStack -> DisplayComponent.builderWithNbt(itemStack).build())
-                .collect(Collectors.toList());
+        List<DisplayComponent> displayComponents = new ArrayList<>();
+        for (ItemStack itemStack : itemStacks) {
+            if (itemStack == null) {
+                continue;
+            }
+
+            ItemComponent itemComponent = ItemComponent.createWithNbt(itemStack);
+            DisplayComponent.Builder builder = DisplayComponent.builder(itemComponent);
+
+            List<Component> reverseUnifiedItems = GregTechOreDictUtil.reverseUnify(itemComponent);
+            if (reverseUnifiedItems.size() > 1) {
+                builder
+                        .setAdditionalInfo("*")
+                        .setAdditionalTooltip(
+                                Tooltip.builder()
+                                        .setFormatting(Tooltip.INFO_FORMATTING)
+                                        .addTextLine(
+                                                Lang.GREGTECH_5_UTIL.trans(
+                                                        "reverseunifieditems"))
+                                        .setFormatting(Tooltip.DEFAULT_FORMATTING)
+                                        .addAllComponents(reverseUnifiedItems)
+                                        .build());
+            }
+
+            displayComponents.add(builder.build());
+        }
+
+        return displayComponents;
     }
 
     public static List<DisplayComponent> buildComponents(FluidStack[] fluidStacks) {
@@ -135,21 +172,6 @@ public final class GregTechRecipeUtil {
         }
 
         return list;
-    }
-
-    public static List<DisplayComponent> buildComponentsFromInputs(GT_Recipe recipe) {
-        List<DisplayComponent> components = new ArrayList<>();
-        components.addAll(buildComponentsFromItemInputs(recipe));
-        components.addAll(buildComponentsFromFluidInputs(recipe));
-        return components;
-    }
-
-    public static List<DisplayComponent> buildComponentsFromItemInputs(GT_Recipe recipe) {
-        return buildComponents(recipe.mInputs);
-    }
-
-    public static List<DisplayComponent> buildComponentsFromFluidInputs(GT_Recipe recipe) {
-        return buildComponents(recipe.mFluidInputs);
     }
 
     public static List<DisplayComponent> buildComponentsFromOutputs(GT_Recipe recipe) {

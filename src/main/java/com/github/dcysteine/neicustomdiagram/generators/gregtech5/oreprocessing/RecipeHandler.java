@@ -3,6 +3,7 @@ package com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprocessing
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechRecipeUtil;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -166,7 +167,8 @@ class RecipeHandler {
     /** The returned set is immutable! */
     Set<ImmutableList<DisplayComponent>> getRecipeOutputs(
             RecipeMap recipeMap, ItemComponent input) {
-        return Multimaps.unmodifiableSetMultimap(recipeData.get(recipeMap)).get(input);
+        return Multimaps.unmodifiableSetMultimap(recipeData.get(recipeMap))
+                .get((ItemComponent) GregTechOreDictUtil.unify(input));
     }
 
     /**
@@ -177,7 +179,9 @@ class RecipeHandler {
      */
     Optional<ImmutableList<DisplayComponent>> getUniqueRecipeOutput(
             RecipeMap recipeMap, ItemComponent input) {
-        Set<ImmutableList<DisplayComponent>> outputs = recipeData.get(recipeMap).get(input);
+        Set<ImmutableList<DisplayComponent>> outputs = recipeData.get(recipeMap)
+                .get((ItemComponent) GregTechOreDictUtil.unify(input));
+
         if (outputs.size() > 1) {
             Logger.GREGTECH_5_ORE_PROCESSING.warn(
                     "Found {} recipes: [{}] [{}]", outputs.size(), recipeMap, input);
