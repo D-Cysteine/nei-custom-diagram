@@ -13,6 +13,7 @@ neicustomdiagram.util.emptyfluidcontainer=Empty container:
 neicustomdiagram.util.gregtech5.materialinforadioactive=危险！放射性！
 neicustomdiagram.util.gregtech5.materialinfohot=危险！炽热！
 neicustomdiagram.util.gregtech5.materialinfocold=危险！冰冷！
+neicustomdiagram.util.gregtech5.reverseunifieditems=Ore dictionary synonyms:
 neicustomdiagram.util.gregtech5.outputchance=几率：%.2f%%
 neicustomdiagram.util.gregtech5.recipecleanroom=Recipe requires cleanroom
 neicustomdiagram.util.gregtech5.recipelowgravity=Recipe requires low gravity

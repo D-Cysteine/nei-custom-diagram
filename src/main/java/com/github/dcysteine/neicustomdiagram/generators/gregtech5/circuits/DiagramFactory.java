@@ -13,6 +13,7 @@ import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
@@ -204,7 +205,9 @@ class DiagramFactory {
                                 LayoutHandler.SLOT_GROUP_RECIPE_ITEM_INPUTS.get(i))
                         .insertEachSafe(subItemInputs);
                 subItemInputs.stream()
-                        .map(DisplayComponent::component).forEach(usageComponents::add);
+                        .map(DisplayComponent::component)
+                        .flatMap(c -> GregTechOreDictUtil.getAssociatedComponents(c).stream())
+                        .forEach(usageComponents::add);
             }
 
             ImmutableSortedSet<DisplayComponent> fluidInputs = recipe.fluidInputs();

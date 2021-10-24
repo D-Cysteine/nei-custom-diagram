@@ -1,7 +1,11 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech5.circuits;
 
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechRecipeUtil;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
@@ -10,6 +14,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import gregtech.api.util.GT_Recipe;
+import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,8 +36,24 @@ abstract class CircuitRecipe {
     @AutoValue
     abstract static class Recipe {
         private static Recipe create(GT_Recipe recipe) {
-            ImmutableList<DisplayComponent> itemInputs =
-                    ImmutableList.copyOf(GregTechRecipeUtil.buildComponentsFromItemInputs(recipe));
+            ImmutableList.Builder<ImmutableList<DisplayComponent>> itemInputsBuilder =
+                    ImmutableList.builder();
+            for (ItemStack itemStack : recipe.mInputs) {
+                if (itemStack == null) {
+                    continue;
+                }
+
+                ItemComponent itemComponent = ItemComponent.create(itemStack);
+                List<Component> reverseUnifiedItems =
+                        GregTechOreDictUtil.reverseUnify(itemComponent);
+
+                itemInputsBuilder.add(
+                        ImmutableList.copyOf(
+                                reverseUnifiedItems.stream()
+                                        .map(ComponentTransformer::transformToDisplay)
+                                        .collect(Collectors.toList())));
+            }
+
             DisplayComponent fluidInput =
                     Iterables.getOnlyElement(
                             GregTechRecipeUtil.buildComponentsFromFluidInputs(recipe));
@@ -42,17 +63,22 @@ abstract class CircuitRecipe {
             return new AutoValue_CircuitRecipe_Recipe(
                     GregTechRecipeUtil.requiresCleanroom(recipe),
                     GregTechRecipeUtil.requiresLowGravity(recipe),
-                    itemInputs, fluidInput, output);
+                    itemInputsBuilder.build(), fluidInput, output);
         }
 
         abstract boolean requiresCleanroom();
         abstract boolean requiresLowGravity();
-        abstract ImmutableList<DisplayComponent> itemInputs();
+
+        /** List of lists because we reverse unify each individual item. */
+        abstract ImmutableList<ImmutableList<DisplayComponent>> itemInputs();
         abstract DisplayComponent fluidInput();
         abstract DisplayComponent output();
 
         private int itemInputsSize() {
             return itemInputs().size();
+        }
+        private int itemInputsPermutationMultiplier() {
+            return itemInputs().stream().mapToInt(List::size).reduce(1, Math::multiplyExact);
         }
     }
 
@@ -97,7 +123,7 @@ abstract class CircuitRecipe {
             }
 
             for (int i = 0; i < itemInputsSize; i++) {
-                itemInputsBuilderList.get(i).add(recipe.itemInputs().get(i));
+                itemInputsBuilderList.get(i).addAll(recipe.itemInputs().get(i));
             }
             fluidInputsBuilder.add(recipe.fluidInput());
         }
@@ -113,6 +139,10 @@ abstract class CircuitRecipe {
         int expectedNumberOfRecipes = fluidInputs.size();
         expectedNumberOfRecipes *=
                 itemInputs.stream().mapToInt(Set::size).reduce(1, Math::multiplyExact);
+        expectedNumberOfRecipes /=
+                recipes.stream()
+                        .mapToInt(Recipe::itemInputsPermutationMultiplier)
+                        .reduce(1, Math::multiplyExact);
         if (expectedNumberOfRecipes != recipes.size()) {
             Logger.GREGTECH_5_CIRCUITS.warn(
                     "Expected {} recipes but got {} for circuit: [{}]",
