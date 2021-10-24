@@ -132,7 +132,8 @@ public final class GregTechRecipeUtil {
             }
 
             ItemComponent itemComponent = ItemComponent.createWithNbt(itemStack);
-            DisplayComponent.Builder builder = DisplayComponent.builder(itemComponent);
+            DisplayComponent.Builder builder =
+                    DisplayComponent.builder(itemComponent).setStackSize(itemStack.stackSize);
 
             List<Component> reverseUnifiedItems = GregTechOreDictUtil.reverseUnify(itemComponent);
             if (reverseUnifiedItems.size() > 1) {
