@@ -4,15 +4,14 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
-import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechRecipeUtil;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.SetMultimap;
 import gregtech.api.util.GT_Recipe;
 import net.minecraft.item.ItemStack;
 
@@ -50,7 +49,10 @@ abstract class CircuitRecipe {
                 itemInputsBuilder.add(
                         ImmutableList.copyOf(
                                 reverseUnifiedItems.stream()
-                                        .map(ComponentTransformer::transformToDisplay)
+                                        .map(
+                                                c -> DisplayComponent.builder(c)
+                                                        .setStackSize(itemStack.stackSize)
+                                                        .build())
                                         .collect(Collectors.toList())));
             }
 
@@ -77,6 +79,7 @@ abstract class CircuitRecipe {
         private int itemInputsSize() {
             return itemInputs().size();
         }
+
         private int itemInputsPermutationMultiplier() {
             return itemInputs().stream().mapToInt(List::size).reduce(1, Math::multiplyExact);
         }
@@ -157,8 +160,8 @@ abstract class CircuitRecipe {
     }
 
     static List<CircuitRecipe> buildCircuitRecipes(Iterable<GT_Recipe> rawRecipes) {
-        ListMultimap<Integer, Recipe> recipeMultimap =
-                MultimapBuilder.hashKeys().arrayListValues().build();
+        SetMultimap<Integer, Recipe> recipeMultimap =
+                MultimapBuilder.hashKeys().hashSetValues().build();
 
         for (GT_Recipe rawRecipe : rawRecipes) {
             Recipe recipe = Recipe.create(rawRecipe);
