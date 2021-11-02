@@ -241,6 +241,8 @@ class CircuitLineHandler {
         circuitLines = circuitLinesBuilder.build();
 
         ImmutableList.Builder<CircuitLine> individualCircuitsBuilder = ImmutableList.builder();
+        // TODO we need to change this one up. Need to include core mod.
+        //  Maybe show diagram for the NAND chip board instead of chip?
         individualCircuitsBuilder.add(
                 CircuitLine.builder()
                         .addBoard(
