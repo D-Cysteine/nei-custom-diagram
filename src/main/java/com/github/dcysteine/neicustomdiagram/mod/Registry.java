@@ -90,6 +90,8 @@ public enum Registry {
         // dependencies in NeiCustomDiagram.java (if necessary).
         ENDER_STORAGE("EnderStorage"),
 
+        GTNH_CORE_MOD("dreamcraft"),
+
         // GregTech 5 shares a mod ID with GregTech 6, so we must also check the mod version.
         GREGTECH_5("gregtech") {
             @Override

@@ -31,6 +31,7 @@ public final class NeiCustomDiagram {
     public static final String MOD_DEPENDENCIES =
             "required-after:NotEnoughItems;"
                     + "after:MineTweaker3;"
+                    + "after:dreamcraft;"
                     + "after:gregtech;"
                     + "after:bartworks;"
                     + "after:detravscannermod;";

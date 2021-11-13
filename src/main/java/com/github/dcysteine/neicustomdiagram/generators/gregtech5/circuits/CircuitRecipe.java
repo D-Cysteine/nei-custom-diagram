@@ -7,16 +7,17 @@ import com.github.dcysteine.neicustomdiagram.mod.Logger;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechRecipeUtil;
 import com.google.auto.value.AutoValue;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSortedSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.MultimapBuilder;
-import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Table;
 import gregtech.api.util.GT_Recipe;
 import net.minecraft.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,6 +81,10 @@ abstract class CircuitRecipe {
             return itemInputs().size();
         }
 
+        private int outputStackSize() {
+            return output().stackSize().get();
+        }
+
         private int itemInputsPermutationMultiplier() {
             return itemInputs().stream().mapToInt(List::size).reduce(1, Math::multiplyExact);
         }
@@ -91,9 +96,6 @@ abstract class CircuitRecipe {
         IntStream.range(0, itemInputsSize).forEach(
                 i -> itemInputsBuilderList.add(ImmutableSortedSet.naturalOrder()));
 
-        // TODO for now, we assume that all recipes with the same number of ingredients are
-        //  permutations of the same recipe.
-        //  If this stops being true, then we'll need to add handling for that.
         Recipe firstRecipe = Iterables.getFirst(recipes, null);
         boolean requiresCleanroom = firstRecipe.requiresCleanroom();
         boolean requiresLowGravity = firstRecipe.requiresLowGravity();
@@ -160,19 +162,37 @@ abstract class CircuitRecipe {
     }
 
     static List<CircuitRecipe> buildCircuitRecipes(Iterable<GT_Recipe> rawRecipes) {
-        SetMultimap<Integer, Recipe> recipeMultimap =
-                MultimapBuilder.hashKeys().hashSetValues().build();
+        // TODO for now, we assume that all recipes with the same number of ingredients and the same
+        //  output stack size are permutations of the same recipe.
+        //  If this stops being true, then we'll need to add handling for that.
+
+        // Table of recipe input size, recipe output stack size to set of recipes.
+        Table<Integer, Integer, Set<Recipe>> recipeTable = HashBasedTable.create();
 
         for (GT_Recipe rawRecipe : rawRecipes) {
             Recipe recipe = Recipe.create(rawRecipe);
-            recipeMultimap.put(recipe.itemInputsSize(), recipe);
+            int row = recipe.itemInputsSize();
+            int column = recipe.outputStackSize();
+
+            Set<Recipe> recipeSet = recipeTable.get(row, column);
+            if (recipeSet == null) {
+                recipeSet = new HashSet<>();
+                recipeTable.put(row, column, recipeSet);
+            }
+
+            recipeSet.add(recipe);
         }
 
-        return recipeMultimap.asMap().entrySet().stream()
+        return recipeTable.rowMap().entrySet().stream()
                 // We use reverse sort order here because circuit recipes with fewer ingredients
                 // tend to be more advanced, so we want to show those later.
-                .sorted(Map.Entry.<Integer, Collection<Recipe>>comparingByKey().reversed())
-                .map(entry -> create(entry.getKey(), entry.getValue()))
+                .sorted(Map.Entry.<Integer, Map<Integer, Set<Recipe>>>comparingByKey().reversed())
+                .flatMap(
+                        entry -> entry.getValue().entrySet().stream()
+                                // For recipes with the same number of input ingredients, we will
+                                // sort them by output stack size, ascending.
+                                .sorted(Map.Entry.comparingByKey())
+                                .map(innerEntry -> create(entry.getKey(), innerEntry.getValue())))
                 .collect(Collectors.toList());
     }
 

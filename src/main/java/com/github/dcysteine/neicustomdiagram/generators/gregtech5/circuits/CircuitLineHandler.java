@@ -1,9 +1,11 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech5.circuits;
 
+import com.dreammaster.gthandler.CustomItemList;
 import com.github.bartimaeusnek.bartworks.system.material.CircuitGeneration.BW_Meta_Items;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.mod.Registry;
+import com.github.dcysteine.neicustomdiagram.util.dreamcraft.DreamcraftUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
@@ -12,12 +14,12 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.Sets;
 import gregtech.api.enums.ItemList;
 import gregtech.api.util.GT_ModHandler;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -95,6 +97,9 @@ class CircuitLineHandler {
 
     /** These are circuit "lines" that only contain a single circuit. */
     private ImmutableList<CircuitLine> individualCircuits;
+
+    /** Additional items that we want to generate circuit assembling machine diagrams for. */
+    private ImmutableList<ItemComponent> additionalDiagramItems;
 
     /**
      * Circuit parts that have tiers go into their own sub-list; single circuit parts go into a
@@ -241,16 +246,23 @@ class CircuitLineHandler {
         circuitLines = circuitLinesBuilder.build();
 
         ImmutableList.Builder<CircuitLine> individualCircuitsBuilder = ImmutableList.builder();
-        // TODO we need to change this one up. Need to include core mod.
-        //  Maybe show diagram for the NAND chip board instead of chip?
-        individualCircuitsBuilder.add(
-                CircuitLine.builder()
-                        .addBoard(
-                                GregTechOreDictUtil.getComponent(
-                                        ItemList.Circuit_Board_Phenolic_Good))
-                        .setStartTier(0)
-                        .addCircuit(GregTechOreDictUtil.getComponent(ItemList.NandChip))
-                        .build());
+        if (Registry.ModDependency.GTNH_CORE_MOD.isLoaded()) {
+            individualCircuitsBuilder.add(
+                    CircuitLine.builder()
+                            .addBoard(DreamcraftUtil.getComponent(CustomItemList.NandChipBoard))
+                            .setStartTier(0)
+                            .addCircuit(GregTechOreDictUtil.getComponent(ItemList.NandChip))
+                            .build());
+        } else {
+            individualCircuitsBuilder.add(
+                    CircuitLine.builder()
+                            .addBoard(
+                                    GregTechOreDictUtil.getComponent(
+                                            ItemList.Circuit_Board_Phenolic_Good))
+                            .setStartTier(0)
+                            .addCircuit(GregTechOreDictUtil.getComponent(ItemList.NandChip))
+                            .build());
+        }
         individualCircuitsBuilder.add(
                 CircuitLine.builder()
                         .addBoard(
@@ -261,6 +273,13 @@ class CircuitLineHandler {
                                 ItemList.Circuit_Microprocessor))
                         .build());
         individualCircuits = individualCircuitsBuilder.build();
+
+        ImmutableList.Builder<ItemComponent> additionalDiagramItemsBuilder = ImmutableList.builder();
+        if (Registry.ModDependency.GTNH_CORE_MOD.isLoaded()) {
+            additionalDiagramItemsBuilder.add(
+                    DreamcraftUtil.getComponent(CustomItemList.NandChipBoard));
+        }
+        additionalDiagramItems = additionalDiagramItemsBuilder.build();
 
         ImmutableList.Builder<ImmutableList<ItemComponent>> circuitPartsBuilder =
                 ImmutableList.builder();
@@ -335,7 +354,7 @@ class CircuitLineHandler {
     }
 
     Set<ItemComponent> allCircuits() {
-        Set<ItemComponent> allCircuits = new HashSet<>();
+        Set<ItemComponent> allCircuits = Sets.newHashSet(additionalDiagramItems);
         for (CircuitLine circuitLine : Iterables.concat(circuitLines, individualCircuits)) {
             allCircuits.addAll(circuitLine.circuits());
         }
@@ -371,7 +390,7 @@ class CircuitLineHandler {
     }
 
     CircuitLineCircuits circuitLineCircuits(ItemComponent circuit) {
-        return circuitLineCircuits.get(circuit);
+        return circuitLineCircuits.getOrDefault(circuit, CircuitLineCircuits.EMPTY);
     }
 
     ImmutableList<DisplayComponent> tierCircuits(ItemComponent circuit) {
