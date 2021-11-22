@@ -65,18 +65,6 @@ class LayoutHandler {
         this.circuitLineHandler = circuitLineHandler;
     }
 
-    Layout overviewLayout() {
-        return overviewLayout;
-    }
-
-    ImmutableList<Layout> requiredLayouts() {
-        return requiredLayouts;
-    }
-
-    ImmutableList<Layout> optionalLayouts() {
-        return optionalLayouts;
-    }
-
     /** This method must be called before any other methods are called. */
     void initialize() {
         overviewLayout = buildOverviewLayout();
@@ -91,6 +79,18 @@ class LayoutHandler {
         optionalLayoutsBuilder.add(buildRecipeFluidInputs());
         optionalLayoutsBuilder.add(buildRecipeOutput());
         optionalLayouts = optionalLayoutsBuilder.build();
+    }
+
+    Layout overviewLayout() {
+        return overviewLayout;
+    }
+
+    ImmutableList<Layout> requiredLayouts() {
+        return requiredLayouts;
+    }
+
+    ImmutableList<Layout> optionalLayouts() {
+        return optionalLayouts;
     }
 
     private Layout buildOverviewLayout() {

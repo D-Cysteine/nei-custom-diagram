@@ -121,7 +121,7 @@ class RelatedMaterialsHandler {
                         .map(Optional::get)
                         .findFirst();
         if (!representation.isPresent()) {
-            Logger.GREGTECH_5_MATERIAL_PARTS.error(
+            Logger.GREGTECH_5_MATERIAL_PARTS.warn(
                     "Could not find representation for material [{}]. Checked prefixes [{}].",
                     material, REPRESENTATION_PREFIXES);
             representation = Optional.of(ItemComponent.create(Items.iron_ingot, 0));

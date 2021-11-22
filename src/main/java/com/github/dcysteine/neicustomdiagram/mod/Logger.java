@@ -10,6 +10,8 @@ public final class Logger {
 
     public static final org.apache.logging.log4j.Logger GREGTECH_5_CIRCUITS =
             LogManager.getLogger(buildGroupName(Lang.GREGTECH_5_CIRCUITS));
+    public static final org.apache.logging.log4j.Logger GREGTECH_5_LENSES =
+            LogManager.getLogger(buildGroupName(Lang.GREGTECH_5_LENSES));
     public static final org.apache.logging.log4j.Logger GREGTECH_5_MATERIAL_PARTS =
             LogManager.getLogger(buildGroupName(Lang.GREGTECH_5_MATERIAL_PARTS));
     public static final org.apache.logging.log4j.Logger GREGTECH_5_MATERIAL_TOOLS =

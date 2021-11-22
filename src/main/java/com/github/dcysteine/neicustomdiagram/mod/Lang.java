@@ -23,6 +23,8 @@ public final class Lang {
 
     public static final Lang GREGTECH_5_CIRCUITS =
             new Lang("neicustomdiagram.generators.gregtech5.circuits.");
+    public static final Lang GREGTECH_5_LENSES =
+            new Lang("neicustomdiagram.generators.gregtech5.lenses.");
     public static final Lang GREGTECH_5_MATERIAL_PARTS =
             new Lang("neicustomdiagram.generators.gregtech5.materialparts.");
     public static final Lang GREGTECH_5_MATERIAL_TOOLS =

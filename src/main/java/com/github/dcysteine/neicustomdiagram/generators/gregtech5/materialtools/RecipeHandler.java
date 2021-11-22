@@ -33,6 +33,33 @@ import java.util.stream.Collectors;
  * material.
  */
 class RecipeHandler {
+    /**
+     * This is basically a struct class that holds an {@link ItemComponent} without NBT, as well as
+     * additional data that would normally be stored in NBT. We use this as a key in our multimaps
+     * to allow us to group together tools with different NBT but that are the same base tool.
+     */
+    @AutoValue
+    abstract static class BaseTool implements Comparable<BaseTool> {
+        private static final Comparator<BaseTool> COMPARATOR =
+                Comparator.<BaseTool, Integer>comparing(b -> b.primaryMaterial().mMetaItemSubID)
+                        .thenComparing(b -> b.primaryMaterial().mName)
+                        .thenComparing(BaseTool::itemComponent);
+
+        private static BaseTool create(ItemStack itemStack) {
+            return new AutoValue_RecipeHandler_BaseTool(
+                    ItemComponent.create(itemStack),
+                    GT_MetaGenerated_Tool.getPrimaryMaterial(itemStack));
+        }
+
+        abstract ItemComponent itemComponent();
+        abstract Materials primaryMaterial();
+
+        @Override
+        public int compareTo(BaseTool other) {
+            return COMPARATOR.compare(this, other);
+        }
+    }
+
     /** Comparator that takes EU capacity into account. */
     private static final Comparator<DisplayComponent> EU_CAPACITY_COMPARATOR =
             Comparator.<DisplayComponent, Long>comparing(
@@ -252,32 +279,5 @@ class RecipeHandler {
                         Formatter.smartFormatInteger(euCapacity)));
 
         return builder.build();
-    }
-
-    /**
-     * This is basically a struct class that holds an {@link ItemComponent} without NBT, as well as
-     * additional data that would normally be stored in NBT. We use this as a key in our multimaps
-     * to allow us to group together tools with different NBT but that are the same base tool.
-     */
-    @AutoValue
-    abstract static class BaseTool implements Comparable<BaseTool> {
-        private static final Comparator<BaseTool> COMPARATOR =
-                Comparator.<BaseTool, Integer>comparing(b -> b.primaryMaterial().mMetaItemSubID)
-                        .thenComparing(b -> b.primaryMaterial().mName)
-                        .thenComparing(BaseTool::itemComponent);
-
-        private static BaseTool create(ItemStack itemStack) {
-            return new AutoValue_RecipeHandler_BaseTool(
-                    ItemComponent.create(itemStack),
-                    GT_MetaGenerated_Tool.getPrimaryMaterial(itemStack));
-        }
-
-        abstract ItemComponent itemComponent();
-        abstract Materials primaryMaterial();
-
-        @Override
-        public int compareTo(BaseTool other) {
-            return COMPARATOR.compare(this, other);
-        }
     }
 }
