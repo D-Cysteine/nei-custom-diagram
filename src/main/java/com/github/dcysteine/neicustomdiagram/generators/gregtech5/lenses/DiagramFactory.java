@@ -7,7 +7,6 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactab
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.mod.Lang;
-import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -91,9 +90,8 @@ class DiagramFactory {
             diagramBuilder.insertIntoSlot(
                     LayoutHandler.SLOT_RECIPE_INPUTS.get(i), inputBuilder.build());
             diagramBuilder.insertIntoSlot(
-                    LayoutHandler.SLOT_RECIPE_OUTPUTS.get(i),
-                    ComponentTransformer.transformToDisplay(recipe.output()));
-            craftingComponents.add(recipe.output());
+                    LayoutHandler.SLOT_RECIPE_OUTPUTS.get(i), recipe.output());
+            craftingComponents.add(recipe.output().component());
             usageComponents.add(recipe.input());
         }
 

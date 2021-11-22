@@ -1,7 +1,12 @@
 package com.github.dcysteine.neicustomdiagram.generators.gregtech5.lenses;
 
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
+import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.util.OreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
+import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechRecipeUtil;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSortedSet;
@@ -11,14 +16,11 @@ import com.google.common.collect.Sets;
 import com.google.common.collect.SortedSetMultimap;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.objects.ItemData;
-import gregtech.api.util.GT_OreDictUnificator;
 import gregtech.api.util.GT_Recipe;
-import net.minecraft.item.ItemStack;
-import net.minecraftforge.oredict.OreDictionary;
 
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -47,13 +49,12 @@ class RecipeHandler {
     abstract static class Recipe implements Comparable<Recipe> {
         private static final Comparator<Recipe> COMPARATOR = Comparator.comparing(Recipe::input);
 
-        static Recipe create(ItemStack input, ItemStack output) {
-            return new AutoValue_RecipeHandler_Recipe(
-                    ItemComponent.create(input), ItemComponent.create(output));
+        static Recipe create(ItemComponent input, DisplayComponent output) {
+            return new AutoValue_RecipeHandler_Recipe(input, output);
         }
 
         abstract ItemComponent input();
-        abstract ItemComponent output();
+        abstract DisplayComponent output();
 
         @Override
         public int compareTo(Recipe other) {
@@ -99,38 +100,43 @@ class RecipeHandler {
     }
 
     void handleRecipe(GT_Recipe recipe) {
-        if (recipe.mInputs.length < 2 || recipe.mOutputs.length < 1
-                || recipe.mInputs[0] == null || recipe.mInputs[1] == null
-                || recipe.mOutputs[0] == null) {
-            // TODO GT_Recipe does not implement toString(), so this is going to give some not very
-            //  useful output. Well, let's worry about it if we ever actually run into this error.
-            Logger.GREGTECH_5_LENSES.warn("Found a malformed recipe: [{}]", recipe);
+        // We need to be able to mark lens-specific recipes with '*', so we can't show any recipe
+        // input formatting. So use plain ItemComponent here.
+        // TODO if we ever do need the recipe input formatting, we'll need to change something here.
+        List<ItemComponent> inputs =
+                GregTechRecipeUtil.buildComponentsFromItemInputs(recipe).stream()
+                        .map(DisplayComponent::component)
+                        .map(ItemComponent.class::cast)
+                        .collect(Collectors.toList());
+        List<DisplayComponent> outputs = GregTechRecipeUtil.buildComponentsFromItemOutputs(recipe);
+
+        if (inputs.size() != 2 || outputs.size() != 1) {
+            Logger.GREGTECH_5_LENSES.warn("Found a malformed recipe: [{}] [{}]", inputs, outputs);
             return;
         }
 
 
-        ItemStack lensItemStack;
-        ItemStack input;
-        if (isLens(recipe.mInputs[1])) {
-            lensItemStack = recipe.mInputs[1];
-            input = recipe.mInputs[0];
-        } else if (isLens(recipe.mInputs[0])) {
-            lensItemStack = recipe.mInputs[0];
-            input = recipe.mInputs[1];
+        ItemComponent lensItemComponent;
+        ItemComponent input;
+        if (isLens(inputs.get(1))) {
+            lensItemComponent = inputs.get(1);
+            input = inputs.get(0);
+        } else if (isLens(inputs.get(0))) {
+            lensItemComponent = inputs.get(0);
+            input = inputs.get(1);
         } else {
             // Not a lens recipe.
             return;
         }
-        ItemStack output = recipe.mOutputs[0];
+        DisplayComponent output = outputs.get(0);
 
         List<String> lensColorOreNames =
-                Arrays.stream(OreDictionary.getOreIDs(lensItemStack))
-                        .mapToObj(OreDictionary::getOreName)
+                OreDictUtil.getOreNames(lensItemComponent).stream()
                         .filter(oreName -> oreName.startsWith(LENS_COLOR_ORE_NAME_PREFIX))
                         .collect(Collectors.toList());
         if (lensColorOreNames.size() > 1) {
             Logger.GREGTECH_5_LENSES.warn(
-                    "Found a multi-colored lens: [{}] [{}]", lensItemStack, lensColorOreNames);
+                    "Found a multi-colored lens: [{}] [{}]", lensItemComponent, lensColorOreNames);
             return;
         }
 
@@ -138,7 +144,8 @@ class RecipeHandler {
                 lensColorOreNames.isEmpty()
                         ? LensColor.UNIQUE
                         : LensColor.get(Iterables.getOnlyElement(lensColorOreNames));
-        Lens lens = Lens.create(color, ItemComponent.create(lensItemStack));
+        Lens lens = Lens.create(color, lensItemComponent);
+
         lensRecipes.put(lens, Recipe.create(input, output));
         lensColors.put(color, lens);
     }
@@ -159,12 +166,12 @@ class RecipeHandler {
         return colorRecipes.get(color).contains(recipe);
     }
 
-    private static boolean isLens(ItemStack itemStack) {
-        ItemData itemData = GT_OreDictUnificator.getAssociation(itemStack);
-        if (itemData == null) {
+    private static boolean isLens(Component component) {
+        Optional<ItemData> itemDataOptional = GregTechOreDictUtil.getItemData(component);
+        if (!itemDataOptional.isPresent()) {
             return false;
         }
 
-        return itemData.mPrefix == OrePrefixes.lens;
+        return itemDataOptional.get().mPrefix == OrePrefixes.lens;
     }
 }
