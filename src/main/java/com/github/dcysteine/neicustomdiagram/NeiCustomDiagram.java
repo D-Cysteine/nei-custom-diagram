@@ -30,11 +30,12 @@ public final class NeiCustomDiagram {
     public static final String MOD_VERSION = "@version@";
     public static final String MOD_DEPENDENCIES =
             "required-after:NotEnoughItems;"
-                    + "after:MineTweaker3;"
                     + "after:dreamcraft;"
                     + "after:gregtech;"
                     + "after:bartworks;"
-                    + "after:detravscannermod;";
+                    + "after:detravscannermod;"
+                    + "after:MineTweaker3;"
+                    + "after:tcneiadditions;";
 
     @Instance(MOD_ID)
     public static NeiCustomDiagram instance;

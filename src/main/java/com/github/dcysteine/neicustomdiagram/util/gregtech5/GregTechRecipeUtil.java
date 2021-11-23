@@ -182,6 +182,8 @@ public final class GregTechRecipeUtil {
         return components;
     }
 
+    // TODO maybe show recipe voltage tier in tooltip? (Also for fluids, below)
+    //  Unfortunately, we'll need the recipe map to do this, as amperage is not stored in recipe.
     public static List<DisplayComponent> buildComponentsFromItemOutputs(GT_Recipe recipe) {
         List<DisplayComponent> results = new ArrayList<>();
 
