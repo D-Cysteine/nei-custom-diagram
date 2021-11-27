@@ -5,7 +5,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInte
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 
 import java.util.EnumMap;

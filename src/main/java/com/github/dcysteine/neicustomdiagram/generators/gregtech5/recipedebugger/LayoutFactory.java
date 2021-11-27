@@ -9,7 +9,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Lines;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Text;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -23,7 +23,9 @@ class LayoutFactory {
             ImmutableMap.<GregTechRecipeDebugger.View, Point>builder()
                     .put(GregTechRecipeDebugger.View.PROGRAMMED_CIRCUITS, Grid.GRID.grid(0, 2))
                     .put(GregTechRecipeDebugger.View.CONSUME_CIRCUIT_RECIPES, Grid.GRID.grid(2, 2))
-                    .put(GregTechRecipeDebugger.View.UNNECESSARY_CIRCUIT_RECIPES, Grid.GRID.grid(4, 2))
+                    .put(
+                            GregTechRecipeDebugger.View.UNNECESSARY_CIRCUIT_RECIPES,
+                            Grid.GRID.grid(4, 2))
                     .put(GregTechRecipeDebugger.View.COLLIDING_RECIPES, Grid.GRID.grid(6, 2))
                     .put(GregTechRecipeDebugger.View.VOIDING_RECIPES, Grid.GRID.grid(8, 2))
                     .put(GregTechRecipeDebugger.View.UNEQUAL_CELL_RECIPES, Grid.GRID.grid(10, 2))

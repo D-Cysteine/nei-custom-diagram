@@ -120,7 +120,7 @@ public abstract class TooltipElement {
             case TEXT:
                 Draw.drawText(
                         formatting.format(text()), center,
-                        Draw.Color.WHITE, formatting.small(), true);
+                        Draw.Colour.WHITE, formatting.small(), true);
                 break;
 
             case DISPLAY_COMPONENT_ICON:
@@ -131,7 +131,7 @@ public abstract class TooltipElement {
             case COMPONENT_DESCRIPTION:
                 Draw.drawText(
                         formatting.format(componentDescription().description()), center,
-                        Draw.Color.WHITE, formatting.small(), true);
+                        Draw.Colour.WHITE, formatting.small(), true);
                 break;
         }
     }

@@ -1,6 +1,6 @@
-package com.github.dcysteine.neicustomdiagram.mod.config;
+package com.github.dcysteine.neicustomdiagram.main.config;
 
-import com.github.dcysteine.neicustomdiagram.NeiCustomDiagram;
+import com.github.dcysteine.neicustomdiagram.main.NeiCustomDiagram;
 import cpw.mods.fml.client.config.GuiConfig;
 import cpw.mods.fml.client.config.IConfigElement;
 import net.minecraft.client.gui.GuiScreen;

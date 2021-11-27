@@ -4,12 +4,12 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInteractable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.google.common.base.CaseFormat;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 
-enum LensColor {
+enum LensColour {
     WHITE(ItemComponent.create(Blocks.wool, 0).get()),
     ORANGE(ItemComponent.create(Blocks.wool, 1).get()),
     MAGENTA(ItemComponent.create(Blocks.wool, 2).get()),
@@ -30,24 +30,26 @@ enum LensColor {
 
     private final ItemComponent itemComponent;
 
-    LensColor(ItemComponent itemComponent) {
+    LensColour(ItemComponent itemComponent) {
         this.itemComponent = itemComponent;
     }
 
-    static LensColor get(String oreName) {
-        String color = oreName.substring(RecipeHandler.LENS_COLOR_ORE_NAME_PREFIX.length());
-        return valueOf(CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, color));
+    static LensColour get(String oreName) {
+        String colour = oreName.substring(RecipeHandler.LENS_COLOUR_ORE_NAME_PREFIX.length());
+        return valueOf(CaseFormat.UPPER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, colour));
     }
 
-    String translateColor() {
-        return Lang.GREGTECH_5_LENSES.trans("color." + name().toLowerCase().replace("_", ""));
+    String translateColour() {
+        return Lang.GREGTECH_5_LENSES.trans("colour." + name().toLowerCase().replace("_", ""));
     }
 
     CustomInteractable buildLabel() {
-        return CustomInteractable.builder(ComponentLabel.create(itemComponent, LayoutHandler.LENS_COLOR_POSITION))
+        return CustomInteractable.builder(
+                        ComponentLabel.create(itemComponent, LayoutHandler.LENS_COLOUR_POSITION))
                 .setTooltip(
                         Tooltip.create(
-                                Lang.GREGTECH_5_LENSES.transf("colorlenseslabel", translateColor()),
+                                Lang.GREGTECH_5_LENSES.transf(
+                                        "colourlenseslabel", translateColour()),
                                 Tooltip.INFO_FORMATTING))
                 .build();
     }

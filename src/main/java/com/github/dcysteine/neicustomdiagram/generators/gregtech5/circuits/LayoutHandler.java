@@ -11,7 +11,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.google.common.collect.ImmutableList;
 
 import java.util.stream.Collectors;

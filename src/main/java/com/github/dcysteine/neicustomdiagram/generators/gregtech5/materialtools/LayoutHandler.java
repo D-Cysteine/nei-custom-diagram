@@ -9,7 +9,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Slot;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.google.common.collect.ImmutableList;
 
 class LayoutHandler {
@@ -80,7 +80,8 @@ class LayoutHandler {
                         SlotGroup.builder(4, 4, Grid.GRID.grid(6, 6), Grid.Direction.NE)
                                 .setDefaultTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_5_MATERIAL_TOOLS.trans("toolpartsslot"),
+                                                Lang.GREGTECH_5_MATERIAL_TOOLS.trans(
+                                                        "toolpartsslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();
@@ -128,7 +129,8 @@ class LayoutHandler {
                         SlotGroup.builder(2, 2, Grid.GRID.grid(2, 2), Grid.Direction.SE)
                                 .setDefaultTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_5_MATERIAL_TOOLS.trans("turbinesslot"),
+                                                Lang.GREGTECH_5_MATERIAL_TOOLS.trans(
+                                                        "turbinesslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();
@@ -141,7 +143,8 @@ class LayoutHandler {
                         Slot.builder(Grid.GRID.grid(0, 6))
                                 .setTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_5_MATERIAL_TOOLS.trans("arrowheadslot"),
+                                                Lang.GREGTECH_5_MATERIAL_TOOLS.trans(
+                                                        "arrowheadslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();
@@ -175,7 +178,8 @@ class LayoutHandler {
                         SlotGroup.builder(5, 2, Grid.GRID.grid(4, 17), Grid.Direction.C)
                                 .setDefaultTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_5_MATERIAL_TOOLS.trans("scannersslot"),
+                                                Lang.GREGTECH_5_MATERIAL_TOOLS.trans(
+                                                        "scannersslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .putSlotGroup(

@@ -11,7 +11,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.main.Logger;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFluidDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;

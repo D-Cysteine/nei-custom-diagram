@@ -6,7 +6,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayCompon
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -30,7 +30,7 @@ class DiagramFactory {
         // Sort so that lens-specific recipes are shown first.
         Comparator<RecipeHandler.Recipe> recipeComparator =
                 Comparator.<RecipeHandler.Recipe, Boolean>comparing(
-                                recipe -> recipeHandler.isColorRecipe(lens.color(), recipe))
+                                recipe -> recipeHandler.isColourRecipe(lens.colour(), recipe))
                         .thenComparing(Comparator.naturalOrder());
         recipes.sort(recipeComparator);
 
@@ -45,18 +45,18 @@ class DiagramFactory {
         Diagram.Builder diagramBuilder = Diagram.builder()
                 .addAllLayouts(layoutHandler.requiredLayouts())
                 .addAllOptionalLayouts(layoutHandler.optionalLayouts())
-                .addInteractable(lens.color().buildLabel());
+                .addInteractable(lens.colour().buildLabel());
         Set<Component> craftingComponents = Sets.newHashSet(lens.itemComponent());
         Set<Component> usageComponents = Sets.newHashSet(lens.itemComponent());
 
         Diagram.Builder.SlotGroupAutoSubBuilder slotGroupSubBuilder =
                 diagramBuilder.autoInsertIntoSlotGroup(
-                        LayoutHandler.SlotGroupKeys.SAME_COLOR_LENSES);
-        for (RecipeHandler.Lens sameColorLens : recipeHandler.lenses(lens.color())) {
+                        LayoutHandler.SlotGroupKeys.SAME_COLOUR_LENSES);
+        for (RecipeHandler.Lens sameColourLens : recipeHandler.lenses(lens.colour())) {
             DisplayComponent.Builder displayComponentBuilder =
-                    DisplayComponent.builder(sameColorLens.itemComponent());
+                    DisplayComponent.builder(sameColourLens.itemComponent());
 
-            if (sameColorLens.equals(lens)) {
+            if (sameColourLens.equals(lens)) {
                 displayComponentBuilder
                         .setAdditionalInfo("*")
                         .setAdditionalTooltip(
@@ -72,11 +72,11 @@ class DiagramFactory {
             RecipeHandler.Recipe recipe = recipes.get(i);
 
             DisplayComponent.Builder inputBuilder = DisplayComponent.builder(recipe.input());
-            if (recipeHandler.isColorRecipe(lens.color(), recipe)) {
+            if (recipeHandler.isColourRecipe(lens.colour(), recipe)) {
                 inputBuilder.setAdditionalTooltip(
                         Tooltip.create(
                                 Lang.GREGTECH_5_LENSES.transf(
-                                        "colorrecipelabel", lens.color().translateColor()),
+                                        "colourrecipelabel", lens.colour().translateColour()),
                                 Tooltip.INFO_FORMATTING));
             } else {
                 inputBuilder

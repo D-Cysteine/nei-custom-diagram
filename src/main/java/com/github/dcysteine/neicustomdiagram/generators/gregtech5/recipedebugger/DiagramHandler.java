@@ -7,7 +7,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.CustomInte
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
@@ -89,7 +89,7 @@ class DiagramHandler {
                                 .build())
                 .setInteract(view.behaviorId(info))
                 .setDrawBackground(Draw::drawRaisedSlot)
-                .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Color.OVERLAY_BLUE))
+                .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Colour.OVERLAY_BLUE))
                 .build();
     }
 

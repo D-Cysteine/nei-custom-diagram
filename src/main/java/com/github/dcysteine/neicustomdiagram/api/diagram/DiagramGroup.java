@@ -19,7 +19,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.DiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.github.dcysteine.neicustomdiagram.api.draw.GuiManager;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;

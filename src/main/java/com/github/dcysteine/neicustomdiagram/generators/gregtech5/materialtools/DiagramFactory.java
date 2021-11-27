@@ -5,7 +5,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayCompon
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Layout;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechDiagramUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;

@@ -20,9 +20,9 @@ public final class Draw {
     public static final int TEXT_HEIGHT = 8;
 
     /**
-     * Some pre-defined colors, for convenience.
+     * Some pre-defined colours, for convenience.
      *
-     * <p>Colors are encoded as four {@code byte}s packed into an {@code int}:
+     * <p>Colours are encoded as four {@code byte}s packed into an {@code int}:
      * <ul>
      *     <li>{@code 0xFF000000}: Alpha channel ({@code 0xFF} is fully opaque)
      *     <li>{@code 0x00FF0000}: Red channel
@@ -30,7 +30,7 @@ public final class Draw {
      *     <li>{@code 0x000000FF}: Blue channel
      * </ul>
      */
-    public static final class Color {
+    public static final class Colour {
         public static final int BLACK = 0xFF000000;
         public static final int WHITE = 0xFFFFFFFF;
         public static final int GREY = 0xFF404040;
@@ -47,7 +47,7 @@ public final class Draw {
         public static final int OVERLAY_BLUE = 0x800000FF;
 
         // Static class.
-        private Color() {}
+        private Colour() {}
     }
 
     /** Struct class holding coordinates for mod textures. */
@@ -78,16 +78,16 @@ public final class Draw {
      * <p><em>Horrible things</em> will happen if the two points aren't orthogonal.
      * And by <em>horrible</em> I mean you'll get a rectangle instead of a line.
      *
-     * <p>See {@link Draw.Color} for color encoding information.
+     * <p>See {@link Draw.Colour} for colour encoding information.
      */
-    public static void drawLine(Point a, Point b, int color) {
+    public static void drawLine(Point a, Point b, int colour) {
         int x = Math.min(a.x(), b.x()) - 1;
         int y = Math.min(a.y(), b.y()) - 1;
         int w = Math.abs(a.x() - b.x()) + 2;
         int h = Math.abs(a.y() - b.y()) + 2;
 
         GL11.glDisable(GL11.GL_LIGHTING);
-        GuiDraw.drawRect(x, y, w, h, color);
+        GuiDraw.drawRect(x, y, w, h, colour);
         GL11.glEnable(GL11.GL_LIGHTING);
     }
 
@@ -97,9 +97,9 @@ public final class Draw {
      * <p><em>Horrible things</em> will happen if the two points aren't orthogonal.
      * And by <em>horrible</em> I mean you'll get a mess of rectangles.
      *
-     * <p>See {@link Draw.Color} for color encoding information.
+     * <p>See {@link Draw.Colour} for colour encoding information.
      */
-    public static void drawArrowhead(Point a, Point b, int color) {
+    public static void drawArrowhead(Point a, Point b, int colour) {
         // (diffX, diffY) is a unit vector pointing from b to a.
         int diffX = Integer.signum(a.x() - b.x());
         int diffY = Integer.signum(a.y() - b.y());
@@ -111,7 +111,7 @@ public final class Draw {
             drawLine(
                     currPos.translate(i * diffY, i * diffX),
                     currPos.translate(-i * diffY, -i * diffX),
-                    color);
+                    colour);
 
             currPos = currPos.translate(diffX, diffY);
         }
@@ -121,12 +121,12 @@ public final class Draw {
     /**
      * Draws some text centered on the given point.
      *
-     * @param color See {@link Draw.Color} for color encoding information.
+     * @param colour See {@link Draw.Colour} for colour encoding information.
      * @param small Whether to draw half-scale text.
      * @param shadow Whether to draw a shadow for the text.
      */
     public static void drawText(
-            String text, Point pos, int color, boolean small, boolean shadow) {
+            String text, Point pos, int colour, boolean small, boolean shadow) {
         int width = GuiDraw.getStringWidth(text);
         int height = TEXT_HEIGHT;
         if (small) {
@@ -147,10 +147,10 @@ public final class Draw {
         }
 
         GL11.glDisable(GL11.GL_LIGHTING);
-        GuiDraw.drawString(text, x, y, color, shadow);
+        GuiDraw.drawString(text, x, y, colour, shadow);
         GL11.glEnable(GL11.GL_LIGHTING);
 
-        // Looks like drawString() leaves color blending active, so reset it.
+        // Looks like drawString() leaves colour blending active, so reset it.
         GL11.glColor4f(1, 1, 1, 1);
 
         if (small) {
@@ -166,7 +166,7 @@ public final class Draw {
     public static void drawStackSize(int stackSize, Point pos) {
         String text = Formatter.smartFormatInteger(stackSize);
         boolean small = stackSize >= 100;
-        drawTextOverIcon(text, pos, Grid.Direction.SE, Color.WHITE, small, true);
+        drawTextOverIcon(text, pos, Grid.Direction.SE, Colour.WHITE, small, true);
     }
 
     /**
@@ -175,12 +175,12 @@ public final class Draw {
      * <p>This will be drawn in the top-left corner of the component. Keep this short!
      */
     public static void drawAdditionalInfo(String text, Point pos, boolean small) {
-        drawTextOverIcon(text, pos, Grid.Direction.NW, Color.YELLOW, small, true);
+        drawTextOverIcon(text, pos, Grid.Direction.NW, Colour.YELLOW, small, true);
     }
 
     /** Draws text offset in the specified direction over an icon. */
     public static void drawTextOverIcon(
-            String text, Point pos, Grid.Direction dir, int color, boolean small, boolean shadow) {
+            String text, Point pos, Grid.Direction dir, int colour, boolean small, boolean shadow) {
         int textWidth = GuiDraw.getStringWidth(text);
         int textHeight = TEXT_HEIGHT;
         if (small) {
@@ -192,7 +192,7 @@ public final class Draw {
                 pos.translate(
                         dir.xFactor * (ICON_WIDTH - textWidth) / 2,
                         dir.yFactor * (ICON_WIDTH - textHeight) / 2);
-        drawText(text, textCenter, color, small, shadow);
+        drawText(text, textCenter, colour, small, shadow);
     }
 
     /**
@@ -275,7 +275,7 @@ public final class Draw {
                 pos.x() - ICON_WIDTH / 2, pos.y() - ICON_WIDTH / 2, itemStack);
         GL11.glEnable(GL11.GL_LIGHTING);
 
-        // Looks like drawItem() leaves color blending active, so reset it.
+        // Looks like drawItem() leaves colour blending active, so reset it.
         GL11.glColor4f(1, 1, 1, 1);
     }
 
@@ -286,12 +286,12 @@ public final class Draw {
             return;
         }
 
-        // Some fluids don't set their icon color, so we have to blend in the color ourselves.
-        int color = fluid.getColor();
+        // Some fluids don't set their icon colour, so we have to blend in the colour ourselves.
+        int colour = fluid.getColor();
         GL11.glColor3ub(
-                (byte) ((color & 0xFF0000) >> 16),
-                (byte) ((color & 0x00FF00) >> 8),
-                (byte) (color & 0x0000FF));
+                (byte) ((colour & 0xFF0000) >> 16),
+                (byte) ((colour & 0x00FF00) >> 8),
+                (byte) (colour & 0x0000FF));
 
         GL11.glDisable(GL11.GL_LIGHTING);
         GuiDraw.changeTexture(TextureMap.locationBlocksTexture);
@@ -299,20 +299,20 @@ public final class Draw {
                 pos.x() - ICON_WIDTH / 2, pos.y() - ICON_WIDTH / 2, icon, ICON_WIDTH, ICON_WIDTH);
         GL11.glEnable(GL11.GL_LIGHTING);
 
-        // Reset color blending.
+        // Reset colour blending.
         GL11.glColor4f(1, 1, 1, 1);
     }
 
     /**
-     * Draws a colored square centered on the given point.
+     * Draws a coloured square centered on the given point.
      *
-     * <p>See {@link Draw.Color} for color encoding information. You probably want to use a
+     * <p>See {@link Draw.Colour} for colour encoding information. You probably want to use a
      * semi-transparent value here.
      */
-    public static void drawOverlay(Point pos, int color) {
+    public static void drawOverlay(Point pos, int colour) {
         GL11.glDisable(GL11.GL_LIGHTING);
         GuiDraw.drawRect(
-                pos.x() - ICON_WIDTH / 2, pos.y() - ICON_WIDTH / 2, ICON_WIDTH, ICON_WIDTH, color);
+                pos.x() - ICON_WIDTH / 2, pos.y() - ICON_WIDTH / 2, ICON_WIDTH, ICON_WIDTH, colour);
         GL11.glEnable(GL11.GL_LIGHTING);
     }
 }

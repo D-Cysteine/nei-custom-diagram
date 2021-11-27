@@ -1,7 +1,7 @@
-package com.github.dcysteine.neicustomdiagram.mod.config;
+package com.github.dcysteine.neicustomdiagram.main.config;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
-import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.main.Logger;
 import com.google.common.collect.ImmutableList;
 import net.minecraftforge.common.config.Property;
 
@@ -206,7 +206,8 @@ public final class ConfigOptions {
     }
 
     public static final class StringArrayOption extends Option<String[]> {
-        private StringArrayOption(Category category, String key, String[] defaultValue, String comment) {
+        private StringArrayOption(
+                Category category, String key, String[] defaultValue, String comment) {
             super(category, key, defaultValue, comment);
         }
 

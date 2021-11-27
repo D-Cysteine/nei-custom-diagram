@@ -3,8 +3,8 @@ package com.github.dcysteine.neicustomdiagram.api.draw;
 import codechicken.lib.gui.GuiDraw;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.recipe.GuiRecipe;
-import com.github.dcysteine.neicustomdiagram.mod.Reflection;
-import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.main.Reflection;
+import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.opengl.GL11;
@@ -29,12 +29,12 @@ public final class GuiManager {
     /** The scrollbar will fade away over this many ticks. */
     private static final int SCROLLBAR_FADE_TICKS = 24;
 
-    // Colors from: https://www.canva.com/colors/color-palettes/mermaid-lagoon/
-    private static final int SCROLLBAR_FOREGROUND_COLOR = 0x145DA0;
-    private static final int SCROLLBAR_FOREGROUND_SELECTED_COLOR = 0x2E8BC0;
-    private static final int SCROLLBAR_BACKGROUND_COLOR = 0xB1D4E0;
-    private static final int SCROLLBAR_FOREGROUND_COLOR_OPACITY = 0xF0;
-    private static final int SCROLLBAR_BACKGROUND_COLOR_OPACITY = 0x90;
+    // Colours from: https://www.canva.com/colours/colour-palettes/mermaid-lagoon/
+    private static final int SCROLLBAR_FOREGROUND_COLOUR = 0x145DA0;
+    private static final int SCROLLBAR_FOREGROUND_SELECTED_COLOUR = 0x2E8BC0;
+    private static final int SCROLLBAR_BACKGROUND_COLOUR = 0xB1D4E0;
+    private static final int SCROLLBAR_FOREGROUND_COLOUR_OPACITY = 0xF0;
+    private static final int SCROLLBAR_BACKGROUND_COLOUR_OPACITY = 0x90;
 
     public enum ScrollDirection {
         UP(-1),
@@ -126,13 +126,13 @@ public final class GuiManager {
         //  Maybe when / if we add a horizontal scrollbar?
         // We'll keep the scrollbar at 100% opacity for half the fade duration, then have it fade.
         int fade = Math.min(2 * scrollbarFade, SCROLLBAR_FADE_TICKS);
-        int fgOpacity = SCROLLBAR_FOREGROUND_COLOR_OPACITY * fade / SCROLLBAR_FADE_TICKS;
-        int bgOpacity = SCROLLBAR_BACKGROUND_COLOR_OPACITY * fade / SCROLLBAR_FADE_TICKS;
-        int fgColor =
+        int fgOpacity = SCROLLBAR_FOREGROUND_COLOUR_OPACITY * fade / SCROLLBAR_FADE_TICKS;
+        int bgOpacity = SCROLLBAR_BACKGROUND_COLOUR_OPACITY * fade / SCROLLBAR_FADE_TICKS;
+        int fgColour =
                 scrollbarSelected
-                        ? SCROLLBAR_FOREGROUND_SELECTED_COLOR : SCROLLBAR_FOREGROUND_COLOR;
-        fgColor |= fgOpacity << 24;
-        int bgColor = SCROLLBAR_BACKGROUND_COLOR | bgOpacity << 24;
+                        ? SCROLLBAR_FOREGROUND_SELECTED_COLOUR : SCROLLBAR_FOREGROUND_COLOUR;
+        fgColour |= fgOpacity << 24;
+        int bgColour = SCROLLBAR_BACKGROUND_COLOUR | bgOpacity << 24;
 
         Point viewportPos = getViewportPosition();
         Dimension viewportDim = getViewportDimension();
@@ -157,11 +157,11 @@ public final class GuiManager {
         GuiDraw.gui.incZLevel(300);
 
         if (scrollbarAboveHeight > 0) {
-            GuiDraw.drawRect(scrollbarX, scrollbarY, 2, scrollbarAboveHeight, bgColor);
+            GuiDraw.drawRect(scrollbarX, scrollbarY, 2, scrollbarAboveHeight, bgColour);
         }
-        GuiDraw.drawRect(scrollbarX - 2, scrollbarCursorY, 6, scrollbarCursorHeight, fgColor);
+        GuiDraw.drawRect(scrollbarX - 2, scrollbarCursorY, 6, scrollbarCursorHeight, fgColour);
         if (scrollbarBelowHeight > 0) {
-            GuiDraw.drawRect(scrollbarX, scrollbarCursorBottom, 2, scrollbarBelowHeight, bgColor);
+            GuiDraw.drawRect(scrollbarX, scrollbarCursorBottom, 2, scrollbarBelowHeight, bgColour);
         }
 
         GuiDraw.gui.incZLevel(-300);
@@ -287,7 +287,8 @@ public final class GuiManager {
                         + BOTTOM_MARGIN;
 
         Minecraft minecraft = Minecraft.getMinecraft();
-        ScaledResolution res = new ScaledResolution(minecraft, minecraft.displayWidth, minecraft.displayHeight);
+        ScaledResolution res =
+                new ScaledResolution(minecraft, minecraft.displayWidth, minecraft.displayHeight);
         int scaleFactor = res.getScaleFactor();
 
         Dimension viewportDim = getViewportDimension();

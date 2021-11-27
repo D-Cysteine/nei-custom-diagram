@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.mod;
+package com.github.dcysteine.neicustomdiagram.main;
 
 import net.minecraft.util.StatCollector;
 

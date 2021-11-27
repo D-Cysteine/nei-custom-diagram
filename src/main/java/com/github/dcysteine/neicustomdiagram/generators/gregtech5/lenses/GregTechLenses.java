@@ -5,7 +5,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagramMatcher;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
@@ -25,7 +25,7 @@ public final class GregTechLenses implements DiagramGenerator {
                 DiagramGroupInfo.builder(
                                 Lang.GREGTECH_5_LENSES.trans("groupname"),
                                 groupId, ICON, 1)
-                        .setDescription("This diagram displays GregTech lens colors and recipes.")
+                        .setDescription("This diagram displays GregTech lens colours and recipes.")
                         .build();
 
         this.layoutHandler = new LayoutHandler(this.info);

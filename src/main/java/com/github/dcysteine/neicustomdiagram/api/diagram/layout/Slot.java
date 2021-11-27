@@ -41,7 +41,7 @@ public abstract class Slot implements Interactable {
 
     @Override
     public void drawOverlay(DiagramState diagramState) {
-        Draw.drawOverlay(position(), Draw.Color.OVERLAY_WHITE);
+        Draw.drawOverlay(position(), Draw.Colour.OVERLAY_WHITE);
     }
 
     @Override

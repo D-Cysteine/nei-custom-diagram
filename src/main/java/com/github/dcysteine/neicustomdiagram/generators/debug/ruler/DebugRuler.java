@@ -16,8 +16,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMa
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
-import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
+import com.github.dcysteine.neicustomdiagram.main.config.DiagramGroupVisibility;
 import com.google.common.collect.Lists;
 import net.minecraft.init.Items;
 
@@ -38,8 +38,8 @@ public final class DebugRuler implements DiagramGenerator {
     private static final int RULER_HEIGHT_SLOTS = Grid.GRID_HEIGHT;
 
     private static final int RULER_SEGMENT_PIXELS = 10;
-    private static final int RULER_COLOR_1 = Draw.Color.RED;
-    private static final int RULER_COLOR_2 = Draw.Color.BLUE;
+    private static final int RULER_COLOUR_1 = Draw.Colour.RED;
+    private static final int RULER_COLOUR_2 = Draw.Colour.BLUE;
 
     /** Format this with the slot {@code x}-index and {@code y}-index. */
     private static final String SLOT_KEY_FORMAT_STRING = "slot(%d,%d)";
@@ -87,13 +87,13 @@ public final class DebugRuler implements DiagramGenerator {
     private static Layout buildLayout() {
         Layout.Builder layoutBuilder = Layout.builder();
 
-        Lines.Builder rulerColor1 =
-                Lines.builder(Point.create(0, 0)).setColor(RULER_COLOR_1);
-        Lines.Builder rulerColor2 =
-                Lines.builder(Point.create(0, 0)).setColor(RULER_COLOR_2);
+        Lines.Builder rulerColour1 =
+                Lines.builder(Point.create(0, 0)).setColour(RULER_COLOUR_1);
+        Lines.Builder rulerColour2 =
+                Lines.builder(Point.create(0, 0)).setColour(RULER_COLOUR_2);
         for (int i = RULER_SEGMENT_PIXELS; i <= RULER_WIDTH_PIXELS; i += RULER_SEGMENT_PIXELS) {
             Lines.Builder linesBuilder =
-                    i % (2 * RULER_SEGMENT_PIXELS) > 0 ? rulerColor1 : rulerColor2;
+                    i % (2 * RULER_SEGMENT_PIXELS) > 0 ? rulerColour1 : rulerColour2;
 
             // To account for lines having thickness 2,
             // we must shorten both ends by 1 pixel to avoid overlap.
@@ -103,7 +103,7 @@ public final class DebugRuler implements DiagramGenerator {
 
         for (int i = RULER_SEGMENT_PIXELS; i <= RULER_HEIGHT_PIXELS; i += RULER_SEGMENT_PIXELS) {
             Lines.Builder linesBuilder =
-                    i % (2 * RULER_SEGMENT_PIXELS) > 0 ? rulerColor1 : rulerColor2;
+                    i % (2 * RULER_SEGMENT_PIXELS) > 0 ? rulerColour1 : rulerColour2;
 
             // To account for lines having thickness 2,
             // we must shorten both ends by 1 pixel to avoid overlap.
@@ -125,8 +125,8 @@ public final class DebugRuler implements DiagramGenerator {
         }
 
         return layoutBuilder
-                .addLines(rulerColor1.build())
-                .addLines(rulerColor2.build())
+                .addLines(rulerColour1.build())
+                .addLines(rulerColour2.build())
                 .build();
     }
 }

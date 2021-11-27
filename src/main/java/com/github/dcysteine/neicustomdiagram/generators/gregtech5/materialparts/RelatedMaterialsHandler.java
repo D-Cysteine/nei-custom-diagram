@@ -3,8 +3,8 @@ package com.github.dcysteine.neicustomdiagram.generators.gregtech5.materialparts
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
-import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Logger;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFormatting;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableList;

@@ -6,7 +6,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactab
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.ComponentLabel;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import gregtech.api.enums.Materials;
 import net.minecraft.init.Items;
 

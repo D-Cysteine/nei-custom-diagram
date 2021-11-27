@@ -2,12 +2,11 @@ import net.minecraftforge.gradle.user.UserExtension
 
 buildscript {
     repositories {
-        mavenCentral()
+        maven("https://maven.minecraftforge.net") { this.name = "Forge" }
         maven("https://jitpack.io") { this.name = "jitpack.io" }
-        maven("https://gregtech.overminddl1.com/") { this.name = "GregTech" }
     }
     dependencies {
-        classpath("com.github.GTNH2:ForgeGradle:FG_1.2-SNAPSHOT")
+        classpath("com.github.GTNewHorizons:ForgeGradle:1.2.4")
     }
 }
 
@@ -55,7 +54,6 @@ val Project.minecraft: UserExtension
     get() = extensions.getByName<UserExtension>("minecraft")
 
 repositories {
-    mavenLocal()
     maven("http://chickenbones.net/maven/") { this.name = "ChickenBones" }
     ivy {
         this.name = "gtnh_download_source"

@@ -1,6 +1,5 @@
-package com.github.dcysteine.neicustomdiagram.mod;
+package com.github.dcysteine.neicustomdiagram.main;
 
-import com.github.dcysteine.neicustomdiagram.NeiCustomDiagram;
 import org.apache.logging.log4j.LogManager;
 
 /** Class that provides convenient access to loggers. */

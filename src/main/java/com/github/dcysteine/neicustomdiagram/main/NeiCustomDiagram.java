@@ -1,11 +1,8 @@
-package com.github.dcysteine.neicustomdiagram;
+package com.github.dcysteine.neicustomdiagram.main;
 
-import com.github.dcysteine.neicustomdiagram.mod.Logger;
-import com.github.dcysteine.neicustomdiagram.mod.NeiIntegration;
-import com.github.dcysteine.neicustomdiagram.mod.Registry;
-import com.github.dcysteine.neicustomdiagram.mod.config.Config;
-import com.github.dcysteine.neicustomdiagram.mod.config.ConfigGuiFactory;
-import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.main.config.Config;
+import com.github.dcysteine.neicustomdiagram.main.config.ConfigGuiFactory;
+import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -33,9 +30,7 @@ public final class NeiCustomDiagram {
                     + "after:dreamcraft;"
                     + "after:gregtech;"
                     + "after:bartworks;"
-                    + "after:detravscannermod;"
-                    + "after:MineTweaker3;"
-                    + "after:tcneiadditions;";
+                    + "after:detravscannermod;";
 
     @Instance(MOD_ID)
     public static NeiCustomDiagram instance;

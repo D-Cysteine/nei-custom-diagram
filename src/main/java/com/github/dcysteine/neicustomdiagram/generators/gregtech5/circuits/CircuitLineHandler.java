@@ -4,7 +4,7 @@ import com.dreammaster.gthandler.CustomItemList;
 import com.github.bartimaeusnek.bartworks.system.material.CircuitGeneration.BW_Meta_Items;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
-import com.github.dcysteine.neicustomdiagram.mod.Registry;
+import com.github.dcysteine.neicustomdiagram.main.Registry;
 import com.github.dcysteine.neicustomdiagram.util.dreamcraft.DreamcraftUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.auto.value.AutoValue;
@@ -274,7 +274,8 @@ class CircuitLineHandler {
                         .build());
         individualCircuits = individualCircuitsBuilder.build();
 
-        ImmutableList.Builder<ItemComponent> additionalDiagramItemsBuilder = ImmutableList.builder();
+        ImmutableList.Builder<ItemComponent> additionalDiagramItemsBuilder =
+                ImmutableList.builder();
         if (Registry.ModDependency.GTNH_CORE_MOD.isLoaded()) {
             additionalDiagramItemsBuilder.add(
                     DreamcraftUtil.getComponent(CustomItemList.NandChipBoard));

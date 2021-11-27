@@ -5,7 +5,7 @@ import codechicken.nei.recipe.GuiUsageRecipe;
 import com.github.dcysteine.neicustomdiagram.api.diagram.interactable.Interactable;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
 import com.google.auto.value.AutoValue;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;

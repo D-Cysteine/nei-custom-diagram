@@ -9,8 +9,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
-import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
+import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
@@ -122,7 +122,7 @@ public class InteractiveComponentGroup implements Interactable {
 
     @Override
     public void drawOverlay(DiagramState diagramState) {
-        Draw.drawOverlay(position, Draw.Color.OVERLAY_WHITE);
+        Draw.drawOverlay(position, Draw.Colour.OVERLAY_WHITE);
     }
 
     @Override

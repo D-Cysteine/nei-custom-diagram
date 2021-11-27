@@ -1,6 +1,6 @@
 package com.github.dcysteine.neicustomdiagram.util.gregtech5;
 
-import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
 import gregtech.api.enums.Materials;
 
 public final class GregTechFormatting {

@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.mod;
+package com.github.dcysteine.neicustomdiagram.main;
 
 import codechicken.nei.api.API;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGenerator;
@@ -17,8 +17,8 @@ import com.github.dcysteine.neicustomdiagram.generators.gregtech5.oredictionary.
 import com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprefixes.GregTechOrePrefixes;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech5.oreprocessing.GregTechOreProcessing;
 import com.github.dcysteine.neicustomdiagram.generators.gregtech5.recipedebugger.GregTechRecipeDebugger;
-import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
-import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
+import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.main.config.DiagramGroupVisibility;
 import com.google.auto.value.AutoValue;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;

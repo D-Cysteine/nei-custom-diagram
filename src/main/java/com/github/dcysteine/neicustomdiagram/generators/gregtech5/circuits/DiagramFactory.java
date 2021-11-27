@@ -11,7 +11,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.ComponentDiagra
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.base.Preconditions;
@@ -177,7 +177,7 @@ class DiagramFactory {
                         position ->
                                 Draw.drawTextOverIcon(
                                         "*", position, Grid.Direction.NW,
-                                        Draw.Color.RED, true, true);
+                                        Draw.Colour.RED, true, true);
             }
             diagramBuilder.addInteractable(
                     CustomInteractable.builder(baseLabel.drawable())

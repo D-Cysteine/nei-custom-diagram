@@ -11,7 +11,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.google.common.collect.ImmutableList;
 
 class LayoutHandler {
@@ -404,7 +404,8 @@ class LayoutHandler {
                 SlotGroup.builder(1, 2, Grid.GRID.grid(6, 14), Grid.Direction.S)
                         .setDefaultTooltip(
                                 Tooltip.create(
-                                        Lang.GREGTECH_5_ORE_PROCESSING.trans("thermalcentrifugeslot"),
+                                        Lang.GREGTECH_5_ORE_PROCESSING.trans(
+                                                "thermalcentrifugeslot"),
                                         Tooltip.SLOT_FORMATTING))
                         .build();
 

@@ -9,7 +9,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Slot;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.google.common.collect.ImmutableList;
 
 import java.util.stream.Collectors;
@@ -17,11 +17,11 @@ import java.util.stream.IntStream;
 
 class LayoutHandler {
     static final class SlotGroupKeys {
-        static final Layout.SlotGroupKey SAME_COLOR_LENSES =
-                Layout.SlotGroupKey.create("same-color-lenses");
+        static final Layout.SlotGroupKey SAME_COLOUR_LENSES =
+                Layout.SlotGroupKey.create("same-colour-lenses");
     }
 
-    static final Point LENS_COLOR_POSITION = Grid.GRID.grid(2, 0);
+    static final Point LENS_COLOUR_POSITION = Grid.GRID.grid(2, 0);
 
     static final int MAX_RECIPES_PER_PAGE = 24;
     static final ImmutableList<Layout.SlotKey> SLOT_RECIPE_INPUTS =
@@ -67,11 +67,12 @@ class LayoutHandler {
         return Layout.builder()
                 .addInteractable(new AllDiagramsButton(info, Grid.GRID.grid(0, 0)))
                 .putSlotGroup(
-                        SlotGroupKeys.SAME_COLOR_LENSES,
+                        SlotGroupKeys.SAME_COLOUR_LENSES,
                         SlotGroup.builder(9, 1, Grid.GRID.grid(6, 2), Grid.Direction.C)
                                 .setDefaultTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_5_LENSES.trans("samecolorlensesslot"),
+                                                Lang.GREGTECH_5_LENSES.trans(
+                                                        "samecolourlensesslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();

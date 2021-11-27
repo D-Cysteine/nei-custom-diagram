@@ -15,8 +15,8 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Text;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
-import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
+import com.github.dcysteine.neicustomdiagram.main.config.DiagramGroupVisibility;
 import com.github.dcysteine.neicustomdiagram.util.ComponentTransformer;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechFormatting;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
@@ -122,7 +122,8 @@ public final class GregTechOreDictionary implements DiagramGenerator {
                     CustomInteractable.builder(materialNameText)
                             .setTooltip(
                                     Tooltip.create(
-                                            Lang.GREGTECH_5_ORE_DICTIONARY.trans("materialnamelabel"),
+                                            Lang.GREGTECH_5_ORE_DICTIONARY.trans(
+                                                    "materialnamelabel"),
                                             Tooltip.SLOT_FORMATTING))
                             .build();
 

@@ -1,4 +1,4 @@
-package com.github.dcysteine.neicustomdiagram.mod;
+package com.github.dcysteine.neicustomdiagram.main;
 
 import com.google.auto.value.AutoValue;
 import cpw.mods.fml.relauncher.ReflectionHelper;

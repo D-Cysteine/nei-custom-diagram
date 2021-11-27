@@ -9,25 +9,25 @@ import net.minecraft.init.Blocks;
 /** Utility class for convenient handling of Ender Storage frequencies. */
 @AutoValue
 public abstract class EnderStorageFrequency {
-    public static EnderStorageFrequency create(Color color1, Color color2, Color color3) {
-        return new AutoValue_EnderStorageFrequency(color1, color2, color3);
+    public static EnderStorageFrequency create(Colour colour1, Colour colour2, Colour colour3) {
+        return new AutoValue_EnderStorageFrequency(colour1, colour2, colour3);
     }
 
     public static EnderStorageFrequency create(int frequency) {
-        Color[] values = Color.values();
-        int[] colors = EnderStorageManager.getColoursFromFreq(frequency);
-        return create(values[colors[0]], values[colors[1]], values[colors[2]]);
+        Colour[] values = Colour.values();
+        int[] colours = EnderStorageManager.getColoursFromFreq(frequency);
+        return create(values[colours[0]], values[colours[1]], values[colours[2]]);
     }
 
-    /** Ender tanks seem to have their frequency colors in reverse order. */
+    /** Ender tanks seem to have their frequency colours in reverse order. */
     public static EnderStorageFrequency createReverse(int frequency) {
-        Color[] values = Color.values();
-        int[] colors = EnderStorageManager.getColoursFromFreq(frequency);
-        return create(values[colors[2]], values[colors[1]], values[colors[0]]);
+        Colour[] values = Colour.values();
+        int[] colours = EnderStorageManager.getColoursFromFreq(frequency);
+        return create(values[colours[2]], values[colours[1]], values[colours[0]]);
     }
 
-    /** Ender Storage uses the same color-integer mapping as wool blocks. */
-    public enum Color {
+    /** Ender Storage uses the same colour-integer mapping as wool blocks. */
+    public enum Colour {
         WHITE, ORANGE, MAGENTA, LIGHT_BLUE, YELLOW, LIME, PINK, GRAY,
         LIGHT_GRAY, CYAN, PURPLE, BLUE, BROWN, GREEN, RED, BLACK;
 
@@ -37,12 +37,12 @@ public abstract class EnderStorageFrequency {
         }
     }
 
-    public abstract Color color1();
-    public abstract Color color2();
-    public abstract Color color3();
+    public abstract Colour colour1();
+    public abstract Colour colour2();
+    public abstract Colour colour3();
 
     public int frequency() {
         return EnderStorageManager.getFreqFromColours(
-                color1().ordinal(), color2().ordinal(), color3().ordinal());
+                colour1().ordinal(), colour2().ordinal(), colour3().ordinal());
     }
 }

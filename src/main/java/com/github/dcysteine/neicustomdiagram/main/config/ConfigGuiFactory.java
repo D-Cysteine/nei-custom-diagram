@@ -1,6 +1,6 @@
-package com.github.dcysteine.neicustomdiagram.mod.config;
+package com.github.dcysteine.neicustomdiagram.main.config;
 
-import com.github.dcysteine.neicustomdiagram.NeiCustomDiagram;
+import com.github.dcysteine.neicustomdiagram.main.NeiCustomDiagram;
 import cpw.mods.fml.client.IModGuiFactory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -29,7 +29,8 @@ public final class ConfigGuiFactory implements IModGuiFactory {
     }
 
     @Override
-    public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement runtimeOptionCategoryElement) {
+    public RuntimeOptionGuiHandler getHandlerFor(
+            RuntimeOptionCategoryElement runtimeOptionCategoryElement) {
         return null;
     }
 }

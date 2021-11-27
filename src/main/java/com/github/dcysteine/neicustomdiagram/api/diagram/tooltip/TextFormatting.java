@@ -17,8 +17,9 @@ public abstract class TextFormatting {
     public abstract boolean small();
 
     /**
-     * We use a sorted set here (with natural ordering) to ensure that color codes are iterated over
-     * before formatting codes. This ordering is necessary to get formatting to apply correctly.
+     * We use a sorted set here (with natural ordering) to ensure that colour codes are iterated
+     * over before formatting codes. This ordering is necessary to get formatting to apply
+     * correctly.
      *
      * @see <a href="https://minecraft.fandom.com/wiki/Formatting_codes">
      *     https://minecraft.fandom.com/wiki/Formatting_codes</a>

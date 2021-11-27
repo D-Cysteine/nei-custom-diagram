@@ -14,7 +14,7 @@ import com.google.common.collect.Iterables;
 /**
  * Immutable class holding line segments and arrows.
  *
- * <p>See {@link Draw.Color} for color encoding information.
+ * <p>See {@link Draw.Colour} for colour encoding information.
  */
 @AutoValue
 public abstract class Lines implements Drawable {
@@ -35,20 +35,20 @@ public abstract class Lines implements Drawable {
         public abstract Point a();
         public abstract Point b();
 
-        /** See {@link Draw.Color} for color encoding information. */
-        public void drawSegment(int color) {
-            Draw.drawLine(a(), b(), color);
+        /** See {@link Draw.Colour} for colour encoding information. */
+        public void drawSegment(int colour) {
+            Draw.drawLine(a(), b(), colour);
         }
 
-        /** See {@link Draw.Color} for color encoding information. */
-        public void drawArrow(int color) {
-            drawSegment(color);
-            Draw.drawArrowhead(a(), b(), color);
+        /** See {@link Draw.Colour} for colour encoding information. */
+        public void drawArrow(int colour) {
+            drawSegment(colour);
+            Draw.drawArrowhead(a(), b(), colour);
         }
     }
 
-    /** See {@link Draw.Color} for color encoding information. */
-    public abstract int color();
+    /** See {@link Draw.Colour} for colour encoding information. */
+    public abstract int colour();
 
     public abstract ImmutableList<Segment> segments();
     public abstract ImmutableList<Segment> arrows();
@@ -69,8 +69,8 @@ public abstract class Lines implements Drawable {
 
     @Override
     public void draw(DiagramState diagramState) {
-        segments().forEach(segment -> segment.drawSegment(color()));
-        arrows().forEach(segment -> segment.drawArrow(color()));
+        segments().forEach(segment -> segment.drawSegment(colour()));
+        arrows().forEach(segment -> segment.drawArrow(colour()));
     }
 
     @ToPrettyString
@@ -89,23 +89,23 @@ public abstract class Lines implements Drawable {
      * to the new point, kind of like a real pen.
      */
     public static final class Builder {
-        private int color;
+        private int colour;
         private Point currentPosition;
 
         private final ImmutableList.Builder<Segment> segmentsBuilder;
         private final ImmutableList.Builder<Segment> arrowsBuilder;
 
         public Builder(Point pos) {
-            color = Draw.Color.BLACK;
+            colour = Draw.Colour.BLACK;
             currentPosition = pos;
 
             segmentsBuilder = ImmutableList.builder();
             arrowsBuilder = ImmutableList.builder();
         }
 
-        /** See {@link Draw.Color} for color encoding information. */
-        public Builder setColor(int color) {
-            this.color = color;
+        /** See {@link Draw.Colour} for colour encoding information. */
+        public Builder setColour(int colour) {
+            this.colour = colour;
             return this;
         }
 
@@ -151,7 +151,7 @@ public abstract class Lines implements Drawable {
         }
 
         public Lines build() {
-            return new AutoValue_Lines(color, segmentsBuilder.build(), arrowsBuilder.build());
+            return new AutoValue_Lines(colour, segmentsBuilder.build(), arrowsBuilder.build());
         }
     }
 }

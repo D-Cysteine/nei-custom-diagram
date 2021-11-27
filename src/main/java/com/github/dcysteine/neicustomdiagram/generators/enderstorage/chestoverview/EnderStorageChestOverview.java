@@ -18,7 +18,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Text;
 import com.github.dcysteine.neicustomdiagram.api.diagram.matcher.CustomDiagramMatcher;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Draw;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.github.dcysteine.neicustomdiagram.util.enderstorage.EnderStorageFrequency;
 import com.github.dcysteine.neicustomdiagram.util.enderstorage.EnderStorageUtil;
 import com.google.common.collect.ImmutableList;
@@ -137,9 +137,9 @@ public final class EnderStorageChestOverview implements DiagramGenerator {
         }
 
         builder.autoInsertIntoSlotGroup(SLOT_GROUP_FREQUENCY)
-                .insertIntoNextSlot(frequency.color1().icon())
-                .insertIntoNextSlot(frequency.color2().icon())
-                .insertIntoNextSlot(frequency.color3().icon());
+                .insertIntoNextSlot(frequency.colour1().icon())
+                .insertIntoNextSlot(frequency.colour2().icon())
+                .insertIntoNextSlot(frequency.colour3().icon());
 
         Diagram.Builder.SlotGroupManualSubBuilder slotBuilder =
                 builder.manualInsertIntoSlotGroup(SLOT_GROUP_INVENTORY);
@@ -224,7 +224,7 @@ public final class EnderStorageChestOverview implements DiagramGenerator {
                                 Tooltip.SPECIAL_FORMATTING))
                 .setInteract(info.groupId() + LOOKUP_GLOBAL_CHESTS_SUFFIX)
                 .setDrawBackground(Draw::drawRaisedSlot)
-                .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Color.OVERLAY_BLUE))
+                .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Colour.OVERLAY_BLUE))
                 .build();
     }
 
@@ -246,7 +246,7 @@ public final class EnderStorageChestOverview implements DiagramGenerator {
                                 .build())
                 .setInteract(info.groupId() + LOOKUP_PERSONAL_CHESTS_SUFFIX)
                 .setDrawBackground(Draw::drawRaisedSlot)
-                .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Color.OVERLAY_BLUE))
+                .setDrawOverlay(pos -> Draw.drawOverlay(pos, Draw.Colour.OVERLAY_BLUE))
                 .build();
     }
 }

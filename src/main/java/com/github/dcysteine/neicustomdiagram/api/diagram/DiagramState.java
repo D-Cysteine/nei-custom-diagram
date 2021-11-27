@@ -2,7 +2,7 @@ package com.github.dcysteine.neicustomdiagram.api.diagram;
 
 import codechicken.nei.NEIClientUtils;
 import com.github.dcysteine.neicustomdiagram.api.draw.GuiManager;
-import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
 
 /**
  * Class that keeps track of any mutable state for diagrams.

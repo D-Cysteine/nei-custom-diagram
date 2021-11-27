@@ -12,7 +12,7 @@ import net.minecraft.util.EnumChatFormatting;
 
 import java.util.Arrays;
 
-/** Class holding a tooltip, with options for using a default color. */
+/** Class holding a tooltip, with options for using a default colour. */
 @AutoValue
 public abstract class Tooltip {
     private static final Splitter SPLITTER = Splitter.on('\n');

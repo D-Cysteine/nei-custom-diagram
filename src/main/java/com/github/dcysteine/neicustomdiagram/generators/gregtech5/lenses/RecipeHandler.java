@@ -3,7 +3,7 @@ package com.github.dcysteine.neicustomdiagram.generators.gregtech5.lenses;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.Component;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.DisplayComponent;
 import com.github.dcysteine.neicustomdiagram.api.diagram.component.ItemComponent;
-import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.main.Logger;
 import com.github.dcysteine.neicustomdiagram.util.OreDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechRecipeUtil;
@@ -25,18 +25,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 class RecipeHandler {
-    static final String LENS_COLOR_ORE_NAME_PREFIX = "craftingLens";
+    static final String LENS_COLOUR_ORE_NAME_PREFIX = "craftingLens";
 
     @AutoValue
     abstract static class Lens implements Comparable<Lens> {
         private static final Comparator<Lens> COMPARATOR =
-                Comparator.comparing(Lens::color).thenComparing(Lens::itemComponent);
+                Comparator.comparing(Lens::colour).thenComparing(Lens::itemComponent);
 
-        static Lens create(LensColor color, ItemComponent itemComponent) {
-            return new AutoValue_RecipeHandler_Lens(color, itemComponent);
+        static Lens create(LensColour colour, ItemComponent itemComponent) {
+            return new AutoValue_RecipeHandler_Lens(colour, itemComponent);
         }
 
-        abstract LensColor color();
+        abstract LensColour colour();
         abstract ItemComponent itemComponent();
 
         @Override
@@ -65,26 +65,26 @@ class RecipeHandler {
     /** Multimap of lens to precision laser engraver recipes for that lens. */
     private final SortedSetMultimap<Lens, Recipe> lensRecipes;
 
-    /** Multimap of lens color to lenses of that color. */
-    private final SortedSetMultimap<LensColor, Lens> lensColors;
+    /** Multimap of lens colour to lenses of that colour. */
+    private final SortedSetMultimap<LensColour, Lens> lensColours;
 
-    /** Multimap of lens color to recipes shared by all lenses of that color. */
-    private final SortedSetMultimap<LensColor, Recipe> colorRecipes;
+    /** Multimap of lens colour to recipes shared by all lenses of that colour. */
+    private final SortedSetMultimap<LensColour, Recipe> colourRecipes;
 
     RecipeHandler() {
         lensRecipes = MultimapBuilder.treeKeys().treeSetValues().build();
-        lensColors = MultimapBuilder.enumKeys(LensColor.class).treeSetValues().build();
-        colorRecipes = MultimapBuilder.enumKeys(LensColor.class).treeSetValues().build();
+        lensColours = MultimapBuilder.enumKeys(LensColour.class).treeSetValues().build();
+        colourRecipes = MultimapBuilder.enumKeys(LensColour.class).treeSetValues().build();
     }
 
     /** This method must be called before any other methods are called. */
     void initialize() {
         GT_Recipe.GT_Recipe_Map.sLaserEngraverRecipes.mRecipeList.forEach(this::handleRecipe);
 
-        // Check that lenses of the same color all have the same recipes.
-        for (LensColor color : lensColors.keySet()) {
+        // Check that lenses of the same colour all have the same recipes.
+        for (LensColour colour : lensColours.keySet()) {
             Set<Recipe> currentRecipes = null;
-            for (Lens lens : lensColors.get(color)) {
+            for (Lens lens : lensColours.get(colour)) {
                 Set<Recipe> currentLensRecipes = lensRecipes.get(lens);
                 if (currentRecipes == null) {
                     currentRecipes = currentLensRecipes;
@@ -94,7 +94,7 @@ class RecipeHandler {
             }
 
             if (currentRecipes != null) {
-                colorRecipes.putAll(color, currentRecipes);
+                colourRecipes.putAll(colour, currentRecipes);
             }
         }
     }
@@ -130,24 +130,25 @@ class RecipeHandler {
         }
         DisplayComponent output = outputs.get(0);
 
-        List<String> lensColorOreNames =
+        List<String> lensColourOreNames =
                 OreDictUtil.getOreNames(lensItemComponent).stream()
-                        .filter(oreName -> oreName.startsWith(LENS_COLOR_ORE_NAME_PREFIX))
+                        .filter(oreName -> oreName.startsWith(LENS_COLOUR_ORE_NAME_PREFIX))
                         .collect(Collectors.toList());
-        if (lensColorOreNames.size() > 1) {
+        if (lensColourOreNames.size() > 1) {
             Logger.GREGTECH_5_LENSES.warn(
-                    "Found a multi-colored lens: [{}] [{}]", lensItemComponent, lensColorOreNames);
+                    "Found a multi-coloured lens: [{}] [{}]",
+                    lensItemComponent, lensColourOreNames);
             return;
         }
 
-        LensColor color =
-                lensColorOreNames.isEmpty()
-                        ? LensColor.UNIQUE
-                        : LensColor.get(Iterables.getOnlyElement(lensColorOreNames));
-        Lens lens = Lens.create(color, lensItemComponent);
+        LensColour colour =
+                lensColourOreNames.isEmpty()
+                        ? LensColour.UNIQUE
+                        : LensColour.get(Iterables.getOnlyElement(lensColourOreNames));
+        Lens lens = Lens.create(colour, lensItemComponent);
 
         lensRecipes.put(lens, Recipe.create(input, output));
-        lensColors.put(color, lens);
+        lensColours.put(colour, lens);
     }
 
     ImmutableSet<Lens> allLenses() {
@@ -158,12 +159,12 @@ class RecipeHandler {
         return ImmutableSortedSet.copyOf(lensRecipes.get(lens));
     }
 
-    ImmutableSortedSet<Lens> lenses(LensColor color) {
-        return ImmutableSortedSet.copyOf(lensColors.get(color));
+    ImmutableSortedSet<Lens> lenses(LensColour colour) {
+        return ImmutableSortedSet.copyOf(lensColours.get(colour));
     }
 
-    boolean isColorRecipe(LensColor color, Recipe recipe) {
-        return colorRecipes.get(color).contains(recipe);
+    boolean isColourRecipe(LensColour colour, Recipe recipe) {
+        return colourRecipes.get(colour).contains(recipe);
     }
 
     private static boolean isLens(Component component) {

@@ -1,15 +1,14 @@
-package com.github.dcysteine.neicustomdiagram.mod;
+package com.github.dcysteine.neicustomdiagram.main;
 
 import codechicken.nei.event.NEIRegisterHandlerInfosEvent;
 import codechicken.nei.guihook.GuiContainerManager;
 import codechicken.nei.guihook.IContainerObjectHandler;
 import codechicken.nei.recipe.GuiRecipe;
 import codechicken.nei.recipe.IRecipeHandler;
-import com.github.dcysteine.neicustomdiagram.NeiCustomDiagram;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
-import com.github.dcysteine.neicustomdiagram.mod.config.ConfigOptions;
-import com.github.dcysteine.neicustomdiagram.mod.config.DiagramGroupVisibility;
+import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
+import com.github.dcysteine.neicustomdiagram.main.config.DiagramGroupVisibility;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;

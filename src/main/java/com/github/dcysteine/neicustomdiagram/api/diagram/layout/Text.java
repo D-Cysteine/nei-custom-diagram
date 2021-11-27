@@ -29,8 +29,8 @@ public abstract class Text implements BoundedDrawable {
     @Override
     public abstract Point position();
 
-    /** See {@link Draw.Color} for color encoding information. */
-    public abstract int color();
+    /** See {@link Draw.Colour} for colour encoding information. */
+    public abstract int colour();
 
     /** If true, the text will be rendered at half-scale. */
     public abstract boolean small();
@@ -53,7 +53,7 @@ public abstract class Text implements BoundedDrawable {
 
     @Override
     public void draw(DiagramState diagramState) {
-        Draw.drawText(text(), position(), color(), small(), shadow());
+        Draw.drawText(text(), position(), colour(), small(), shadow());
     }
 
     @ToPrettyString
@@ -84,7 +84,7 @@ public abstract class Text implements BoundedDrawable {
         private final Point position;
         private final Grid.Direction direction;
 
-        private int color;
+        private int colour;
         private boolean small;
         private boolean shadow;
 
@@ -93,14 +93,14 @@ public abstract class Text implements BoundedDrawable {
             this.position = pos;
             this.direction = dir;
 
-            this.color = Draw.Color.BLACK;
+            this.colour = Draw.Colour.BLACK;
             this.small = false;
             this.shadow = false;
         }
 
-        /** See {@link Draw.Color} for color encoding information. */
-        public Builder setColor(int color) {
-            this.color = color;
+        /** See {@link Draw.Colour} for colour encoding information. */
+        public Builder setColour(int colour) {
+            this.colour = colour;
             return this;
         }
 
@@ -127,7 +127,7 @@ public abstract class Text implements BoundedDrawable {
                             direction.xFactor * width / 2,
                             direction.yFactor * height / 2);
 
-            return new AutoValue_Text(text, center, color, small, shadow);
+            return new AutoValue_Text(text, center, colour, small, shadow);
         }
     }
 
@@ -138,7 +138,7 @@ public abstract class Text implements BoundedDrawable {
         private final Grid.Direction direction;
 
         private int lineHeight;
-        private int color;
+        private int colour;
         private boolean small;
         private boolean shadow;
         private List<String> textLines;
@@ -147,16 +147,16 @@ public abstract class Text implements BoundedDrawable {
             this.position = position;
             this.direction = direction;
 
-            this.color = Draw.Color.BLACK;
+            this.colour = Draw.Colour.BLACK;
             this.small = false;
             this.shadow = false;
             this.lineHeight = LINE_HEIGHT;
             this.textLines = new ArrayList<>();
         }
 
-        /** See {@link Draw.Color} for color encoding information. */
-        public MultiLineBuilder setColor(int color) {
-            this.color = color;
+        /** See {@link Draw.Colour} for colour encoding information. */
+        public MultiLineBuilder setColour(int colour) {
+            this.colour = colour;
             return this;
         }
 
@@ -206,7 +206,7 @@ public abstract class Text implements BoundedDrawable {
             for (String line : textLines) {
                 list.add(
                         builder(line, Point.create(position.x(), y), direction)
-                                .setColor(color)
+                                .setColour(colour)
                                 .setSmall(small)
                                 .setShadow(shadow)
                                 .build());

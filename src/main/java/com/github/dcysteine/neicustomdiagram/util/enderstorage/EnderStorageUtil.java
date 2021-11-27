@@ -116,7 +116,7 @@ public final class EnderStorageUtil {
         // Use LinkedHashMap so that the resulting map iterates through keys in insertion order.
         Map<EnderStorageFrequency, EnderLiquidStorage> map = new LinkedHashMap<>();
         IntStream.rangeClosed(0, MAX_FREQUENCY)
-                // Ender tanks seem to have their frequency colors in reverse order.
+                // Ender tanks seem to have their frequency colours in reverse order.
                 .map(EnderStorageUtil::reverseInt)
                 .forEach(
                         freq -> map.put(
@@ -128,7 +128,7 @@ public final class EnderStorageUtil {
     }
 
     /**
-     * Ender tanks seem to have their frequency colors in reverse order; this method helps us
+     * Ender tanks seem to have their frequency colours in reverse order; this method helps us
      * compensate for that.
      */
     public static int reverseInt(int i) {

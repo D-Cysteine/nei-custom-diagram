@@ -1,7 +1,7 @@
-package com.github.dcysteine.neicustomdiagram.mod.config;
+package com.github.dcysteine.neicustomdiagram.main.config;
 
 import com.github.dcysteine.neicustomdiagram.api.diagram.DiagramGroupInfo;
-import com.github.dcysteine.neicustomdiagram.mod.Logger;
+import com.github.dcysteine.neicustomdiagram.main.Logger;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import net.minecraftforge.common.config.Configuration;
 

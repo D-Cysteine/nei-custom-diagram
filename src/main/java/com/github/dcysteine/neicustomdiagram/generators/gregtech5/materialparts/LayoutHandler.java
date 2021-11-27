@@ -9,7 +9,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.layout.Slot;
 import com.github.dcysteine.neicustomdiagram.api.diagram.layout.SlotGroup;
 import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import com.github.dcysteine.neicustomdiagram.mod.Lang;
+import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.google.common.collect.ImmutableList;
 
 class LayoutHandler {
@@ -252,7 +252,8 @@ class LayoutHandler {
                         Slot.builder(Grid.GRID.grid(2, 6))
                                 .setTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_5_MATERIAL_PARTS.trans("hotingotslot"),
+                                                Lang.GREGTECH_5_MATERIAL_PARTS.trans(
+                                                        "hotingotslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();
@@ -458,7 +459,8 @@ class LayoutHandler {
                         Slot.builder(Grid.GRID.grid(12, 16))
                                 .setTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_5_MATERIAL_PARTS.trans("frameboxslot"),
+                                                Lang.GREGTECH_5_MATERIAL_PARTS.trans(
+                                                        "frameboxslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();
@@ -484,7 +486,8 @@ class LayoutHandler {
                         Slot.builder(Grid.GRID.grid(2, 18))
                                 .setTooltip(
                                         Tooltip.create(
-                                                Lang.GREGTECH_5_MATERIAL_PARTS.trans("finewireslot"),
+                                                Lang.GREGTECH_5_MATERIAL_PARTS.trans(
+                                                        "finewireslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();
