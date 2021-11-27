@@ -13,7 +13,13 @@ public final class ConfigGuiFactory implements IModGuiFactory {
      * updated if this class is moved or renamed.
      */
     public static final String CLASS_NAME =
-            "com.github.dcysteine.neicustomdiagram.mod.config.ConfigGuiFactory";
+            "com.github.dcysteine.neicustomdiagram.main.config.ConfigGuiFactory";
+
+    public static void checkClassName() {
+        if (!CLASS_NAME.equals(ConfigGuiFactory.class.getName())) {
+            throw new IllegalStateException("ConfigGuiFactory.CLASS_NAME needs to be updated!");
+        }
+    }
 
     @Override
     public void initialize(Minecraft minecraft) {}

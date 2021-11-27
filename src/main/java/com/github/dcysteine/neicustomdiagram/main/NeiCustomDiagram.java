@@ -49,6 +49,8 @@ public final class NeiCustomDiagram {
         }
         Logger.MOD.info("Mod initialization starting...");
 
+        ConfigGuiFactory.checkClassName();
+
         Config.initialize();
         Registry.INSTANCE.initialize();
         Config.initializeDiagramGroupVisibility(Registry.INSTANCE.infoList());
