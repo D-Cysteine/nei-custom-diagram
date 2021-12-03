@@ -30,7 +30,8 @@ public final class NeiCustomDiagram {
                     + "after:dreamcraft;"
                     + "after:gregtech;"
                     + "after:bartworks;"
-                    + "after:detravscannermod;";
+                    + "after:detravscannermod;"
+                    + "after:MineTweaker3;";
 
     @Instance(MOD_ID)
     public static NeiCustomDiagram instance;

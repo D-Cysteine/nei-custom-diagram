@@ -54,14 +54,13 @@ val Project.minecraft: UserExtension
     get() = extensions.getByName<UserExtension>("minecraft")
 
 repositories {
-    maven("http://chickenbones.net/maven/") { this.name = "ChickenBones" }
     ivy {
         this.name = "gtnh_download_source"
         this.artifactPattern(
             "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]-[revision]-[classifier].[ext]")
     }
     maven("https://jitpack.io") { this.name = "jitpack.io" }
-    //maven("https://gregtech.overminddl1.com/") { this.name = "GregTech" }
+    //maven("https://gregtech.overminddl1.com/") { this.name = "GregTech" }  // GT6
 }
 
 dependencies {
@@ -72,21 +71,18 @@ dependencies {
 
     val codeChickenCoreVersion: String by project
     val codeChickenLibVersion: String by project
-    compile("codechicken:CodeChickenCore:$minecraftVersion-$codeChickenCoreVersion:dev")
-    compile("codechicken:CodeChickenLib:$minecraftVersion-$codeChickenLibVersion:dev")
+    val neiVersion: String by project
+    compile("com.github.GTNewHorizons:CodeChickenCore:$codeChickenCoreVersion:dev")
+    compile("com.github.GTNewHorizons:CodeChickenLib:$codeChickenLibVersion:dev")
+    compile("com.github.GTNewHorizons:NotEnoughItems:$neiVersion:dev")
 
     val gregTech5Version: String by project
     compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
         this.isTransitive = false
     }
-    /*
-     * If we need to get this from downloads.gtnewhorizons.com instead:
-    compile("gregtech:gregtech:$gregTech5Version:dev") {
-        this.isTransitive = false
-    }
-     */
 
     // The following are compile-time dependencies of GT5.
+    // TODO once EnderIO and Railcraft build on Jitpack, switch over to that and remove ivy repo
     val enderIoVersion: String by project
     val forestryVersion: String by project
     val railcraftVersion: String by project
@@ -99,8 +95,15 @@ dependencies {
         this.isTransitive = false
     }
 
+    val detravScannerVersion: String by project
+    compile("com.github.GTNewHorizons:DetravScannerMod:$detravScannerVersion:dev") {
+        this.isTransitive = false
+    }
+
     val enderStorageVersion: String by project
-    compile("com.github.GTNewHorizons:EnderStorage:$enderStorageVersion:dev")
+    compile("com.github.GTNewHorizons:EnderStorage:$enderStorageVersion:dev") {
+        this.isTransitive = false
+    }
 
     /*
     val gregTech6Version: String by project
