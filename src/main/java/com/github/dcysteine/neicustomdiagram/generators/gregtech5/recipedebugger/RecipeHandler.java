@@ -68,10 +68,16 @@ class RecipeHandler {
                 ItemList.Machine_HV_Disassembler, "disassemblerlabel"),
          */
 
-        // Scanner, Rock Breaker, By-product, Replicator, Assembly Line
+        // Scanner, Rock Breaker, By-product, Replicator
+
+        /*
+         * Assembly line recipes don't conflict usually since they are position-dependent.
+         * So it's disabled.
         ASSEMBLY_LINE(
                 GT_Recipe.GT_Recipe_Map.sAssemblylineVisualRecipes,
                 ItemList.Machine_Multi_Assemblyline, "assemblylinelabel"),
+         */
+
         // Plasma Arc Furnace, Arc Furnace
         PRINTER(
                 GT_Recipe.GT_Recipe_Map.sPrinterRecipes,

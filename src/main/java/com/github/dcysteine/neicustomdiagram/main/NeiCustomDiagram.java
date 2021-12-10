@@ -30,6 +30,7 @@ public final class NeiCustomDiagram {
                     + "after:dreamcraft;"
                     + "after:gregtech;"
                     + "after:bartworks;"
+                    + "after:miscutils;"
                     + "after:detravscannermod;"
                     + "after:MineTweaker3;";
 

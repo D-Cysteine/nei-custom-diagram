@@ -18,6 +18,7 @@ import gregtech.api.enums.Materials;
 import gregtech.api.items.GT_MetaGenerated_Tool;
 import gregtech.api.util.GT_Recipe;
 import gregtech.common.items.GT_MetaGenerated_Tool_01;
+import gtPlusPlus.xmod.gregtech.common.items.MetaGeneratedGregtechTools;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
@@ -85,6 +86,15 @@ class RecipeHandler {
     private final SortedSetMultimap<BaseTool, ItemComponent> toolsMultimap;
 
     /**
+     * Multimap of base tool (without NBT) to sorted set of tool item components (with NBT).
+     *
+     * <p>This is an intermediary data structure which we use to group tools together ignoring
+     * extraneous NBT such as electrical stats. We use a sorted set to hold the values, to ensure
+     * that item components are iterated through in order taking into account extraneous NBT.
+     */
+    private final SortedSetMultimap<BaseTool, ItemComponent> gtPlusPlusToolsMultimap;
+
+    /**
      * Multimap of base tool (without NBT) to sorted set of Detrav scanner components (with NBT).
      *
      * <p>This is an intermediary data structure which we use to group tools together ignoring
@@ -131,6 +141,7 @@ class RecipeHandler {
 
     RecipeHandler() {
         this.toolsMultimap = MultimapBuilder.hashKeys().treeSetValues().build();
+        this.gtPlusPlusToolsMultimap = MultimapBuilder.hashKeys().treeSetValues().build();
         this.scannersMultimap = MultimapBuilder.hashKeys().treeSetValues().build();
         this.materialToolsMultimap = MultimapBuilder.hashKeys().arrayListValues().build();
         this.materialTurbinesMultimap = MultimapBuilder.hashKeys().arrayListValues().build();
@@ -163,6 +174,17 @@ class RecipeHandler {
             } else {
                 materialToolsMultimap.put(baseTool.primaryMaterial(), displayComponents);
             }
+        }
+
+        for (BaseTool baseTool: ImmutableSortedSet.copyOf(gtPlusPlusToolsMultimap.keySet())) {
+            ImmutableList<DisplayComponent> displayComponents =
+                    ImmutableList.copyOf(
+                            gtPlusPlusToolsMultimap.get(baseTool).stream()
+                                    .map(RecipeHandler::buildDisplayComponent)
+                                    .sorted(EU_CAPACITY_COMPARATOR)
+                                    .collect(Collectors.toList()));
+
+            materialToolsMultimap.put(baseTool.primaryMaterial(), displayComponents);
         }
 
         for (BaseTool baseTool : ImmutableSortedSet.copyOf(scannersMultimap.keySet())) {
@@ -231,6 +253,13 @@ class RecipeHandler {
 
         if (itemStack.getItem() == GT_MetaGenerated_Tool_01.INSTANCE) {
             toolsMultimap.put(BaseTool.create(itemStack), ItemComponent.createWithNbt(itemStack));
+        }
+
+        if (Registry.ModDependency.GT_PLUS_PLUS.isLoaded()) {
+            if (itemStack.getItem() == MetaGeneratedGregtechTools.INSTANCE) {
+                gtPlusPlusToolsMultimap.put(
+                        BaseTool.create(itemStack), ItemComponent.createWithNbt(itemStack));
+            }
         }
 
         if (Registry.ModDependency.DETRAV_SCANNER.isLoaded()) {

@@ -95,6 +95,11 @@ dependencies {
         this.isTransitive = false
     }
 
+    val gtPlusPlusVersion: String by project
+    compile("com.github.GTNewHorizons:GTplusplus:$gtPlusPlusVersion") {
+        this.isTransitive = false
+    }
+
     val detravScannerVersion: String by project
     compile("com.github.GTNewHorizons:DetravScannerMod:$detravScannerVersion:dev") {
         this.isTransitive = false

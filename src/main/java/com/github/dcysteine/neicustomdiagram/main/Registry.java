@@ -110,6 +110,7 @@ public enum Registry {
 
         // GregTech5 add-ons
         BARTWORKS("bartworks"),
+        GT_PLUS_PLUS("miscutils"),
         DETRAV_SCANNER("detravscannermod"),
 
         // GregTech 6 shares a mod ID with GregTech 5, so we must also check the mod version.

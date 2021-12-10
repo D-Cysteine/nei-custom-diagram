@@ -66,7 +66,14 @@ class DiagramBuilder {
                         .filter(GregTechOreProcessing::isGregTechOreBlock)
                         .collect(Collectors.toList());
 
-        this.rawOre = gregTechOres.isEmpty() ? filteredRawOres.get(0) : gregTechOres.get(0);
+        if (!gregTechOres.isEmpty()) {
+            this.rawOre = gregTechOres.get(0);
+        } else if (!filteredRawOres.isEmpty()) {
+            this.rawOre = filteredRawOres.get(0);
+        } else {
+            this.rawOre = rawOres.get(0);
+        }
+
         this.craftingComponents = new HashSet<>(filteredRawOres);
         this.usageComponents = new HashSet<>(filteredRawOres);
         this.diagramBuilder = Diagram.builder();
