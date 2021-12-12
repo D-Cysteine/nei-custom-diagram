@@ -2,8 +2,8 @@ import net.minecraftforge.gradle.user.UserExtension
 
 buildscript {
     repositories {
-        maven("https://maven.minecraftforge.net") { this.name = "Forge" }
-        maven("https://jitpack.io") { this.name = "jitpack.io" }
+        maven("https://maven.minecraftforge.net") { name = "Forge" }
+        maven("https://jitpack.io") { name = "jitpack.io" }
     }
     dependencies {
         classpath("com.github.GTNewHorizons:ForgeGradle:1.2.4")
@@ -19,14 +19,14 @@ apply(plugin = "forge")
 
 idea {
     module {
-        this.isDownloadJavadoc = true
-        this.isDownloadSources = true
+        isDownloadJavadoc = true
+        isDownloadSources = true
     }
 }
 
 java {
-    this.sourceCompatibility = JavaVersion.VERSION_1_8
-    this.targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }
 
 tasks.withType<JavaCompile> {
@@ -42,12 +42,12 @@ val forgeVersion: String by project
 minecraft.version = "$minecraftVersion-$forgeVersion-$minecraftVersion"
 
 configure<UserExtension> {
-    this.replacements.putAll(
+    replacements.putAll(
         mapOf(
             Pair("@version@", version)
         )
     )
-    this.runDir = "run"
+    runDir = "run"
 }
 
 val Project.minecraft: UserExtension
@@ -55,19 +55,19 @@ val Project.minecraft: UserExtension
 
 repositories {
     ivy {
-        this.name = "gtnh_download_source"
-        this.artifactPattern(
+        name = "gtnh_download_source"
+        artifactPattern(
             "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]-[revision]-[classifier].[ext]")
     }
-    maven("https://jitpack.io") { this.name = "jitpack.io" }
-    //maven("https://gregtech.overminddl1.com/") { this.name = "GregTech" }  // GT6
+    maven("https://jitpack.io") { name = "jitpack.io" }
+    //maven("https://gregtech.overminddl1.com/") { name = "GregTech" }  // GT6
 }
 
 dependencies {
     val autoValueVersion: String by project
     compileOnly("com.google.auto.value:auto-value-annotations:$autoValueVersion")
     annotationProcessor("com.google.auto.value:auto-value:$autoValueVersion")
-    compileOnly(fileTree("libs") { this.include("*.jar") })
+    compileOnly(fileTree("libs") { include("*.jar") })
 
     val codeChickenCoreVersion: String by project
     val codeChickenLibVersion: String by project
@@ -78,7 +78,7 @@ dependencies {
 
     val gregTech5Version: String by project
     compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
-        this.isTransitive = false
+        isTransitive = false
     }
 
     // The following are compile-time dependencies of GT5.
@@ -92,22 +92,22 @@ dependencies {
 
     val bartworksVersion: String by project
     compile("com.github.GTNewHorizons:bartworks:$bartworksVersion:dev") {
-        this.isTransitive = false
+        isTransitive = false
     }
 
     val gtPlusPlusVersion: String by project
     compile("com.github.GTNewHorizons:GTplusplus:$gtPlusPlusVersion") {
-        this.isTransitive = false
+        isTransitive = false
     }
 
     val detravScannerVersion: String by project
     compile("com.github.GTNewHorizons:DetravScannerMod:$detravScannerVersion:dev") {
-        this.isTransitive = false
+        isTransitive = false
     }
 
     val enderStorageVersion: String by project
     compile("com.github.GTNewHorizons:EnderStorage:$enderStorageVersion:dev") {
-        this.isTransitive = false
+        isTransitive = false
     }
 
     /*
@@ -118,12 +118,12 @@ dependencies {
 
 tasks.withType<Jar> {
     // Make sure this task is re-run when versions change.
-    this.inputs.properties += "version" to project.version
-    this.inputs.properties += "mcversion" to project.minecraft.version
+    inputs.properties += "version" to project.version
+    inputs.properties += "mcversion" to project.minecraft.version
 
     // Replace version in mcmod.info
-    this.filesMatching("mcmod.info") {
-        this.expand(
+    filesMatching("mcmod.info") {
+        expand(
             mapOf(
                 "version" to project.version,
                 "mcversion" to project.minecraft.version
@@ -131,20 +131,20 @@ tasks.withType<Jar> {
         )
     }
 
-    this.archiveBaseName.set("NEICustomDiagram")
+    archiveBaseName.set("NEICustomDiagram")
 }
 
 val sourcesJar by tasks.creating(Jar::class) {
-    this.from(sourceSets.main.get().allSource)
-    this.archiveClassifier.set("sources")
+    from(sourceSets.main.get().allSource)
+    archiveClassifier.set("sources")
 }
 
 val devJar by tasks.creating(Jar::class) {
-    this.from(sourceSets.main.get().output)
-    this.archiveClassifier.set("dev")
+    from(sourceSets.main.get().output)
+    archiveClassifier.set("dev")
 }
 
 artifacts {
-    this.archives(sourcesJar)
-    this.archives(devJar)
+    archives(sourcesJar)
+    archives(devJar)
 }
