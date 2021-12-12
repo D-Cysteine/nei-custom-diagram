@@ -136,6 +136,7 @@ tasks.withType<Jar> {
 
 val sourcesJar by tasks.creating(Jar::class) {
     from(sourceSets.main.get().allSource)
+    from("$projectDir/LICENSE.md")
     archiveClassifier.set("sources")
 }
 
