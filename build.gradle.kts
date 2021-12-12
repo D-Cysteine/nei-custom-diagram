@@ -54,10 +54,15 @@ val Project.minecraft: UserExtension
     get() = extensions.getByName<UserExtension>("minecraft")
 
 repositories {
+    maven("https://maven.minecraftforge.net") {
+        name = "Forge"
+        metadataSources { artifact() }
+    }
     ivy {
         name = "gtnh_download_source"
         artifactPattern(
             "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]-[revision]-[classifier].[ext]")
+        metadataSources { artifact() }
     }
     maven("https://jitpack.io") { name = "jitpack.io" }
     //maven("https://gregtech.overminddl1.com/") { name = "GregTech" }  // GT6
@@ -72,12 +77,12 @@ dependencies {
     val codeChickenCoreVersion: String by project
     val codeChickenLibVersion: String by project
     val neiVersion: String by project
-    compile("com.github.GTNewHorizons:CodeChickenCore:$codeChickenCoreVersion:dev")
-    compile("com.github.GTNewHorizons:CodeChickenLib:$codeChickenLibVersion:dev")
-    compile("com.github.GTNewHorizons:NotEnoughItems:$neiVersion:dev")
+    implementation("com.github.GTNewHorizons:CodeChickenCore:$codeChickenCoreVersion:dev")
+    implementation("com.github.GTNewHorizons:CodeChickenLib:$codeChickenLibVersion:dev")
+    implementation("com.github.GTNewHorizons:NotEnoughItems:$neiVersion:dev")
 
     val gregTech5Version: String by project
-    compile("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
+    implementation("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
         isTransitive = false
     }
 
@@ -91,22 +96,22 @@ dependencies {
     compileOnly("mods.railcraft:Railcraft_$minecraftVersion:$railcraftVersion:dev")
 
     val bartworksVersion: String by project
-    compile("com.github.GTNewHorizons:bartworks:$bartworksVersion:dev") {
+    implementation("com.github.GTNewHorizons:bartworks:$bartworksVersion:dev") {
         isTransitive = false
     }
 
     val gtPlusPlusVersion: String by project
-    compile("com.github.GTNewHorizons:GTplusplus:$gtPlusPlusVersion") {
+    implementation("com.github.GTNewHorizons:GTplusplus:$gtPlusPlusVersion") {
         isTransitive = false
     }
 
     val detravScannerVersion: String by project
-    compile("com.github.GTNewHorizons:DetravScannerMod:$detravScannerVersion:dev") {
+    implementation("com.github.GTNewHorizons:DetravScannerMod:$detravScannerVersion:dev") {
         isTransitive = false
     }
 
     val enderStorageVersion: String by project
-    compile("com.github.GTNewHorizons:EnderStorage:$enderStorageVersion:dev") {
+    implementation("com.github.GTNewHorizons:EnderStorage:$enderStorageVersion:dev") {
         isTransitive = false
     }
 
@@ -117,10 +122,6 @@ dependencies {
 }
 
 tasks.withType<Jar> {
-    // Make sure this task is re-run when versions change.
-    inputs.properties += "version" to project.version
-    inputs.properties += "mcversion" to project.minecraft.version
-
     // Replace version in mcmod.info
     filesMatching("mcmod.info") {
         expand(
@@ -130,7 +131,6 @@ tasks.withType<Jar> {
             )
         )
     }
-
     archiveBaseName.set("NEICustomDiagram")
 }
 
