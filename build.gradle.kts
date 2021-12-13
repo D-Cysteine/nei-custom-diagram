@@ -69,10 +69,12 @@ repositories {
 }
 
 dependencies {
+    // TODO once we can get GTNH core mod from Jitpack, we can delete the libs/ directory
+    compileOnly(fileTree("libs") { include("*.jar") })
+
     val autoValueVersion: String by project
     compileOnly("com.google.auto.value:auto-value-annotations:$autoValueVersion")
     annotationProcessor("com.google.auto.value:auto-value:$autoValueVersion")
-    compileOnly(fileTree("libs") { include("*.jar") })
 
     val codeChickenCoreVersion: String by project
     val codeChickenLibVersion: String by project
