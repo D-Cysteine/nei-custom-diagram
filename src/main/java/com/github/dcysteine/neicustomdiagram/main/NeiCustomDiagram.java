@@ -19,6 +19,7 @@ import net.minecraftforge.common.MinecraftForge;
         modid = NeiCustomDiagram.MOD_ID,
         name = NeiCustomDiagram.MOD_NAME,
         version = NeiCustomDiagram.MOD_VERSION,
+        acceptableRemoteVersions = "*", // Client-side-only mod.
         dependencies = NeiCustomDiagram.MOD_DEPENDENCIES,
         guiFactory = ConfigGuiFactory.CLASS_NAME)
 public final class NeiCustomDiagram {
