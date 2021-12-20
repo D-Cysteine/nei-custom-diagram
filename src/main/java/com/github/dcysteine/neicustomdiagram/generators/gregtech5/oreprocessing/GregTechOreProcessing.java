@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.common.blocks.GT_Block_Ores_Abstract;
+import gtPlusPlus.core.block.base.BlockBaseOre;
 import gtPlusPlus.core.material.Material;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
@@ -114,7 +115,9 @@ public final class GregTechOreProcessing implements DiagramGenerator {
         if (Registry.ModDependency.GT_PLUS_PLUS.isLoaded()) {
             for (Material material : Material.mMaterialMap) {
                 ItemStack ore = material.getOre(1);
-                if (ore == null) {
+                if (ore == null
+                        || !(Block.getBlockFromItem(ore.getItem()) instanceof BlockBaseOre)) {
+                    // Skip non-GT++ ore blocks to avoid duplicate diagrams.
                     continue;
                 }
 
