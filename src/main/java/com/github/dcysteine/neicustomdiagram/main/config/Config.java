@@ -13,7 +13,7 @@ public final class Config {
             new File(
                     (File) FMLInjectionData.data()[6],
                     "config" + File.separator + "NEICustomDiagram.cfg");
-    static Configuration CONFIG = new Configuration(CONFIG_FILE);
+    static final Configuration CONFIG = new Configuration(CONFIG_FILE);
 
     // Static class.
     private Config() {}
