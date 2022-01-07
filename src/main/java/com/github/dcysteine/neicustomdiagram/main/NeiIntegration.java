@@ -46,6 +46,10 @@ public enum NeiIntegration {
 
         @Override
         public ItemStack getStackUnderMouse(GuiContainer guiContainer, int mousex, int mousey) {
+            if (!(guiContainer instanceof GuiRecipe)) {
+                return null;
+            }
+
             Optional<DiagramGroup> diagramGroupOptional = getDiagramGroup(guiContainer);
             if (!diagramGroupOptional.isPresent()) {
                 return null;

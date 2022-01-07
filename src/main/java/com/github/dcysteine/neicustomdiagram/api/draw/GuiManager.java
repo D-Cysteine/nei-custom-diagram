@@ -9,6 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import org.lwjgl.opengl.GL11;
 
+import java.util.Optional;
+
 /** Handles things like getting the mouse position, and scrolling. */
 public final class GuiManager {
     // Margins for glScissor, in pixels. These margins will be excluded from the scissor region.
@@ -201,7 +203,13 @@ public final class GuiManager {
     }
 
     public Point getRelativeMousePosition(int recipe) {
-        GuiRecipe gui = getGui();
+        Optional<GuiRecipe> guiOptional = getGui();
+        if (!guiOptional.isPresent()) {
+            // The GUI got closed already, or something.
+            return Point.create(0, 0);
+        }
+        GuiRecipe gui = guiOptional.get();
+
         java.awt.Point mouse = GuiDraw.getMousePosition();
         java.awt.Point offset = gui.getRecipePosition(recipe);
 
@@ -261,14 +269,26 @@ public final class GuiManager {
      * <p>Note that this is incorrect for {@code glScissor}!
      */
     public Point getViewportPosition() {
-        GuiRecipe gui = getGui();
+        Optional<GuiRecipe> guiOptional = getGui();
+        if (!guiOptional.isPresent()) {
+            // The GUI got closed already, or something.
+            return Point.create(0, 0);
+        }
+        GuiRecipe gui = guiOptional.get();
+
         return Point.create(
                 Reflection.GUI_LEFT.get(gui) + SIDE_MARGIN,
                 Reflection.GUI_TOP.get(gui) + TOP_MARGIN);
     }
 
     public Dimension getViewportDimension() {
-        GuiRecipe gui = getGui();
+        Optional<GuiRecipe> guiOptional = getGui();
+        if (!guiOptional.isPresent()) {
+            // The GUI got closed already, or something.
+            return Dimension.create(0, 0);
+        }
+        GuiRecipe gui = guiOptional.get();
+
         return Dimension.create(
                 Reflection.X_SIZE.get(gui) - 2 * SIDE_MARGIN,
                 Reflection.Y_SIZE.get(gui) - (TOP_MARGIN + BOTTOM_MARGIN));
@@ -280,7 +300,13 @@ public final class GuiManager {
     }
 
     private void setScissor() {
-        GuiRecipe gui = getGui();
+        Optional<GuiRecipe> guiOptional = getGui();
+        if (!guiOptional.isPresent()) {
+            // The GUI got closed already, or something.
+            return;
+        }
+        GuiRecipe gui = guiOptional.get();
+
         int left = Reflection.GUI_LEFT.get(gui) + SIDE_MARGIN;
         int bottom =
                 gui.height - (Reflection.GUI_TOP.get(gui) + Reflection.Y_SIZE.get(gui))
@@ -300,7 +326,13 @@ public final class GuiManager {
                 viewportDim.width() * scaleFactor, viewportDim.height() * scaleFactor);
     }
 
-    private GuiRecipe getGui() {
-        return (GuiRecipe) GuiContainerManager.getManager().window;
+    /** Returns empty {@link Optional} in cases such as the GUI being instantly closed. */
+    private Optional<GuiRecipe> getGui() {
+        GuiContainerManager manager = GuiContainerManager.getManager();
+        if (manager == null || !(manager.window instanceof GuiRecipe)) {
+            return Optional.empty();
+        }
+
+        return Optional.of((GuiRecipe) manager.window);
     }
 }
