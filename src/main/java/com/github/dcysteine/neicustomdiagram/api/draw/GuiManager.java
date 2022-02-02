@@ -141,10 +141,9 @@ public final class GuiManager {
         int scrollbarX = viewportPos.x() + viewportDim.width() + 7;
         int scrollbarY = viewportPos.y();
 
-        int scrollbarCursorHeight =
-                viewportDim.height() * viewportDim.height() / diagramDimension.height();
-        int scrollbarCursorY =
-                scrollbarY + (scrollY * viewportDim.height() / diagramDimension.height());
+        int paddedHeight = diagramDimension.height() + VERTICAL_PADDING;
+        int scrollbarCursorHeight = viewportDim.height() * viewportDim.height() / paddedHeight;
+        int scrollbarCursorY = scrollbarY + (scrollY * viewportDim.height() / paddedHeight);
         // Set a min height just in case integer division gives us 0 or something =S
         scrollbarCursorHeight += 2;
         scrollbarCursorY -= 1;
@@ -251,8 +250,8 @@ public final class GuiManager {
     /** Does not check bounds! Bounds checks are done by {@link #checkScrollState(Dimension)}. */
     public void scrollToMouse(Dimension diagramDimension) {
         Dimension viewportDim = getViewportDimension();
-        int scrollbarCursorHeight =
-                viewportDim.height() * viewportDim.height() / diagramDimension.height();
+        int paddedHeight = diagramDimension.height() + VERTICAL_PADDING;
+        int scrollbarCursorHeight = viewportDim.height() * viewportDim.height() / paddedHeight;
 
         int mouseOffset =
                 getAbsoluteMousePosition().y()
@@ -295,7 +294,7 @@ public final class GuiManager {
     }
 
     private int computeScrollableHeight(Dimension diagramDimension) {
-        // Need to add one to avoid clipping the bottom-most row.
+        // Need to add padding to avoid clipping the bottom-most row.
         return diagramDimension.height() + VERTICAL_PADDING - getViewportDimension().height();
     }
 
