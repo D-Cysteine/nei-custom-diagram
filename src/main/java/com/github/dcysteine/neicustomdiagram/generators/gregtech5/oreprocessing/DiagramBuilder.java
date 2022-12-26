@@ -296,20 +296,21 @@ class DiagramBuilder {
     private void handleChemicalBathFluid(
             RecipeHandler.ChemicalBathFluid chemicalBathFluid, ItemComponent input,
             Layout.SlotGroupKey key) {
-        Optional<ImmutableList<DisplayComponent>> outputsOptional =
+        Optional<RecipeHandler.ChemicalBathFluidRecipe> recipeOptional =
                 recipeHandler.getUniqueChemicalBathOutput(chemicalBathFluid, input);
-        if (!outputsOptional.isPresent()) {
+        if (!recipeOptional.isPresent()) {
             return;
         }
 
-        DisplayComponent fluid = chemicalBathFluid.fluid;
+        DisplayComponent fluid = DisplayComponent.builder(chemicalBathFluid.fluid)
+                .setStackSize(recipeOptional.get().inputFluidAmount()).build();
         Optional<DisplayComponent> fluidDisplayItem =
                 GregTechFluidDictUtil.getDisplayItem(fluid.component())
                         .map(
                                 itemComponent ->
                                         fluid.toBuilder().setComponent(itemComponent).build());
 
-        List<DisplayComponent> outputs = new ArrayList<>(outputsOptional.get());
+        List<DisplayComponent> outputs = new ArrayList<>(recipeOptional.get().outputs());
         ComponentTransformer.removeComponent(outputs, STONE_DUST);
         if (outputs.size() == 0) {
             Logger.GREGTECH_5_ORE_PROCESSING.warn(
