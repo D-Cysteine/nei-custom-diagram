@@ -3,9 +3,7 @@ neicustomdiagram.api.hasnbt=有NBT(<Shift>查看)
 neicustomdiagram.api.cycleindex=循环页码：%,d / %,d
 neicustomdiagram.api.cycleindexwithshift=循环页码：%,d / %,d (<Shift>查看)
 neicustomdiagram.api.cyclecomponents=循环工具：
-# Begin needs translation
 neicustomdiagram.api.excesscyclecomponents=(+%,d more)
-# End needs translation
 neicustomdiagram.api.showalldiagrams=显示所有图表
 
 neicustomdiagram.util.capacity=容量：%,d
@@ -79,33 +77,31 @@ neicustomdiagram.generators.gregtech5.circuits.recipeiteminputsslot=合成表物
 neicustomdiagram.generators.gregtech5.circuits.recipefluidinputsslot=合成表流体输入
 neicustomdiagram.generators.gregtech5.circuits.recipeoutputslot=合成表输出
 
-# Begin needs translation
-neicustomdiagram.generators.gregtech5.lenses.groupname=GregTech Lenses
-neicustomdiagram.generators.gregtech5.lenses.colourlenseslabel=%s lenses
-neicustomdiagram.generators.gregtech5.lenses.currentlenslabel=Currently viewing this lens
-neicustomdiagram.generators.gregtech5.lenses.samecolourlensesslot=Same colour lenses
-neicustomdiagram.generators.gregtech5.lenses.specificrecipelabel=Lens-specific recipe
-neicustomdiagram.generators.gregtech5.lenses.colourrecipelabel=%s lens recipe
-neicustomdiagram.generators.gregtech5.lenses.recipeinputslot=Precision Laser Engraver input
-neicustomdiagram.generators.gregtech5.lenses.recipeoutputslot=Precision Laser Engraver output
-neicustomdiagram.generators.gregtech5.lenses.colour.white=White
-neicustomdiagram.generators.gregtech5.lenses.colour.orange=Orange
-neicustomdiagram.generators.gregtech5.lenses.colour.magenta=Magenta
-neicustomdiagram.generators.gregtech5.lenses.colour.lightblue=Light blue
-neicustomdiagram.generators.gregtech5.lenses.colour.yellow=Yellow
-neicustomdiagram.generators.gregtech5.lenses.colour.lime=Lime
-neicustomdiagram.generators.gregtech5.lenses.colour.pink=Pink
-neicustomdiagram.generators.gregtech5.lenses.colour.gray=Gray
-neicustomdiagram.generators.gregtech5.lenses.colour.lightgray=Light gray
-neicustomdiagram.generators.gregtech5.lenses.colour.cyan=Cyan
-neicustomdiagram.generators.gregtech5.lenses.colour.purple=Purple
-neicustomdiagram.generators.gregtech5.lenses.colour.blue=Blue
-neicustomdiagram.generators.gregtech5.lenses.colour.brown=Brown
-neicustomdiagram.generators.gregtech5.lenses.colour.green=Green
-neicustomdiagram.generators.gregtech5.lenses.colour.red=Red
-neicustomdiagram.generators.gregtech5.lenses.colour.black=Black
-neicustomdiagram.generators.gregtech5.lenses.colour.unique=Unique
-# End needs translation
+neicustomdiagram.generators.gregtech5.lenses.groupname=GT透镜
+neicustomdiagram.generators.gregtech5.lenses.colourlenseslabel=%s 透镜
+neicustomdiagram.generators.gregtech5.lenses.currentlenslabel=正在查看此透镜
+neicustomdiagram.generators.gregtech5.lenses.samecolourlensesslot=同色透镜
+neicustomdiagram.generators.gregtech5.lenses.specificrecipelabel=指定透镜合成表
+neicustomdiagram.generators.gregtech5.lenses.colourrecipelabel=%s 透镜合成表
+neicustomdiagram.generators.gregtech5.lenses.recipeinputslot=精密激光蚀刻机输入
+neicustomdiagram.generators.gregtech5.lenses.recipeoutputslot=精密激光蚀刻机输出
+neicustomdiagram.generators.gregtech5.lenses.colour.white=白色
+neicustomdiagram.generators.gregtech5.lenses.colour.orange=橙色
+neicustomdiagram.generators.gregtech5.lenses.colour.magenta=品红色
+neicustomdiagram.generators.gregtech5.lenses.colour.lightblue=淡蓝色
+neicustomdiagram.generators.gregtech5.lenses.colour.yellow=黄色
+neicustomdiagram.generators.gregtech5.lenses.colour.lime=黄绿色
+neicustomdiagram.generators.gregtech5.lenses.colour.pink=粉色
+neicustomdiagram.generators.gregtech5.lenses.colour.gray=灰色
+neicustomdiagram.generators.gregtech5.lenses.colour.lightgray=淡灰色
+neicustomdiagram.generators.gregtech5.lenses.colour.cyan=青色
+neicustomdiagram.generators.gregtech5.lenses.colour.purple=紫色
+neicustomdiagram.generators.gregtech5.lenses.colour.blue=蓝色
+neicustomdiagram.generators.gregtech5.lenses.colour.brown=棕色
+neicustomdiagram.generators.gregtech5.lenses.colour.green=绿色
+neicustomdiagram.generators.gregtech5.lenses.colour.red=红色
+neicustomdiagram.generators.gregtech5.lenses.colour.black=黑色
+neicustomdiagram.generators.gregtech5.lenses.colour.unique=特殊
 
 neicustomdiagram.generators.gregtech5.materialparts.groupname=GT材料零件
 neicustomdiagram.generators.gregtech5.materialparts.blastfurnaceinfo=需要工业高炉！
@@ -147,9 +143,7 @@ neicustomdiagram.generators.gregtech5.materialparts.springsslot=弹簧
 neicustomdiagram.generators.gregtech5.materialparts.gearsslot=齿轮
 neicustomdiagram.generators.gregtech5.materialparts.rotorslot=转子
 neicustomdiagram.generators.gregtech5.materialparts.casingslot=机械方块
-# Begin needs translation
-neicustomdiagram.generators.gregtech5.materialparts.barsslot=Bars
-# End needs translation
+neicustomdiagram.generators.gregtech5.materialparts.barsslot=条
 neicustomdiagram.generators.gregtech5.materialparts.frameboxslot=框架
 neicustomdiagram.generators.gregtech5.materialparts.wiresslot=导线
 neicustomdiagram.generators.gregtech5.materialparts.finewireslot=细导线
@@ -160,8 +154,8 @@ neicustomdiagram.generators.gregtech5.materialparts.specialpipesslot=特殊管�
 neicustomdiagram.generators.gregtech5.materialtools.groupname=GT材料工具
 neicustomdiagram.generators.gregtech5.materialtools.handlelabel=工具手柄
 neicustomdiagram.generators.gregtech5.materialtools.prefixlabel=矿辞前缀：%s
-neicustomdiagram.generators.gregtech5.materialtools.primarymateriallabel=初级材料：%s
-neicustomdiagram.generators.gregtech5.materialtools.secondarymateriallabel=次级材料：%s
+neicustomdiagram.generators.gregtech5.materialtools.primarymateriallabel=主要材料：%s
+neicustomdiagram.generators.gregtech5.materialtools.secondarymateriallabel=次要材料：%s
 neicustomdiagram.generators.gregtech5.materialtools.toolpartsslot=工具部件
 neicustomdiagram.generators.gregtech5.materialtools.toolsslot=工具
 neicustomdiagram.generators.gregtech5.materialtools.turbinebladeslot=涡轮扇叶
