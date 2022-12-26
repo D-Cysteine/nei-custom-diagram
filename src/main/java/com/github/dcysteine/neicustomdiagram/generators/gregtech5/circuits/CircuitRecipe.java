@@ -141,13 +141,25 @@ abstract class CircuitRecipe {
         ImmutableSortedSet<DisplayComponent> fluidInputs = fluidInputsBuilder.build();
 
         boolean missingCombinations = false;
-        int expectedNumberOfRecipes = fluidInputs.size();
-        expectedNumberOfRecipes *=
-                itemInputs.stream().mapToInt(Set::size).reduce(1, Math::multiplyExact);
-        expectedNumberOfRecipes /=
-                recipes.stream()
-                        .mapToInt(Recipe::itemInputsPermutationMultiplier)
-                        .reduce(1, Math::multiplyExact);
+        // This was changed to long because we were getting overflows earlier.
+        // But it might no longer be needed.
+        // I tried loading up the pack (2.2.8) without this logic on 2022-12-25 and it didn't error.
+        long expectedNumberOfRecipes = fluidInputs.size();
+        try {
+            expectedNumberOfRecipes *=
+                    itemInputs.stream().mapToLong(Set::size).reduce(1, Math::multiplyExact);
+            expectedNumberOfRecipes /=
+                    recipes.stream()
+                            .mapToLong(Recipe::itemInputsPermutationMultiplier)
+                            .reduce(1, Math::multiplyExact);
+        } catch (ArithmeticException e) {
+            Logger.GREGTECH_5_CIRCUITS.error(
+                    "Arithmetic exception when calculating number of recipes for circuit: [{}] [{}]",
+                            output.toPrettyString(), e);
+            // Assume a valid number of recipes when calculation fails
+            expectedNumberOfRecipes = recipes.size();
+        }
+
         if (expectedNumberOfRecipes != recipes.size()) {
             Logger.GREGTECH_5_CIRCUITS.warn(
                     "Expected {} recipes but got {} for circuit: [{}]",

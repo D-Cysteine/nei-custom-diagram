@@ -19,11 +19,16 @@ import com.google.common.collect.ImmutableList;
 import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
+import gregtech.api.objects.ItemData;
+import gregtech.api.util.GT_OreDictUnificator;
+import gregtech.api.util.GT_Recipe;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -107,6 +112,7 @@ class DiagramFactory {
     private final LayoutHandler layoutHandler;
     private final HeatingCoilHandler heatingCoilHandler;
     private final RelatedMaterialsHandler relatedMaterialsHandler;
+    private final HashMap<Materials, Integer> materialEbfHeatMap;
 
     DiagramFactory(
             LayoutHandler layoutHandler, HeatingCoilHandler heatingCoilHandler,
@@ -114,6 +120,20 @@ class DiagramFactory {
         this.layoutHandler = layoutHandler;
         this.heatingCoilHandler = heatingCoilHandler;
         this.relatedMaterialsHandler = relatedMaterialsHandler;
+        this.materialEbfHeatMap = new HashMap<>();
+    }
+
+    void initialize() {
+        for (GT_Recipe ebfRecipe : GT_Recipe.GT_Recipe_Map.sBlastRecipes.mRecipeList) {
+            for (ItemStack output : ebfRecipe.mOutputs) {
+                ItemData outData = GT_OreDictUnificator.getAssociation(output);
+                if ((outData != null) && outData.hasValidMaterialData() && outData.hasValidPrefixData() && (outData.mPrefix == OrePrefixes.ingot || outData.mPrefix == OrePrefixes.ingotHot)) {
+                    Materials mat = outData.mMaterial.mMaterial;
+                    int recipeHeat = ebfRecipe.mSpecialValue;
+                    materialEbfHeatMap.compute(mat, (m, oldHeat) -> (oldHeat == null) ? recipeHeat : Math.min(recipeHeat, oldHeat));
+                }
+            }
+        }
     }
 
     Diagram buildDiagram(Materials material) {
@@ -206,10 +226,11 @@ class DiagramFactory {
         }
 
         Tooltip.Builder tooltipBuilder = Tooltip.builder().setFormatting(Tooltip.INFO_FORMATTING);
-        if (material.mBlastFurnaceTemp > 0) {
+        int ebfTemp = materialEbfHeatMap.getOrDefault(material, (int) material.mBlastFurnaceTemp);
+        if (ebfTemp > 0) {
             tooltipBuilder.addTextLine(
                             Lang.GREGTECH_5_MATERIAL_PARTS.transf(
-                                    "blastfurnaceinfotemp", material.mBlastFurnaceTemp))
+                                    "blastfurnaceinfotemp", ebfTemp))
                     .addSpacing()
                     .setFormatting(Tooltip.SLOT_FORMATTING)
                     .addTextLine(
@@ -217,7 +238,7 @@ class DiagramFactory {
                     .setFormatting(Tooltip.DEFAULT_FORMATTING);
 
             for (Map.Entry<Long, Component> entry :
-                    heatingCoilHandler.getHeatingCoils(material.mBlastFurnaceTemp).entrySet()) {
+                    heatingCoilHandler.getHeatingCoils(ebfTemp).entrySet()) {
                 long heat = entry.getKey();
                 Component heatingCoil = entry.getValue();
 

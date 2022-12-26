@@ -22,7 +22,10 @@ class HeatingCoilHandler {
                     ItemList.Casing_Coil_ElectrumFlux,
                     ItemList.Casing_Coil_AwakenedDraconium,
                     ItemList.Casing_Coil_HSSS,
-                    ItemList.Casing_Coil_Trinium);
+                    ItemList.Casing_Coil_Trinium,
+                    ItemList.Casing_Coil_Infinity,
+                    ItemList.Casing_Coil_Hypogen,
+                    ItemList.Casing_Coil_Eternal);
 
     /** Sorted map of blast furnace recipe heat to heating coil item. */
     private ImmutableSortedMap<Long, Component> heatingCoilMap;

@@ -70,6 +70,7 @@ public final class GregTechMaterialParts implements DiagramGenerator {
         layoutHandler.initialize();
         heatingCoilHandler.initialize();
         relatedMaterialsHandler.initialize();
+        diagramFactory.initialize();
 
         ImmutableBiMap.Builder<Materials, Diagram> materialsMapBuilder = ImmutableBiMap.builder();
         for (Materials material : Materials.getAll()) {
