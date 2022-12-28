@@ -243,6 +243,8 @@ class CircuitLineHandler {
                                         ItemList.Circuit_Biowaresupercomputer),
                                 GregTechOreDictUtil.getComponent(ItemList.Circuit_Biomainframe))
                         .build());
+        // If we need to add any more circuit lines, we'll probably just want to add an entire
+        // second page of circuit lines.
         circuitLines = circuitLinesBuilder.build();
 
         ImmutableList.Builder<CircuitLine> individualCircuitsBuilder = ImmutableList.builder();
@@ -288,24 +290,32 @@ class CircuitLineHandler {
                 ImmutableList.of(
                         GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_Resistor),
                         GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_ResistorSMD),
-                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_ResistorASMD)));
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_ResistorASMD),
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_ResistorXSMD)));
         circuitPartsBuilder.add(
                 ImmutableList.of(
                         GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_Diode),
                         GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_DiodeSMD),
-                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_DiodeASMD)));
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_DiodeASMD),
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_DiodeXSMD)));
         circuitPartsBuilder.add(
                 ImmutableList.of(
                         GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_Transistor),
                         GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_TransistorSMD),
-                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_TransistorASMD)));
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_TransistorASMD),
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_TransistorXSMD)));
         circuitPartsBuilder.add(
                 ImmutableList.of(
                         GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_Capacitor),
                         GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_CapacitorSMD),
-                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_CapacitorASMD)));
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_CapacitorASMD),
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_CapacitorXSMD)));
         circuitPartsBuilder.add(
-                ImmutableList.of(GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_Coil)));
+                ImmutableList.of(
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_Coil),
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_InductorSMD),
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_InductorASMD),
+                        GregTechOreDictUtil.getComponent(ItemList.Circuit_Parts_InductorXSMD)));
         circuitParts = circuitPartsBuilder.build();
 
         ImmutableMap.Builder<ItemComponent, CircuitLineCircuits> circuitLineCircuitsBuilder =
