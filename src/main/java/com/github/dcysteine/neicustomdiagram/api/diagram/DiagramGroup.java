@@ -193,7 +193,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         guiManager.afterDraw(diagramDimension);
     }
 
-    public void drawTooltip(GuiRecipe gui, int recipe) {
+    public void drawTooltip(GuiRecipe<?> gui, int recipe) {
         Diagram diagram = diagrams.get(recipe);
         Dimension diagramDimension = diagram.dimension(diagramState);
         guiManager.drawScrollbar(diagramDimension);
@@ -237,7 +237,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
      * intercepted and handled first) by the code in {@link RecipeItemInputHandler}.
      */
     @Override
-    public boolean keyTyped(GuiRecipe gui, char keyChar, int keyCode, int recipe) {
+    public boolean keyTyped(GuiRecipe<?> gui, char keyChar, int keyCode, int recipe) {
         if (keyCode == NEIClientConfig.getKeyBinding("gui.recipe")) {
             return interact(recipe, Interactable.RecipeType.CRAFTING);
 
@@ -253,7 +253,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
      * intercepted and handled first) by the code in {@link RecipeItemInputHandler}.
      */
     @Override
-    public boolean mouseClicked(GuiRecipe gui, int button, int recipe) {
+    public boolean mouseClicked(GuiRecipe<?> gui, int button, int recipe) {
         boolean handled =
             guiManager.mouseClickScrollbar(
                     button == 0 ? GuiManager.MouseButton.LEFT : GuiManager.MouseButton.RIGHT,
@@ -274,7 +274,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     }
 
     @Override
-    public boolean mouseScrolled(GuiRecipe gui, int scroll, int recipe) {
+    public boolean mouseScrolled(GuiRecipe<?> gui, int scroll, int recipe) {
         if (!mouseInBounds() && !guiManager.mouseInScrollBounds()) {
             return false;
         }
@@ -333,7 +333,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
 
     /** We have our own custom tooltip drawing code. */
     @Override
-    public List<String> handleTooltip(GuiRecipe gui, List<String> currenttip, int recipe) {
+    public List<String> handleTooltip(GuiRecipe<?> gui, List<String> currenttip, int recipe) {
         // Call our custom tooltip logic. It must be called here rather than in drawForeground(),
         // because calling it in drawForeground() will cause it to be drawn under NEI side panels.
         drawTooltip(gui, recipe);
@@ -344,7 +344,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     /** We have our own custom tooltip drawing code. */
     @Override
     public List<String> handleItemTooltip(
-            GuiRecipe gui, ItemStack stack, List<String> currenttip, int recipe) {
+            GuiRecipe<?> gui, ItemStack stack, List<String> currenttip, int recipe) {
         return currenttip;
     }
 

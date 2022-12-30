@@ -3,10 +3,10 @@ import net.minecraftforge.gradle.user.UserExtension
 buildscript {
     repositories {
         maven("https://maven.minecraftforge.net") { name = "Forge" }
-        maven("https://jitpack.io") { name = "jitpack.io" }
+        maven("http://jenkins.usrv.eu:8081/nexus/content/groups/public/") { name = "GTNH Maven" }
     }
     dependencies {
-        classpath("com.github.GTNewHorizons:ForgeGradle:1.2.4")
+        classpath("net.minecraftforge.gradle:ForgeGradle:1.2.13")
     }
 }
 
@@ -58,44 +58,50 @@ repositories {
         name = "Forge"
         metadataSources { artifact() }
     }
-    ivy {
-        name = "gtnh_download_source"
-        artifactPattern(
-            "http://downloads.gtnewhorizons.com/Mods_for_Jenkins/[module]-[revision]-[classifier].[ext]")
-        metadataSources { artifact() }
+    maven("http://jenkins.usrv.eu:8081/nexus/content/groups/public/") { name = "GTNH Maven" }
+    maven("https://maven.ic2.player.to") {
+        name = "IC2 Maven"
+        metadataSources {
+            //mavenPom()
+            artifact()
+        }
     }
-    maven("https://jitpack.io") { name = "jitpack.io" }
     //maven("https://gregtech.overminddl1.com/") { name = "GregTech" }  // GT6
 }
 
 dependencies {
-    // TODO once we can get GTNH core mod from Jitpack, we can delete the libs/ directory
-    compileOnly(fileTree("libs") { include("*.jar") })
-
     val autoValueVersion: String by project
     compileOnly("com.google.auto.value:auto-value-annotations:$autoValueVersion")
     annotationProcessor("com.google.auto.value:auto-value:$autoValueVersion")
 
-    val codeChickenCoreVersion: String by project
-    val codeChickenLibVersion: String by project
     val neiVersion: String by project
-    implementation("com.github.GTNewHorizons:CodeChickenCore:$codeChickenCoreVersion:dev")
-    implementation("com.github.GTNewHorizons:CodeChickenLib:$codeChickenLibVersion:dev")
     implementation("com.github.GTNewHorizons:NotEnoughItems:$neiVersion:dev")
 
     val gregTech5Version: String by project
     implementation("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
         isTransitive = false
     }
-
     // The following are compile-time dependencies of GT5.
-    // TODO once EnderIO and Railcraft build on Jitpack, switch over to that and remove ivy repo
-    val enderIoVersion: String by project
+    val industrialCraft2Version: String by project
+    compileOnly("net.industrial-craft:industrialcraft-2:${industrialCraft2Version}-experimental:api") {
+        isTransitive = false
+    }
     val forestryVersion: String by project
+    compileOnly("com.github.GTNewHorizons:ForestryMC:$forestryVersion:api") {
+        isTransitive = false
+    }
     val railcraftVersion: String by project
-    compileOnly("crazypants.enderio:EnderIO-$minecraftVersion:${enderIoVersion}_beta:dev")
-    compileOnly("net.sengir.forestry:forestry_$minecraftVersion:$forestryVersion:dev")
-    compileOnly("mods.railcraft:Railcraft_$minecraftVersion:$railcraftVersion:dev")
+    compileOnly("com.github.GTNewHorizons:Railcraft:$railcraftVersion:api") {
+        isTransitive = false
+    }
+    val buildCraftVersion: String by project
+    compileOnly("com.github.GTNewHorizons:BuildCraft:$buildCraftVersion:api") {
+        isTransitive = false
+    }
+    val enderIoVersion: String by project
+    compileOnly("com.github.GTNewHorizons:EnderIO:${enderIoVersion}:api") {
+        isTransitive = false
+    }
 
     val bartworksVersion: String by project
     implementation("com.github.GTNewHorizons:bartworks:$bartworksVersion:dev") {
@@ -112,15 +118,20 @@ dependencies {
         isTransitive = false
     }
 
-    val enderStorageVersion: String by project
-    implementation("com.github.GTNewHorizons:EnderStorage:$enderStorageVersion:dev") {
+    val gtnhCoreModVersion: String by project
+    implementation("com.github.GTNewHorizons:NewHorizonsCoreMod:${gtnhCoreModVersion}:dev") {
         isTransitive = false
     }
 
     /*
     val gregTech6Version: String by project
-    compile("com.gregoriust.gregtech:gregtech_$minecraftVersion:$gregTech6Version:dev")
-    */
+    implementation("com.gregoriust.gregtech:gregtech_$minecraftVersion:$gregTech6Version:dev")
+     */
+
+    val enderStorageVersion: String by project
+    implementation("com.github.GTNewHorizons:EnderStorage:$enderStorageVersion:dev") {
+        isTransitive = false
+    }
 }
 
 tasks.withType<Jar> {

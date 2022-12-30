@@ -56,7 +56,7 @@ public enum NeiIntegration {
             }
 
             DiagramGroup diagramGroup = diagramGroupOptional.get();
-            for (int i : ((GuiRecipe) guiContainer).getRecipeIndices()) {
+            for (int i : ((GuiRecipe<?>) guiContainer).getRecipeIndices()) {
                 Optional<ItemStack> itemStackOptional = diagramGroup.getStackUnderMouse(i);
                 if (itemStackOptional.isPresent()) {
                     return itemStackOptional.get();
