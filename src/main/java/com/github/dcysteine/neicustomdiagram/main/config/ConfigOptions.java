@@ -45,9 +45,9 @@ public final class ConfigOptions {
                     true)
                     .register();
 
-    public static final Option<String[]> HARD_DISABLED_DIAGRAM_GROUPS =
-            new StringArrayOption(
-                    Category.OPTIONS, "hard_disabled_diagram_groups", new String[0],
+    public static final Option<List<String>> HARD_DISABLED_DIAGRAM_GROUPS =
+            new StringListOption(
+                    Category.OPTIONS, "hard_disabled_diagram_groups", new ArrayList<>(),
                     "Add a diagram group ID here to disable that diagram group before"
                             + " initialization."
                             + "\nThis option is intended to fix compatibility with old versions of"
@@ -205,26 +205,27 @@ public final class ConfigOptions {
         }
     }
 
-    public static final class StringArrayOption extends Option<String[]> {
-        private StringArrayOption(
-                Category category, String key, String[] defaultValue, String comment) {
+    public static final class StringListOption extends Option<List<String>> {
+        private StringListOption(
+                Category category, String key, List<String> defaultValue, String comment) {
             super(category, key, defaultValue, comment);
         }
 
-        private StringArrayOption(
-                Category category, String key, String[] defaultValue, String comment,
+        private StringListOption(
+                Category category, String key, List<String> defaultValue, String comment,
                 boolean requiresRestart) {
             super(category, key, defaultValue, comment, requiresRestart);
         }
 
         @Override
         Property getProperty() {
-            return Config.CONFIG.get(category.toString(), key, defaultValue, comment);
+            return Config.CONFIG.get(
+                    category.toString(), key, defaultValue.toArray(new String[0]), comment);
         }
 
         @Override
-        public String[] get() {
-            return property.getStringList();
+        public List<String> get() {
+            return Arrays.asList(property.getStringList());
         }
     }
 
@@ -285,15 +286,7 @@ public final class ConfigOptions {
     }
 
     private static String buildDefaultComment(Object defaultValue) {
-        String toString;
-        if (defaultValue instanceof String[]) {
-            // String[] does not have a nice default toString() implementation.
-             toString = Arrays.toString((String[]) defaultValue);
-        } else {
-            toString = defaultValue.toString();
-        }
-
-        return String.format("\nDefault: %s", toString);
+        return String.format("\nDefault: %s", defaultValue);
     }
 
     private static String buildDiagramGroupVisibilityComment(DiagramGroupInfo info) {
