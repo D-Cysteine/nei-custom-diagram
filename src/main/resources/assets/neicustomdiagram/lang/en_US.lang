@@ -129,6 +129,7 @@ neicustomdiagram.generators.gregtech5.materialparts.gemsslot=Gems
 neicustomdiagram.generators.gregtech5.materialparts.gemslot=Gem
 neicustomdiagram.generators.gregtech5.materialparts.lensslot=Lens
 neicustomdiagram.generators.gregtech5.materialparts.dustsslot=Dusts
+neicustomdiagram.generators.gregtech5.materialparts.nanitesslot=Nanites
 neicustomdiagram.generators.gregtech5.materialparts.ingotsslot=Ingots
 neicustomdiagram.generators.gregtech5.materialparts.hotingotslot=Hot ingot
 neicustomdiagram.generators.gregtech5.materialparts.multiingotsslot=Multi-ingots

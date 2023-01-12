@@ -20,6 +20,8 @@ class LayoutHandler {
         static final Layout.SlotKey GEM = Layout.SlotKey.create("gem");
         static final Layout.SlotKey LENS = Layout.SlotKey.create("lens");
 
+
+        static final Layout.SlotKey NANITES = Layout.SlotKey.create("nanites");
         static final Layout.SlotKey HOT_INGOT = Layout.SlotKey.create("hot-ingot");
         static final Layout.SlotKey ALLOY_PLATE = Layout.SlotKey.create("alloy-plate");
 
@@ -87,6 +89,7 @@ class LayoutHandler {
         optionalLayoutsBuilder.add(buildGemsLayout());
         optionalLayoutsBuilder.add(buildGemLayout());
         optionalLayoutsBuilder.add(buildLensLayout());
+        optionalLayoutsBuilder.add(buildNanitesLayout());
         optionalLayoutsBuilder.add(buildDustsLayout());
         optionalLayoutsBuilder.add(buildHotIngotLayout());
         optionalLayoutsBuilder.add(buildIngotsLayout());
@@ -223,6 +226,19 @@ class LayoutHandler {
                                 .setTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_5_MATERIAL_PARTS.trans("lensslot"),
+                                                Tooltip.SLOT_FORMATTING))
+                                .build())
+                .build();
+    }
+
+    private Layout buildNanitesLayout() {
+        return Layout.builder()
+                .putSlot(
+                        SlotKeys.NANITES,
+                        Slot.builder(Grid.GRID.grid(0, 6))
+                                .setTooltip(
+                                        Tooltip.create(
+                                                Lang.GREGTECH_5_MATERIAL_PARTS.trans("nanitesslot"),
                                                 Tooltip.SLOT_FORMATTING))
                                 .build())
                 .build();

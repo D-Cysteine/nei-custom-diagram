@@ -129,6 +129,7 @@ neicustomdiagram.generators.gregtech5.materialparts.gemsslot=宝石
 neicustomdiagram.generators.gregtech5.materialparts.gemslot=宝石
 neicustomdiagram.generators.gregtech5.materialparts.lensslot=透镜
 neicustomdiagram.generators.gregtech5.materialparts.dustsslot=粉
+neicustomdiagram.generators.gregtech5.materialparts.nanitesslot=Nanites
 neicustomdiagram.generators.gregtech5.materialparts.ingotsslot=锭
 neicustomdiagram.generators.gregtech5.materialparts.hotingotslot=热锭
 neicustomdiagram.generators.gregtech5.materialparts.multiingotsslot=多重锭

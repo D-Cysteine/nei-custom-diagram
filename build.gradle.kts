@@ -102,6 +102,10 @@ dependencies {
     compileOnly("com.github.GTNewHorizons:EnderIO:${enderIoVersion}:api") {
         isTransitive = false
     }
+    val projectRedVersion: String by project
+    compileOnly("com.github.GTNewHorizons:ProjectRed:${projectRedVersion}:dev") {
+        isTransitive = false
+    }
 
     val bartworksVersion: String by project
     implementation("com.github.GTNewHorizons:bartworks:$bartworksVersion:dev") {

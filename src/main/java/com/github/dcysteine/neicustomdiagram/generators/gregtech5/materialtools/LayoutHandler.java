@@ -95,7 +95,7 @@ class LayoutHandler {
                                 .build())
                 .putSlotGroup(
                         SlotGroupKeys.TOOLS,
-                        SlotGroup.builder(9, 5, Grid.GRID.grid(6, 8), Grid.Direction.S)
+                        SlotGroup.builder(9, 6, Grid.GRID.grid(6, 8), Grid.Direction.S)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_5_MATERIAL_TOOLS.trans("toolsslot"),
@@ -170,12 +170,12 @@ class LayoutHandler {
     private Layout buildScannersLayout() {
         return Layout.builder()
                 .addLines(
-                        Lines.builder(Grid.GRID.grid(4, 17))
-                                .addSegment(Grid.GRID.grid(10, 17))
+                        Lines.builder(Grid.GRID.grid(4, 19))
+                                .addSegment(Grid.GRID.grid(10, 19))
                                 .build())
                 .putSlotGroup(
                         SlotGroupKeys.SCANNERS,
-                        SlotGroup.builder(5, 2, Grid.GRID.grid(4, 17), Grid.Direction.C)
+                        SlotGroup.builder(5, 2, Grid.GRID.grid(4, 19), Grid.Direction.C)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_5_MATERIAL_TOOLS.trans(
@@ -184,7 +184,7 @@ class LayoutHandler {
                                 .build())
                 .putSlotGroup(
                         SlotGroupKeys.ELECTRIC_SCANNERS,
-                        SlotGroup.builder(2, 2, Grid.GRID.grid(10, 17), Grid.Direction.C)
+                        SlotGroup.builder(2, 2, Grid.GRID.grid(10, 19), Grid.Direction.C)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_5_MATERIAL_TOOLS.trans(

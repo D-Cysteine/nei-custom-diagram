@@ -46,6 +46,7 @@ class DiagramFactory {
         GEM(LayoutHandler.SlotKeys.GEM, OrePrefixes.gem),
         LENS(LayoutHandler.SlotKeys.LENS, OrePrefixes.lens),
 
+        NANITES(LayoutHandler.SlotKeys.NANITES, OrePrefixes.nanite),
         DUSTS(LayoutHandler.SlotGroupKeys.DUSTS,
                 OrePrefixes.dust, OrePrefixes.dustSmall, OrePrefixes.dustTiny),
 
