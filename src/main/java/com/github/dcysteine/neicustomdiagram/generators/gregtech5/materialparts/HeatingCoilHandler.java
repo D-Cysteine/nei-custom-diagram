@@ -9,7 +9,19 @@ import gregtech.common.blocks.GT_Block_Casings5;
 import net.minecraft.item.ItemStack;
 
 class HeatingCoilHandler {
-    /** List of all heating coil items in GregTech. Unfortunately, must be manually updated. */
+    /**
+     * List of all heating coil items in GregTech. Unfortunately, must be manually updated.
+     *
+     * <p>So, we could auto-generate this by just iterating through {@link ItemList#values()} and
+     * checking that the entry's name is prefixed with "Casing_Coil_". The reason why this doesn't
+     * quite work is that {@link ItemList#Casing_Coil_Superconductor} matches, but isn't actually a
+     * heating coil. So in that case, we would need a hard-coded list of exclusions.
+     *
+     * <p>It's a trade-off between whether it's more likely that we add a new heating coil, or more
+     * likely that we add a new non-heating coil. The former is probably more likely, but either
+     * way, the list of coils doesn't (currently) change often enough for us to worry too much about
+     * it. If that changes in the future, we can make this logic smarter.
+     */
     private static final ImmutableList<ItemList> HEATING_COILS =
             ImmutableList.of(
                     ItemList.Casing_Coil_Cupronickel,
