@@ -56,13 +56,16 @@ val Project.minecraft: UserExtension
 repositories {
     maven("https://maven.minecraftforge.net") {
         name = "Forge"
-        metadataSources { artifact() }
+        metadataSources {
+            artifact()
+        }
     }
-    maven("http://jenkins.usrv.eu:8081/nexus/content/groups/public/") { name = "GTNH Maven" }
+    maven("http://jenkins.usrv.eu:8081/nexus/content/groups/public/") {
+        name = "GTNH Maven"
+    }
     maven("https://maven.ic2.player.to") {
         name = "IC2 Maven"
         metadataSources {
-            //mavenPom()
             artifact()
         }
     }
