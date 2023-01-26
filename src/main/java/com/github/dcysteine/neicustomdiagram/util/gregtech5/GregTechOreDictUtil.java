@@ -51,7 +51,7 @@ public final class GregTechOreDictUtil {
         List<Component> results = new ArrayList<>();
 
         if (unified.type() == Component.ComponentType.ITEM) {
-            GT_OreDictUnificator.getNonUnifiedStacks((ItemStack) unified.stack()).forEach(
+            GT_OreDictUnificator.getNonUnifiedStacks(unified.stack()).forEach(
                     itemStack -> results.add(ItemComponent.create(itemStack)));
         } else {
             results.add(unified);
@@ -61,9 +61,11 @@ public final class GregTechOreDictUtil {
     }
 
     /**
-     * GregTech doesn't handle getting item data for fluids or its own fluid display items.
-     * We'll work around this by trying to place such fluids into a cell, which we can then get item
-     * data for.
+     * GregTech doesn't handle getting item data for fluids or its own fluid display items, so this
+     * method will return empty optional for such cases.
+     *
+     * <p>If you need to get the material for a fluid, first get a filled cell for the fluid, and
+     * then call this method on that filled cell.
      */
     public static Optional<ItemData> getItemData(Component component) {
         if (component.type() != Component.ComponentType.ITEM) {
