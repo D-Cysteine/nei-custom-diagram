@@ -29,6 +29,7 @@ class LayoutFactory {
                     .put(GregTechRecipeDebugger.View.COLLIDING_RECIPES, Grid.GRID.grid(6, 2))
                     .put(GregTechRecipeDebugger.View.VOIDING_RECIPES, Grid.GRID.grid(8, 2))
                     .put(GregTechRecipeDebugger.View.UNEQUAL_CELL_RECIPES, Grid.GRID.grid(10, 2))
+                    .put(GregTechRecipeDebugger.View.SMALL_VARIANT_RECIPES, Grid.GRID.grid(12, 2))
                     .build();
 
     static final class SlotGroupKeys {

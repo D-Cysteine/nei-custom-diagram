@@ -59,6 +59,9 @@ class DiagramHandler {
         diagramListMultimap.putAll(
                 GregTechRecipeDebugger.View.UNEQUAL_CELL_RECIPES,
                 buildRecipeDiagrams(recipeHandler.unequalCellRecipes));
+        diagramListMultimap.putAll(
+                GregTechRecipeDebugger.View.SMALL_VARIANT_RECIPES,
+                buildRecipeDiagrams(recipeHandler.smallVariantRecipes));
 
         // This must be last, as it reads counts from diagramListMultimap.
         menuDiagram = buildMenuDiagram();

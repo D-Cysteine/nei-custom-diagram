@@ -208,6 +208,7 @@ neicustomdiagram.generators.gregtech5.recipedebugger.unnecessarycircuitrecipesbu
 neicustomdiagram.generators.gregtech5.recipedebugger.collidingrecipesbutton=Recipes with colliding inputs
 neicustomdiagram.generators.gregtech5.recipedebugger.voidingrecipesbutton=Recipes which void inputs
 neicustomdiagram.generators.gregtech5.recipedebugger.unequalcellrecipesbutton=Recipes which output unequal cells
+neicustomdiagram.generators.gregtech5.recipedebugger.smallvariantrecipesbutton=Recipes with tiny / small dusts or nuggets
 neicustomdiagram.generators.gregtech5.recipedebugger.orewashingplantlabel=Ore Washing Plant recipe
 neicustomdiagram.generators.gregtech5.recipedebugger.thermalcentrifugelabel=Thermal Centrifuge recipe
 neicustomdiagram.generators.gregtech5.recipedebugger.compressorlabel=Compressor recipe

@@ -208,6 +208,7 @@ neicustomdiagram.generators.gregtech5.recipedebugger.unnecessarycircuitrecipesbu
 neicustomdiagram.generators.gregtech5.recipedebugger.collidingrecipesbutton=输入冲突的合成表
 neicustomdiagram.generators.gregtech5.recipedebugger.voidingrecipesbutton=销毁输入的合成表
 neicustomdiagram.generators.gregtech5.recipedebugger.unequalcellrecipesbutton=输出不等单元的合成表
+neicustomdiagram.generators.gregtech5.recipedebugger.smallvariantrecipesbutton=Recipes with tiny / small dusts or nuggets
 neicustomdiagram.generators.gregtech5.recipedebugger.orewashingplantlabel=洗矿机合成表
 neicustomdiagram.generators.gregtech5.recipedebugger.thermalcentrifugelabel=热力离心机合成表
 neicustomdiagram.generators.gregtech5.recipedebugger.compressorlabel=压缩机合成表

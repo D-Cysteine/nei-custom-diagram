@@ -14,6 +14,8 @@ import com.github.dcysteine.neicustomdiagram.util.gregtech5.GregTechOreDictUtil;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import gregtech.api.enums.ItemList;
+import gregtech.api.enums.Materials;
+import gregtech.api.enums.OrePrefixes;
 import gregtech.api.util.GT_Utility;
 import net.minecraft.init.Items;
 
@@ -55,7 +57,13 @@ public final class GregTechRecipeDebugger implements DiagramGenerator {
         UNEQUAL_CELL_RECIPES(
                 "-unequal-cell-recipes",
                 GregTechOreDictUtil.getComponent(ItemList.Cell_Empty),
-                "unequalcellrecipesbutton");
+                "unequalcellrecipesbutton"),
+
+        SMALL_VARIANT_RECIPES(
+                "-small-variant-recipes",
+                GregTechOreDictUtil.getComponent(OrePrefixes.dustTiny, Materials.Salt).get(),
+                "smallvariantrecipesbutton"),
+        ;
 
         /** The suffix to append to the group ID, to get the custom behavior ID for this view. */
         public final String suffix;

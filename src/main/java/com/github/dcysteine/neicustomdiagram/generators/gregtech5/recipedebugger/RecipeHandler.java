@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import gregtech.api.enums.ItemList;
+import gregtech.api.enums.OrePrefixes;
 import gregtech.api.util.GT_ModHandler;
 import gregtech.api.util.GT_OreDictUnificator;
 import gregtech.api.util.GT_Recipe;
@@ -22,10 +23,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,6 +47,25 @@ class RecipeHandler {
                     .add(GregTechOreDictUtil.getComponent(ItemList.Schematic_3by3))
                     .add(GregTechOreDictUtil.getComponent(ItemList.Schematic_Dust))
                     .build();
+
+    static final ImmutableSet<OrePrefixes> SMALL_VARIANT_ORE_PREFIXES =
+            ImmutableSet.of(OrePrefixes.dustTiny, OrePrefixes.dustSmall, OrePrefixes.nugget);
+    static final ImmutableSet<OrePrefixes> CABLE_ORE_PREFIXES = ImmutableSet.of(
+            OrePrefixes.cableGt01,
+            OrePrefixes.cableGt02,
+            OrePrefixes.cableGt04,
+            OrePrefixes.cableGt08,
+            OrePrefixes.cableGt12,
+            OrePrefixes.cableGt16);
+    static final ImmutableSet<RecipeMap> RECIPE_MAPS_TO_IGNORE_FOR_SMALL_VARIANT = ImmutableSet.of(
+            // These recipemaps are meant to have tiny / small dusts or nuggets.
+            RecipeMap.PACKAGER,
+            RecipeMap.UNPACKAGER,
+            RecipeMap.MACERATOR,
+            RecipeMap.LATHE,
+            RecipeMap.FLUID_EXTRACTOR,
+            RecipeMap.IMPLOSION_COMPRESSOR,
+            RecipeMap.ALLOY_SMELTER);
 
     enum RecipeMap {
         ORE_WASHING_PLANT(
@@ -274,6 +296,7 @@ class RecipeHandler {
     final Set<Recipe> collidingRecipes;
     final List<Recipe> voidingRecipes;
     final List<Recipe> unequalCellRecipes;
+    final List<Recipe> smallVariantRecipes;
 
     RecipeHandler() {
         this.allRecipes = new HashMap<>();
@@ -282,6 +305,7 @@ class RecipeHandler {
         this.collidingRecipes = new LinkedHashSet<>();
         this.voidingRecipes = new ArrayList<>();
         this.unequalCellRecipes = new ArrayList<>();
+        this.smallVariantRecipes = new ArrayList<>();
     }
 
     /** This method must be called before any other methods are called. */
@@ -329,6 +353,10 @@ class RecipeHandler {
 
                 if (unequalCellRecipe(recipe)) {
                     unequalCellRecipes.add(recipe);
+                }
+
+                if (smallVariantRecipe(recipe)) {
+                    smallVariantRecipes.add(recipe);
                 }
             }
         }
@@ -466,5 +494,29 @@ class RecipeHandler {
         }
 
         return countCells(recipe.inputs()) != countCells(recipe.outputs());
+    }
+
+    private static boolean smallVariantRecipe(Recipe recipe) {
+        if (RECIPE_MAPS_TO_IGNORE_FOR_SMALL_VARIANT.contains(recipe.recipeMap())) {
+            return false;
+        }
+
+        Set<OrePrefixes> orePrefixes = getOrePrefixes(recipe.outputs().keySet());
+        if (recipe.recipeMap() == RecipeMap.ASSEMBLING_MACHINE
+                && Sets.intersection(orePrefixes, CABLE_ORE_PREFIXES).size() > 0) {
+            // Allow using small dusts for cable insulation.
+            return false;
+        } else {
+            orePrefixes.addAll(getOrePrefixes(recipe.inputs().keySet()));
+            return Sets.intersection(orePrefixes, SMALL_VARIANT_ORE_PREFIXES).size() > 0;
+        }
+    }
+
+    private static Set<OrePrefixes> getOrePrefixes(Set<Component> componentSet) {
+        return componentSet.stream()
+                .map(GregTechOreDictUtil::getItemData)
+                .filter(Optional::isPresent)
+                .map(itemData -> itemData.get().mPrefix)
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(OrePrefixes.class)));
     }
 }
