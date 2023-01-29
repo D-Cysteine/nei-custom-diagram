@@ -125,19 +125,56 @@ class CircuitLineHandler {
     /** This method must be called before any other methods are called. */
     void initialize() {
         ImmutableList.Builder<CircuitLine> circuitLinesBuilder = ImmutableList.builder();
-        if (Registry.ModDependency.BARTWORKS.isLoaded()) {
-            CircuitLine.Builder circuitLineBuilder =
+        if (Registry.ModDependency.GTNH_CORE_MOD.isLoaded()) {
+            circuitLinesBuilder.add(
                     CircuitLine.builder()
-                            .addBoard(
+                            .setStartTier(0)
+                            .addCircuits(
                                     ItemComponent.create(
-                                            BW_Meta_Items.getNEWCIRCUITS().getStack(3)))
-                            .setStartTier(0);
-
-            IntStream.rangeClosed(4, 14)
-                    .mapToObj(i -> ItemComponent.create(BW_Meta_Items.getNEWCIRCUITS().getStack(i)))
-                    .forEach(circuitLineBuilder::addCircuit);
-
-            circuitLinesBuilder.add(circuitLineBuilder.build());
+                                            com.dreammaster.item.ItemList.CircuitULV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitLV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitMV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitHV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitEV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitIV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitLuV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitZPM.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitUV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitUHV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitUEV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitUIV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitUMV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitUXV.getIS()))
+                            .addCircuits(
+                                    ItemComponent.create(
+                                            com.dreammaster.item.ItemList.CircuitMAX.getIS()))
+                            .build());
         }
         circuitLinesBuilder.add(
                 CircuitLine.builder()
@@ -166,7 +203,7 @@ class CircuitLineHandler {
                                 GregTechOreDictUtil.getComponent(ItemList.Circuit_Integrated_Good),
                                 ItemComponent.create(
                                         GT_ModHandler.getIC2Item("advancedCircuit", 1L)))
-                .build());
+                        .build());
         circuitLinesBuilder.add(
                 CircuitLine.builder()
                         .addBoard(
@@ -243,6 +280,65 @@ class CircuitLineHandler {
                                         ItemList.Circuit_Biowaresupercomputer),
                                 GregTechOreDictUtil.getComponent(ItemList.Circuit_Biomainframe))
                         .build());
+        circuitLinesBuilder.add(
+                CircuitLine.builder()
+                        .addBoard(
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_Board_Optical))
+                        .setStartTier(8)
+                        .addCircuits(
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_OpticalProcessor),
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_OpticalAssembly),
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_OpticalComputer),
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_OpticalMainframe))
+                        .build());
+        circuitLinesBuilder.add(
+                CircuitLine.builder()
+                        // TODO board does not exist yet
+                        .setStartTier(9)
+                        .addCircuits(
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_ExoticProcessor),
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_ExoticAssembly),
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_ExoticComputer),
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_ExoticMainframe))
+                        .build());
+        circuitLinesBuilder.add(
+                CircuitLine.builder()
+                        // TODO board does not exist yet
+                        .setStartTier(10)
+                        .addCircuits(
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_CosmicProcessor),
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_CosmicAssembly),
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_CosmicComputer),
+                                GregTechOreDictUtil.getComponent(ItemList.Circuit_CosmicMainframe))
+                        .build());
+        circuitLinesBuilder.add(
+                CircuitLine.builder()
+                        // TODO board does not exist yet
+                        .setStartTier(11)
+                        .addCircuits(
+                                GregTechOreDictUtil.getComponent(
+                                        ItemList.Circuit_TranscendentProcessor),
+                                GregTechOreDictUtil.getComponent(
+                                        ItemList.Circuit_TranscendentAssembly),
+                                GregTechOreDictUtil.getComponent(
+                                        ItemList.Circuit_TranscendentComputer),
+                                GregTechOreDictUtil.getComponent(
+                                        ItemList.Circuit_TranscendentMainframe))
+                        .build());
+        if (Registry.ModDependency.BARTWORKS.isLoaded()) {
+            CircuitLine.Builder circuitLineBuilder =
+                    CircuitLine.builder()
+                            .addBoard(
+                                    ItemComponent.create(
+                                            BW_Meta_Items.getNEWCIRCUITS().getStack(3)))
+                            .setStartTier(0);
+
+            IntStream.rangeClosed(4, 14)
+                    .mapToObj(i -> ItemComponent.create(BW_Meta_Items.getNEWCIRCUITS().getStack(i)))
+                    .forEach(circuitLineBuilder::addCircuit);
+
+            circuitLinesBuilder.add(circuitLineBuilder.build());
+        }
         // If we need to add any more circuit lines, we'll probably just want to add an entire
         // second page of circuit lines.
         circuitLines = circuitLinesBuilder.build();

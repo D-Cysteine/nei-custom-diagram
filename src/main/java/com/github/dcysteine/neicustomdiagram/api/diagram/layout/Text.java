@@ -39,21 +39,12 @@ public abstract class Text implements BoundedDrawable {
     public abstract boolean shadow();
 
     @Override
-    public Dimension dimension() {
-        int width = GuiDraw.getStringWidth(text());
-        int height = Draw.TEXT_HEIGHT;
-
-        if (small()) {
-            width /= 2;
-            height /= 2;
-        }
-
-        return Dimension.create(width, height);
-    }
+    public abstract Dimension dimension();
 
     @Override
     public void draw(DiagramState diagramState) {
-        Draw.drawText(text(), position(), colour(), small(), shadow());
+        Point topLeft = position().translate(-dimension().width() / 2, -dimension().height() / 2);
+        Draw.drawText(text(), topLeft, colour(), small(), shadow());
     }
 
     @ToPrettyString
@@ -121,13 +112,14 @@ public abstract class Text implements BoundedDrawable {
                 width /= 2;
                 height /= 2;
             }
+            Dimension dimension = Dimension.create(width, height);
 
             Point center =
                     position.translate(
-                            (direction.xFactor - 1) * width / 2,
-                            (direction.yFactor - 1) * height / 2);
+                            direction.xFactor * width / 2,
+                            direction.yFactor * height / 2);
 
-            return new AutoValue_Text(text, center, colour, small, shadow);
+            return new AutoValue_Text(text, center, colour, small, shadow, dimension);
         }
     }
 

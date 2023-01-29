@@ -66,7 +66,7 @@ public final class ConfigOptions {
     public static final Option<Integer> MOUSE_SCROLL_SPEED =
             new IntegerOption(
                     Category.OPTIONS, "mouse_scroll_speed", 12,
-                    "Sets the mouse scrollwheel scroll speed, in pixels."
+                    "Sets the mouse scroll wheel scroll speed, in pixels."
                             + "\nUse a negative value to invert the scroll direction.")
                     .register();
 
@@ -107,7 +107,7 @@ public final class ConfigOptions {
 
     public static final Option<Boolean> NBT_VIEWER_SMALL_TEXT =
             new BooleanOption(
-                    Category.DIAGRAM_SPECIFIC, "nbt_viewer_small_text", true,
+                    Category.DIAGRAM_SPECIFIC, "nbt_viewer_small_text", false,
                     "Enables drawing smaller text in the NBT Viewer diagram.")
                     .register();
 

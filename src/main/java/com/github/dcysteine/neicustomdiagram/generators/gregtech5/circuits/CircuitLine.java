@@ -21,7 +21,7 @@ abstract class CircuitLine {
      * {@link LayoutHandler}! The {@code y}-coordinate of slots below the circuit lines slots will
      * probably need to be adjusted.
      */
-    static final int MAX_TIER = 10;
+    static final int MAX_TIER = 14;
 
     /** The circuit boards associated with this circuit line. */
     abstract ImmutableList<ItemComponent> boards();
