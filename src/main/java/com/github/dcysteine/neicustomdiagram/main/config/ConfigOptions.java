@@ -63,11 +63,18 @@ public final class ConfigOptions {
                     true)
                     .register();
 
-    public static final Option<Integer> SCROLL_SPEED =
+    public static final Option<Integer> MOUSE_SCROLL_SPEED =
             new IntegerOption(
-                    Category.OPTIONS, "scroll_speed", 12,
-                    "Sets the scroll speed, in pixels."
-                            + " Use a negative value to invert the scroll direction.")
+                    Category.OPTIONS, "mouse_scroll_speed", 12,
+                    "Sets the mouse scrollwheel scroll speed, in pixels."
+                            + "\nUse a negative value to invert the scroll direction.")
+                    .register();
+
+    public static final Option<Integer> KEYBOARD_SCROLL_SPEED =
+            new IntegerOption(
+                    Category.OPTIONS, "keyboard_scroll_speed", 24,
+                    "Sets the keyboard arrow keys scroll speed, in pixels."
+                            + "\nUse a negative value to invert the scroll direction.")
                     .register();
 
     public static final Option<Boolean> SHOW_EMPTY_DIAGRAMS =

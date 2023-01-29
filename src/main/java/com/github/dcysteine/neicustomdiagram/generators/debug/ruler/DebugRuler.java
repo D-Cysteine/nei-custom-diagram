@@ -32,10 +32,10 @@ import java.util.Collection;
 public final class DebugRuler implements DiagramGenerator {
     public static final ItemComponent ICON = ItemComponent.create(Items.compass, 0);
 
-    private static final int RULER_WIDTH_PIXELS = Grid.TOTAL_WIDTH;
-    private static final int RULER_HEIGHT_PIXELS = Grid.TOTAL_HEIGHT;
-    private static final int RULER_WIDTH_SLOTS = Grid.GRID_WIDTH;
-    private static final int RULER_HEIGHT_SLOTS = Grid.GRID_HEIGHT;
+    private static final int RULER_WIDTH_PIXELS = 2 * Grid.TOTAL_WIDTH;
+    private static final int RULER_HEIGHT_PIXELS = 2 * Grid.TOTAL_HEIGHT;
+    private static final int RULER_WIDTH_SLOTS = 2 * Grid.GRID_WIDTH;
+    private static final int RULER_HEIGHT_SLOTS = 2 * Grid.GRID_HEIGHT;
 
     private static final int RULER_SEGMENT_PIXELS = 10;
     private static final int RULER_COLOUR_1 = Draw.Colour.RED;

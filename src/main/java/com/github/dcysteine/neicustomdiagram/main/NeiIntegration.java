@@ -26,7 +26,7 @@ public enum NeiIntegration {
             if (!(guiContainer instanceof GuiRecipe)) {
                 return Optional.empty();
             }
-            GuiRecipe gui = (GuiRecipe) guiContainer;
+            GuiRecipe<?> gui = (GuiRecipe<?>) guiContainer;
 
             IRecipeHandler handler = gui.getHandler();
             if (!(handler instanceof DiagramGroup)) {
