@@ -24,7 +24,7 @@ class Scrollbar {
     private static final int SCROLLBAR_RADIUS = 1;
 
     /** The # of pixels of leeway (in all four directions) for scrollbar mouseover detection. */
-    private static final int MOUSEOVER_PADDING = 2;
+    private static final int MOUSEOVER_PADDING = 4;
 
     /** The scrollbar will fade away over this many ticks. */
     private static final int FADE_TICKS = 24;

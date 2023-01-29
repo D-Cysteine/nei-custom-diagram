@@ -88,7 +88,7 @@ public abstract class Layout implements Drawable {
      * Interactables are not included here, because they will be handled by {@link Diagram}.
      *
      * <p>This means that interactables <b>will not be included</b> in the calculations for
-     * {@link #maxX()} and {@link #maxY()}!
+     * {@link #maxDimension()}!
      */
     private Iterable<Drawable> drawables() {
         return Iterables.concat(lines(), slotGroups().values(), slots().values(), labels());

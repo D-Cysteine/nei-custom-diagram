@@ -97,7 +97,7 @@ class LayoutHandler {
         SlotGroup.Builder circuitLinesSlotGroupBuilder =
                 SlotGroup.builder(
                                 circuitLineHandler.circuitLinesSize(), CircuitLine.MAX_TIER + 2,
-                                Grid.GRID.grid(6, 0), Grid.Direction.S)
+                                Grid.GRID.grid(0, 0), Grid.Direction.SE)
                         .setDefaultTooltip(
                                 Tooltip.create(
                                         Lang.GREGTECH_5_CIRCUITS.trans("circuitlinesslot"),
@@ -116,7 +116,7 @@ class LayoutHandler {
         SlotGroup.Builder individualCircuitsSlotGroupBuilder =
                 SlotGroup.builder(
                                 circuitLineHandler.individualCircuitsSize(), 2,
-                                Grid.GRID.grid(3, 19), Grid.Direction.SW)
+                                Grid.GRID.grid(3, 24), Grid.Direction.SW)
                         .setDefaultTooltip(
                                 Tooltip.create(
                                         Lang.GREGTECH_5_CIRCUITS.trans("individualcircuitsslot"),
@@ -142,7 +142,7 @@ class LayoutHandler {
                         SlotGroup.builder(
                                         circuitLineHandler.circuitPartsSize(),
                                         circuitLineHandler.circuitPartsSubListMaxSize(),
-                                        Grid.GRID.grid(5, 19), Grid.Direction.SE)
+                                        Grid.GRID.grid(5, 24), Grid.Direction.SE)
                                 .setDefaultTooltip(
                                         Tooltip.create(
                                                 Lang.GREGTECH_5_CIRCUITS.trans("circuitpartsslot"),
