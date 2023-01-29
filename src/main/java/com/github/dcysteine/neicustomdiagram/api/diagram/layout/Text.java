@@ -124,8 +124,8 @@ public abstract class Text implements BoundedDrawable {
 
             Point center =
                     position.translate(
-                            direction.xFactor * width / 2,
-                            direction.yFactor * height / 2);
+                            (direction.xFactor - 1) * width / 2,
+                            (direction.yFactor - 1) * height / 2);
 
             return new AutoValue_Text(text, center, colour, small, shadow);
         }
@@ -198,11 +198,21 @@ public abstract class Text implements BoundedDrawable {
             }
 
             int y = position.y();
-            if (direction.yFactor < 0) {
-                // If we're extending the multi-line text upwards, then we need to move to start at
-                // the top of the area so that we build the lines top-to-bottom.
-                y -= textLines.size() * lineHeight;
+            // Move to top of text area.
+            switch (direction.yFactor) {
+                case -1:
+                    y -= textLines.size() * lineHeight;
+                    break;
+
+                case 0:
+                    y -= textLines.size() * lineHeight / 2;
+                    break;
+
+                case 1:
+                    // We're already at the top.
+                    break;
             }
+
             for (String line : textLines) {
                 list.add(
                         builder(line, Point.create(position.x(), y), direction)

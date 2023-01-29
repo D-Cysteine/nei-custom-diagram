@@ -18,6 +18,8 @@ neicustomdiagram.util.gregtech5.outputchance=几率：%.2f%%
 neicustomdiagram.util.gregtech5.recipecleanroom=合成表要求超净间
 neicustomdiagram.util.gregtech5.recipelowgravity=合成表要求低重力
 
+neicustomdiagram.generators.debug.nbtviewer.groupname=NBT Viewer
+
 neicustomdiagram.generators.debug.ruler.groupname=Debug规则
 neicustomdiagram.generators.debug.ruler.slotlabel=格 (%02d, %02d)
 

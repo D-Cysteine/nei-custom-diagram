@@ -119,7 +119,9 @@ public final class Draw {
     }
 
     /**
-     * Draws some text centered on the given point.
+     * Draws some text, with the given point being the top-left corner. This is different from most
+     * other draw methods, which draw from the center, but doing this helps avoid left-justified
+     * text being off by one pixel due to integer division.
      *
      * @param colour See {@link Draw.Colour} for colour encoding information.
      * @param small Whether to draw half-scale text.
@@ -127,23 +129,16 @@ public final class Draw {
      */
     public static void drawText(
             String text, Point pos, int colour, boolean small, boolean shadow) {
-        int width = GuiDraw.getStringWidth(text);
-        int height = TEXT_HEIGHT;
-        if (small) {
-            width /= 2;
-            height /= 2;
-        }
-
         int x, y;
         if (small) {
-            x = 2 * pos.x() - width;
-            y = 2 * pos.y() - height;
+            x = 2 * pos.x();
+            y = 2 * pos.y();
 
             GL11.glPushMatrix();
             GL11.glScalef(0.5f, 0.5f, 0.5f);
         } else {
-            x = pos.x() - (width / 2);
-            y = pos.y() - (height / 2);
+            x = pos.x();
+            y = pos.y();
         }
 
         GL11.glDisable(GL11.GL_LIGHTING);
@@ -188,11 +183,15 @@ public final class Draw {
             textHeight /= 2;
         }
 
-        Point textCenter =
+        Point directionPos =
                 pos.translate(
-                        dir.xFactor * (ICON_WIDTH - textWidth) / 2,
-                        dir.yFactor * (ICON_WIDTH - textHeight) / 2);
-        drawText(text, textCenter, colour, small, shadow);
+                        dir.xFactor * ICON_WIDTH / 2,
+                        dir.yFactor * ICON_WIDTH / 2);
+        Point textAnchor =
+                directionPos.translate(
+                        -(dir.xFactor + 1) * textWidth / 2,
+                        -(dir.yFactor + 1) * textHeight / 2);
+        drawText(text, textAnchor, colour, small, shadow);
     }
 
     /**

@@ -9,6 +9,7 @@ public final class Lang {
 
     public static final Lang GREGTECH_5_UTIL = new Lang("neicustomdiagram.util.gregtech5.");
 
+    public static final Lang NBT_VIEWER = new Lang("neicustomdiagram.generators.debug.nbtviewer.");
     public static final Lang DEBUG_RULER = new Lang("neicustomdiagram.generators.debug.ruler.");
 
     public static final Lang ENDER_STORAGE_CHEST_OVERVIEW =

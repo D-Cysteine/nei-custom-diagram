@@ -114,12 +114,13 @@ public abstract class TooltipElement {
      * to facilitate our custom tooltip drawing code.
      */
     public void draw(int x, int y, TextFormatting formatting) {
+        Point topLeft = Point.create(x, y);
         Point center = Point.create(x + width(formatting) / 2, y + height(formatting) / 2);
 
         switch (type()) {
             case TEXT:
                 Draw.drawText(
-                        formatting.format(text()), center,
+                        formatting.format(text()), topLeft,
                         Draw.Colour.WHITE, formatting.small(), true);
                 break;
 
@@ -130,7 +131,7 @@ public abstract class TooltipElement {
 
             case COMPONENT_DESCRIPTION:
                 Draw.drawText(
-                        formatting.format(componentDescription().description()), center,
+                        formatting.format(componentDescription().description()), topLeft,
                         Draw.Colour.WHITE, formatting.small(), true);
                 break;
         }

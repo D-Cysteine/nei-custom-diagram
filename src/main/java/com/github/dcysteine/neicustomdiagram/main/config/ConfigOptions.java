@@ -98,9 +98,23 @@ public final class ConfigOptions {
                             + "\nSet to 0 to disable this feature.")
                     .register();
 
+    public static final Option<Boolean> NBT_VIEWER_SMALL_TEXT =
+            new BooleanOption(
+                    Category.DIAGRAM_SPECIFIC, "nbt_viewer_small_text", true,
+                    "Enables drawing smaller text in the NBT Viewer diagram.")
+                    .register();
+
+    public static final Option<Boolean> NBT_VIEWER_NEWLINE_VALUES =
+            new BooleanOption(
+                    Category.DIAGRAM_SPECIFIC, "nbt_viewer_newline_values", false,
+                    "Enables drawing values on a separate line in the NBT Viewer diagram.")
+                    .register();
+
     public enum Category {
         OPTIONS("options"),
-        DIAGRAM_GROUPS("diagram_groups");
+        DIAGRAM_GROUPS("diagram_groups"),
+        DIAGRAM_SPECIFIC("diagram_specific"),
+        ;
 
         private final String name;
 
@@ -238,6 +252,11 @@ public final class ConfigOptions {
                 Category.OPTIONS.toString(),
                 "General usage options."
                         + " These should be safe to change without requiring a restart.");
+
+        Config.CONFIG.setCategoryComment(
+                Category.DIAGRAM_SPECIFIC.toString(),
+                "Diagram-specific options."
+                        + " Whether these require a restart depends on the diagram.");
 
         StringBuilder diagramGroupCategoryCommentBuilder = new StringBuilder();
         diagramGroupCategoryCommentBuilder
