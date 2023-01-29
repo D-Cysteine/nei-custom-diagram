@@ -3,7 +3,6 @@ package com.github.dcysteine.neicustomdiagram.api.draw.scroll;
 import codechicken.lib.gui.GuiDraw;
 import com.github.dcysteine.neicustomdiagram.api.draw.Dimension;
 import com.github.dcysteine.neicustomdiagram.api.draw.Point;
-import org.lwjgl.opengl.GL11;
 
 /** Handles drawing and controlling of a scrollbar. */
 class Scrollbar {
@@ -12,9 +11,19 @@ class Scrollbar {
      */
     private static final int PADDING = 2;
 
-    /**
-     * Specifies # of pixels of leeway (in all four directions) for scrollbar mouseover detection.
-     */
+    /** The distance, in pixels, between the edge of the diagram and the scrollbar. */
+    private static final int OFFSET = 8;
+
+    /** The minimum length of the scrollbar cursor, in pixels. */
+    private static final int MIN_CURSOR_LENGTH = 2;
+
+    /** Half of the width of the scrollbar cursor, in pixels. */
+    private static final int CURSOR_RADIUS = 3;
+
+    /** Half of the width of the scrollbar itself, in pixels. */
+    private static final int SCROLLBAR_RADIUS = 1;
+
+    /** The # of pixels of leeway (in all four directions) for scrollbar mouseover detection. */
     private static final int MOUSEOVER_PADDING = 2;
 
     /** The scrollbar will fade away over this many ticks. */
@@ -30,6 +39,7 @@ class Scrollbar {
 
     private final ScrollManager scrollManager;
     private final ScrollOrientation orientation;
+    private final ScrollbarDimensions dimensions;
     private int scroll;
     private boolean selected;
     private int fade;
@@ -37,6 +47,7 @@ class Scrollbar {
     public Scrollbar(ScrollManager scrollManager, ScrollOrientation orientation) {
         this.scrollManager = scrollManager;
         this.orientation = orientation;
+        this.dimensions = new ScrollbarDimensions();
         this.scroll = 0;
         this.selected = false;
         // Draw the scrollbar upon initialization of the diagram, if it is scrollable.
@@ -51,11 +62,10 @@ class Scrollbar {
         return scroll;
     }
 
-    /** Does not check bounds! Bounds checks are done by {@link #checkScrollState(Dimension)}. */
-    public boolean scroll(
-            Dimension diagramDimension, ScrollDirection direction, int amount) {
-        int scrollAmount = orientation.scrollMultiplier(direction) * amount;
-        if (!isScrollable(diagramDimension) || scrollAmount == 0) {
+    /** Does not check bounds! Bounds checks are done by {@link #refreshState(Dimension)}. */
+    public boolean scroll(ScrollDirection direction, int amount) {
+        int scrollAmount = orientation.dotProduct(direction) * amount;
+        if (dimensions.offscreenLength <= 0 || scrollAmount == 0) {
             return false;
         }
 
@@ -65,9 +75,14 @@ class Scrollbar {
     }
 
     /** Returns whether the click was handled. */
-    public boolean mouseClickScrollbar(Dimension diagramDimension, MouseButton button) {
-        if (!mouseInScrollBounds() && !selected) {
-            return false;
+    public boolean mouseClickScrollbar(MouseButton button) {
+        if (!mouseInScrollBounds()) {
+            if (selected) {
+                selected = false;
+                return true;
+            } else {
+                return false;
+            }
         }
 
         switch (button) {
@@ -76,60 +91,33 @@ class Scrollbar {
                 return true;
 
             case RIGHT:
-                scrollToMouse(diagramDimension);
+                scrollToMouse();
                 return true;
         }
 
         return false;
     }
 
-    /** Does not check bounds! Bounds checks are done by {@link #checkScrollState(Dimension)}. */
-    public void scrollToMouse(Dimension diagramDimension) {
-        Dimension viewportDim = scrollManager.getViewportDimension();
-        int paddedHeight = diagramDimension.height() + PADDING;
-        int scrollbarCursorHeight = viewportDim.height() * viewportDim.height() / paddedHeight;
-
+    /** Does not check bounds! Bounds checks are done by {@link #refreshState(Dimension)}. */
+    public void scrollToMouse() {
+        int mousePos =
+                orientation.dotProduct(scrollManager.getAbsoluteMousePosition());
         int mouseOffset =
-                scrollManager.getAbsoluteMousePosition().y()
-                        - (scrollManager.getViewportPosition().y() + scrollbarCursorHeight / 2);
-        int scrollbarHeight = viewportDim.height() - scrollbarCursorHeight;
+                mousePos - orientation.dotProduct(dimensions.anchor) - dimensions.cursorLength / 2;
 
-        scroll = mouseOffset * computeScrollableLength(diagramDimension) / scrollbarHeight;
+        scroll = mouseOffset * dimensions.offscreenLength / dimensions.scrollableLength;
         fade = FADE_TICKS;
     }
 
     public boolean mouseInScrollBounds() {
-        Point viewportPos = scrollManager.getViewportPosition();
-        Dimension viewportDim = scrollManager.getViewportDimension();
-        int scrollbarX = viewportPos.x() + viewportDim.width() + 5 - MOUSEOVER_PADDING;
-        int scrollbarY = viewportPos.y() - MOUSEOVER_PADDING;
-        int scrollbarWidth = 4 + 2 * MOUSEOVER_PADDING;
-        int scrollbarHeight = viewportDim.height() + 2 * MOUSEOVER_PADDING;
+        int minX = dimensions.anchor.x() - MOUSEOVER_PADDING;
+        int maxX = dimensions.end.x() + MOUSEOVER_PADDING;
+        int minY = dimensions.anchor.y() - MOUSEOVER_PADDING;
+        int maxY = dimensions.end.y() + MOUSEOVER_PADDING;
 
         Point mousePos = scrollManager.getAbsoluteMousePosition();
-        int xDiff = mousePos.x() - scrollbarX;
-        int yDiff = mousePos.y() - scrollbarY;
-
-        return xDiff >= 0 && xDiff <= scrollbarWidth && yDiff >= 0 && yDiff <= scrollbarHeight;
-    }
-
-    private int computeScrollableLength(Dimension diagramDimension) {
-        switch (orientation) {
-            case VERTICAL:
-                return diagramDimension.height() - scrollManager.getViewportDimension().height()
-                        + PADDING;
-
-            case HORIZONTAL:
-                return diagramDimension.width() - scrollManager.getViewportDimension().width()
-                        + PADDING;
-
-            default:
-                throw new IllegalStateException("Unhandled orientation: " + orientation);
-        }
-    }
-
-    public boolean isScrollable(Dimension diagramDimension) {
-        return computeScrollableLength(diagramDimension) > 0;
+        return mousePos.x() >= minX && mousePos.x() <= maxX
+                && mousePos.y() >= minY && mousePos.y() <= maxY;
     }
 
     public void tick() {
@@ -143,12 +131,12 @@ class Scrollbar {
     /**
      * Checks for bad scroll state due to things like resizes or switching diagrams.
      *
-     * <p>{@link #scroll(Dimension, ScrollDirection, int)} does not check bounds,
+     * <p>{@link #scroll(ScrollDirection, int)} does not check bounds,
      * because we will check them here.
      */
-    public void checkScrollState(Dimension diagramDimension) {
-        int scrollableHeight = computeScrollableLength(diagramDimension);
-        if (scrollableHeight <= 0) {
+    public void refreshState(Dimension diagramDimension) {
+        dimensions.compute(diagramDimension);
+        if (dimensions.offscreenLength <= 0) {
             scroll = 0;
             selected = false;
             fade = 0;
@@ -156,18 +144,18 @@ class Scrollbar {
         }
 
         if (selected) {
-            scrollToMouse(diagramDimension);
+            scrollToMouse();
         }
 
-        if (scroll > scrollableHeight) {
-            scroll = scrollableHeight;
+        if (scroll > dimensions.offscreenLength) {
+            scroll = dimensions.offscreenLength;
         } else if (scroll < 0) {
             scroll = 0;
         }
     }
 
     /** This needs to be called with absolute coordinate context, such as when drawing tooltips. */
-    public void draw(Dimension diagramDimension) {
+    public void draw() {
         if (fade <= 0) {
             return;
         }
@@ -176,43 +164,101 @@ class Scrollbar {
         int fadeOpacity = Math.min(2 * fade, FADE_TICKS);
         int fgOpacity = FOREGROUND_COLOUR_OPACITY * fadeOpacity / FADE_TICKS;
         int bgOpacity = BACKGROUND_COLOUR_OPACITY * fadeOpacity / FADE_TICKS;
-        int fgColour =
-                selected
-                        ? FOREGROUND_SELECTED_COLOUR : FOREGROUND_COLOUR;
+        int fgColour = selected ? FOREGROUND_SELECTED_COLOUR : FOREGROUND_COLOUR;
         fgColour |= fgOpacity << 24;
         int bgColour = BACKGROUND_COLOUR | bgOpacity << 24;
 
-        Point viewportPos = scrollManager.getViewportPosition();
-        Dimension viewportDim = scrollManager.getViewportDimension();
-        int scrollbarX = viewportPos.x() + viewportDim.width() + 7;
-        int scrollbarY = viewportPos.y();
+        int scrollbarAboveLength =
+                scroll * dimensions.scrollableLength / dimensions.offscreenLength;
+        // The top-left corner of the scrollbar above the cursor.
+        Point scrollbarAboveStart =
+                dimensions.anchor.translate(orientation.transposeScale(-SCROLLBAR_RADIUS));
+        Dimension scrollbarAboveDimension =
+                Dimension.create(scrollbarAboveLength, 2 * SCROLLBAR_RADIUS);
+        int scrollbarAboveWidth = orientation.dotProduct(scrollbarAboveDimension);
+        int scrollbarAboveHeight = orientation.transposeProduct(scrollbarAboveDimension);
 
-        int paddedHeight = diagramDimension.height() + PADDING;
-        int scrollbarCursorHeight = viewportDim.height() * viewportDim.height() / paddedHeight;
-        int scrollbarCursorY = scrollbarY + (scroll * viewportDim.height() / paddedHeight);
-        // Set a min height just in case integer division gives us 0 or something =S
-        scrollbarCursorHeight += 2;
-        scrollbarCursorY -= 1;
+        // The top-left corner of the cursor.
+        Point cursorStart = dimensions.anchor.translate(orientation.scale(scrollbarAboveLength));
+        cursorStart = cursorStart.translate(orientation.transposeScale(-CURSOR_RADIUS));
+        Dimension cursorDimension = Dimension.create(dimensions.cursorLength, 2 * CURSOR_RADIUS);
+        int cursorWidth = orientation.dotProduct(cursorDimension);
+        int cursorHeight = orientation.transposeProduct(cursorDimension);
 
-        int scrollbarCursorBottom = scrollbarCursorY + scrollbarCursorHeight;
-        // Heights of exposed portions of scrollbar above and below the cursor.
-        int scrollbarAboveHeight = scrollbarCursorY - scrollbarY;
-        int scrollbarBelowHeight = scrollbarY + viewportDim.height() - scrollbarCursorBottom;
+        int scrollbarBelowLength =
+                dimensions.scrollbarLength - (scrollbarAboveLength + dimensions.cursorLength);
+        // The top-left corner of the scrollbar below the cursor.
+        Point scrollbarBelowStart =
+                dimensions.end.translate(orientation.scale(-scrollbarBelowLength));
+        scrollbarBelowStart =
+                scrollbarBelowStart.translate(orientation.transposeScale(-SCROLLBAR_RADIUS));
+        Dimension scrollbarBelowDimension =
+                Dimension.create(scrollbarBelowLength, 2 * SCROLLBAR_RADIUS);
+        int scrollbarBelowWidth = orientation.dotProduct(scrollbarBelowDimension);
+        int scrollbarBelowHeight = orientation.transposeProduct(scrollbarBelowDimension);
 
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDisable(GL11.GL_LIGHTING);
-        GuiDraw.gui.incZLevel(300);
-
-        if (scrollbarAboveHeight > 0) {
-            GuiDraw.drawRect(scrollbarX, scrollbarY, 2, scrollbarAboveHeight, bgColour);
+        if (scrollbarAboveLength > 0) {
+            GuiDraw.drawRect(
+                    scrollbarAboveStart.x(), scrollbarAboveStart.y(),
+                    scrollbarAboveWidth, scrollbarAboveHeight, bgColour);
         }
-        GuiDraw.drawRect(scrollbarX - 2, scrollbarCursorY, 6, scrollbarCursorHeight, fgColour);
-        if (scrollbarBelowHeight > 0) {
-            GuiDraw.drawRect(scrollbarX, scrollbarCursorBottom, 2, scrollbarBelowHeight, bgColour);
-        }
 
-        GuiDraw.gui.incZLevel(-300);
-        GL11.glEnable(GL11.GL_LIGHTING);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
+        GuiDraw.drawRect(
+                cursorStart.x(), cursorStart.y(), cursorWidth, cursorHeight, fgColour);
+
+        if (scrollbarBelowLength > 0) {
+            GuiDraw.drawRect(
+                    scrollbarBelowStart.x(), scrollbarBelowStart.y(),
+                    scrollbarBelowWidth, scrollbarBelowHeight, bgColour);
+        }
+    }
+
+    /**
+     * Helper class which computes and stores various parameters for the scrollbar.
+     *
+     * <p>We'll re-compute these values each time the diagram is rendered, and then just store them,
+     * to avoid needlessly re-computing them.
+     */
+    private class ScrollbarDimensions {
+        private Point anchor = Point.create(0, 0);
+        private Point end = Point.create(0, 0);
+
+        /** The length of the complete scrollbar, in pixels. */
+        private int scrollbarLength = 0;
+
+        /** The length of the scrollbar cursor, in pixels. */
+        private int cursorLength = 0;
+
+        /** The amount of the scrollbar that is actually scrollable (excludes cursor length). */
+        private int scrollableLength = 0;
+
+        /** The length of the viewport, in pixels. */
+        private int viewportLength = 0;
+
+        /** The length of the diagram, in pixels. */
+        private int diagramLength = 0;
+
+        /** The amount of the diagram that is offscreen and must be scrolled, in pixels. */
+        private int offscreenLength = 0;
+
+        public void compute(Dimension diagramDimension) {
+            Point viewportPos = scrollManager.getViewportPosition();
+            Dimension viewportDim = scrollManager.getViewportDimension();
+
+            viewportLength = orientation.dotProduct(viewportDim);
+            scrollbarLength = viewportLength;
+
+            // Transpose because a vertical scrollbar should be offset horizontally, and vice-versa.
+            anchor = viewportPos.translate(
+                    orientation.transposeScale(orientation.transposeProduct(viewportDim) + OFFSET));
+            end = anchor.translate(orientation.scale(scrollbarLength));
+
+            diagramLength = orientation.dotProduct(diagramDimension) + PADDING;
+            offscreenLength = diagramLength - viewportLength;
+
+            cursorLength =
+                    Math.max((viewportLength * scrollbarLength) / diagramLength, MIN_CURSOR_LENGTH);
+            scrollableLength = scrollbarLength - cursorLength;
+        }
     }
 }

@@ -175,31 +175,27 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     public void drawBackground(int recipe) {
         Diagram diagram = diagrams.get(recipe);
         Dimension diagramDimension = diagram.dimension(diagramState);
-        scrollManager.checkScrollState(diagramDimension);
-        scrollManager.beforeDraw(diagramDimension);
+        scrollManager.refreshState(diagramDimension);
+        scrollManager.beforeDraw();
 
         diagram.drawBackground(diagramState);
 
-        scrollManager.afterDraw(diagramDimension);
+        scrollManager.afterDraw();
     }
 
     @Override
     public void drawForeground(int recipe) {
-        Diagram diagram = diagrams.get(recipe);
-        Dimension diagramDimension = diagram.dimension(diagramState);
-        scrollManager.beforeDraw(diagramDimension);
+        scrollManager.beforeDraw();
 
-        diagram.drawForeground(diagramState);
+        diagrams.get(recipe).drawForeground(diagramState);
         Optional<Interactable> interactable = findHoveredInteractable(recipe);
         interactable.ifPresent(i -> i.drawOverlay(diagramState));
 
-        scrollManager.afterDraw(diagramDimension);
+        scrollManager.afterDraw();
     }
 
     public void drawTooltip(GuiRecipe<?> gui, int recipe) {
-        Diagram diagram = diagrams.get(recipe);
-        Dimension diagramDimension = diagram.dimension(diagramState);
-        scrollManager.drawScrollbars(diagramDimension);
+        scrollManager.drawScrollbars();
 
         Optional<Interactable> interactable = findHoveredInteractable(recipe);
         interactable.ifPresent(
@@ -272,9 +268,8 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
      */
     @Override
     public boolean mouseClicked(GuiRecipe<?> gui, int button, int recipe) {
-        Dimension diagramDimension = diagrams.get(recipe).dimension(diagramState);
         MouseButton mouseButton = button == 0 ? MouseButton.LEFT : MouseButton.RIGHT;
-        if (scrollManager.mouseClickScrollbar(diagramDimension, mouseButton)) {
+        if (scrollManager.mouseClickScrollbar(mouseButton)) {
             return true;
         }
 
@@ -298,8 +293,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
             return true;
         }
 
-        Dimension diagramDimension = diagrams.get(recipe).dimension(diagramState);
-        if (scrollManager.mouseScroll(diagramDimension, direction)) {
+        if (scrollManager.mouseScroll(direction)) {
             return true;
         } else {
             return ConfigOptions.DISABLE_PAGE_SCROLL.get();

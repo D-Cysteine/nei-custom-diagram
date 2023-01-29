@@ -5,8 +5,8 @@ import com.google.auto.value.AutoValue;
 /**
  * Immutable class representing a point in 2D space.
  *
- * <p>While this class's contents are the same as those of {@link Dimension}, for type-safety, we
- * treat this as a separate class.
+ * <p>While this class's contents are the same as those of {@link Vector} and {@link Dimension}, for
+ * type-safety, we treat this as a separate class.
  */
 @AutoValue
 public abstract class Point {
@@ -40,6 +40,15 @@ public abstract class Point {
     /** Returns a new point object; the original is not modified. */
     public Point translate(int dx, int dy) {
         return Point.create(x() + dx, y() + dy);
+    }
+
+    /** Returns a new point object; the original is not modified. */
+    public Point translate(Vector other) {
+        return Point.create(x() + other.x(), y() + other.y());
+    }
+
+    public Vector difference(Point other) {
+        return Vector.create(x() - other.x(), y() - other.y());
     }
 
     public boolean isOrthogonal(Point pos) {

@@ -72,7 +72,7 @@ public final class ConfigOptions {
 
     public static final Option<Integer> KEYBOARD_SCROLL_SPEED =
             new IntegerOption(
-                    Category.OPTIONS, "keyboard_scroll_speed", 24,
+                    Category.OPTIONS, "keyboard_scroll_speed", 36,
                     "Sets the keyboard arrow keys scroll speed, in pixels."
                             + "\nUse a negative value to invert the scroll direction.")
                     .register();

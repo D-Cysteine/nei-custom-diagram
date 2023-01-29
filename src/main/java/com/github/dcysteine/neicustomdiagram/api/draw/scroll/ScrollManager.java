@@ -29,14 +29,15 @@ public final class ScrollManager {
     }
 
     public boolean keyboardScroll(Dimension diagramDimension, ScrollDirection direction) {
+        // This technically allows both scrollbars to handle the same event,
+        // but in practice, this cannot happen.
         boolean handled = verticalScrollbar.scroll(
-                diagramDimension, direction, ConfigOptions.KEYBOARD_SCROLL_SPEED.get());
-        handled |= horizontalScrollbar.scroll(
-                diagramDimension, direction, ConfigOptions.KEYBOARD_SCROLL_SPEED.get());
+                direction, ConfigOptions.KEYBOARD_SCROLL_SPEED.get());
+        handled |= horizontalScrollbar.scroll(direction, ConfigOptions.KEYBOARD_SCROLL_SPEED.get());
         return handled;
     }
 
-    public boolean mouseScroll(Dimension diagramDimension, ScrollDirection direction) {
+    public boolean mouseScroll(ScrollDirection direction) {
         // Horizontal scrolling is more rarely done, so we will scroll horizontally only if the
         // mouse is directly over the horizontal scrollbar. Otherwise, we will default to vertical.
         if (horizontalScrollbar.mouseInScrollBounds()) {
@@ -57,17 +58,19 @@ public final class ScrollManager {
                     break;
             }
             return horizontalScrollbar.scroll(
-                    diagramDimension, horizontalDirection, ConfigOptions.MOUSE_SCROLL_SPEED.get());
+                    horizontalDirection, ConfigOptions.MOUSE_SCROLL_SPEED.get());
         } else {
             return verticalScrollbar.scroll(
-                    diagramDimension, direction, ConfigOptions.MOUSE_SCROLL_SPEED.get());
+                    direction, ConfigOptions.MOUSE_SCROLL_SPEED.get());
         }
     }
 
     /** Returns whether the click was handled. */
-    public boolean mouseClickScrollbar(Dimension diagramDimension, MouseButton button) {
-        boolean handled = verticalScrollbar.mouseClickScrollbar(diagramDimension, button);
-        handled |= horizontalScrollbar.mouseClickScrollbar(diagramDimension, button);
+    public boolean mouseClickScrollbar(MouseButton button) {
+        // We intentionally allow both scrollbars to handle the same event.
+        // This allows for de-selecting one scrollbar, and selecting another, with a single click.
+        boolean handled = verticalScrollbar.mouseClickScrollbar(button);
+        handled |= horizontalScrollbar.mouseClickScrollbar(button);
         return handled;
     }
 
@@ -178,12 +181,12 @@ public final class ScrollManager {
     }
 
     /** Checks for bad scroll state due to things like resizes or switching diagrams. */
-    public void checkScrollState(Dimension diagramDimension) {
-        horizontalScrollbar.checkScrollState(diagramDimension);
-        verticalScrollbar.checkScrollState(diagramDimension);
+    public void refreshState(Dimension diagramDimension) {
+        horizontalScrollbar.refreshState(diagramDimension);
+        verticalScrollbar.refreshState(diagramDimension);
     }
 
-    public void beforeDraw(Dimension diagramDimension) {
+    public void beforeDraw() {
         GL11.glPushMatrix();
         GL11.glTranslatef(-horizontalScrollbar.getScroll(), -verticalScrollbar.getScroll(), 0);
         setScissor();
@@ -191,19 +194,19 @@ public final class ScrollManager {
         GL11.glColor4f(1, 1, 1, 1);
     }
 
-    public void afterDraw(Dimension diagramDimension) {
+    public void afterDraw() {
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         GL11.glPopMatrix();
     }
 
     /** This needs to be called with absolute coordinate context, such as when drawing tooltips. */
-    public void drawScrollbars(Dimension diagramDimension) {
+    public void drawScrollbars() {
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glDisable(GL11.GL_LIGHTING);
         GuiDraw.gui.incZLevel(300);
 
-        horizontalScrollbar.draw(diagramDimension);
-        verticalScrollbar.draw(diagramDimension);
+        horizontalScrollbar.draw();
+        verticalScrollbar.draw();
 
         GuiDraw.gui.incZLevel(-300);
         GL11.glEnable(GL11.GL_LIGHTING);
