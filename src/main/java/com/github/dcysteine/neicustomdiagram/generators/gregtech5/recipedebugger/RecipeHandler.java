@@ -23,8 +23,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -517,6 +517,6 @@ class RecipeHandler {
                 .map(GregTechOreDictUtil::getItemData)
                 .filter(Optional::isPresent)
                 .map(itemData -> itemData.get().mPrefix)
-                .collect(Collectors.toCollection(() -> EnumSet.noneOf(OrePrefixes.class)));
+                .collect(Collectors.toCollection(HashSet::new));
     }
 }
