@@ -44,7 +44,7 @@ minecraft.version = "$minecraftVersion-$forgeVersion-$minecraftVersion"
 configure<UserExtension> {
     replacements.putAll(
         mapOf(
-            Pair("@version@", version)
+            Pair("@version@", project.version)
         )
     )
     runDir = "run"
@@ -86,7 +86,7 @@ dependencies {
     }
     // The following are compile-time dependencies of GT5.
     val industrialCraft2Version: String by project
-    compileOnly("net.industrial-craft:industrialcraft-2:${industrialCraft2Version}-experimental:api") {
+    compileOnly("net.industrial-craft:industrialcraft-2:$industrialCraft2Version-experimental:api") {
         isTransitive = false
     }
     val forestryVersion: String by project
@@ -102,11 +102,11 @@ dependencies {
         isTransitive = false
     }
     val enderIoVersion: String by project
-    compileOnly("com.github.GTNewHorizons:EnderIO:${enderIoVersion}:api") {
+    compileOnly("com.github.GTNewHorizons:EnderIO:$enderIoVersion:api") {
         isTransitive = false
     }
     val projectRedVersion: String by project
-    compileOnly("com.github.GTNewHorizons:ProjectRed:${projectRedVersion}:dev") {
+    compileOnly("com.github.GTNewHorizons:ProjectRed:$projectRedVersion:dev") {
         isTransitive = false
     }
 
@@ -126,7 +126,7 @@ dependencies {
     }
 
     val gtnhCoreModVersion: String by project
-    implementation("com.github.GTNewHorizons:NewHorizonsCoreMod:${gtnhCoreModVersion}:dev") {
+    implementation("com.github.GTNewHorizons:NewHorizonsCoreMod:$gtnhCoreModVersion:dev") {
         isTransitive = false
     }
 
