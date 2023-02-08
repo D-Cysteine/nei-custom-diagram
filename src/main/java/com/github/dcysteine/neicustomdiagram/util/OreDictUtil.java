@@ -48,9 +48,15 @@ public final class OreDictUtil {
 
         ItemComponent itemComponent = (ItemComponent) component;
         if (itemComponent.hasWildcardDamage()) {
-            return ItemList.itemMap.get(itemComponent.item()).stream()
-                    .map(ItemComponent::create)
-                    .collect(Collectors.toList());
+            List<ItemStack> permutations = ItemList.itemMap.get(itemComponent.item());
+            if (!permutations.isEmpty()) {
+                return permutations.stream()
+                        .map(ItemComponent::create)
+                        .collect(Collectors.toList());
+            } else {
+                return Lists.newArrayList(
+                        ItemComponent.create(itemComponent.item(), 0, itemComponent.nbt()));
+            }
         } else {
             return Lists.newArrayList(component);
         }
