@@ -215,7 +215,6 @@ neicustomdiagram.generators.gregtech5.recipedebugger.orewashingplantlabel=Ore Wa
 neicustomdiagram.generators.gregtech5.recipedebugger.thermalcentrifugelabel=Thermal Centrifuge recipe
 neicustomdiagram.generators.gregtech5.recipedebugger.compressorlabel=Compressor recipe
 neicustomdiagram.generators.gregtech5.recipedebugger.extractorlabel=Extractor recipe
-neicustomdiagram.generators.gregtech5.recipedebugger.disassemblerlabel=Disassembler recipe
 neicustomdiagram.generators.gregtech5.recipedebugger.assemblylinelabel=Assembly Line recipe
 neicustomdiagram.generators.gregtech5.recipedebugger.printerlabel=Printer recipe
 neicustomdiagram.generators.gregtech5.recipedebugger.sifterlabel=Sifter recipe

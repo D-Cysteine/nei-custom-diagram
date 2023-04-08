@@ -80,17 +80,7 @@ class RecipeHandler {
         EXTRACTOR(
                 GT_Recipe.GT_Recipe_Map.sExtractorRecipes,
                 ItemList.Machine_HV_Extractor, "extractorlabel"),
-        // Recycler, Furnace, Microwave
-
-        /*
-         * Disassembler produces too much noise in colliding recipes view.
-         * Uncomment this if you want to see for yourself.
-        DISASSEMBLER(
-                GT_Recipe.GT_Recipe_Map.sDisassemblerRecipes,
-                ItemList.Machine_HV_Disassembler, "disassemblerlabel"),
-         */
-
-        // Scanner, Rock Breaker, By-product, Replicator
+        // Recycler, Furnace, Microwave, Scanner, Rock Breaker, By-product, Replicator
 
         /*
          * Assembly line recipes don't conflict usually since they are position-dependent.
