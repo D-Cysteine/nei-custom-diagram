@@ -8,6 +8,7 @@ import com.github.dcysteine.neicustomdiagram.api.draw.Point;
 import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
 import com.google.auto.value.AutoValue;
 import net.minecraft.block.Block;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,6 +27,17 @@ public abstract class ItemComponent implements Component {
 
     public static final int DEFAULT_STACK_SIZE = 1;
 
+    /**
+     * Helper method for retrieving the raw item damage of an {@code ItemStack}.
+     *
+     * <p>This method is better than calling {@link ItemStack#getItemDamage()}, because that method
+     * could be overridden with a custom implementation of {@link Item#getDamage(ItemStack)} and
+     * therefore not actually return the raw item damage.
+     */
+    public static int getItemDamage(ItemStack itemStack) {
+        return Items.feather.getDamage(itemStack);
+    }
+
     public static ItemComponent create(Item item, int damage, Optional<NBTTagCompound> nbt) {
         if (item.isDamageable()) {
             return new AutoValue_ItemComponent(item, 0, nbt.map(ImmutableNbtWrapper::create));
@@ -40,17 +52,17 @@ public abstract class ItemComponent implements Component {
 
     /** NBT will be discarded. Use {@link #createWithNbt(ItemStack)} if you want NBT. */
     public static ItemComponent create(ItemStack itemStack) {
-        return create(itemStack.getItem(), itemStack.getItemDamage());
+        return create(itemStack.getItem(), getItemDamage(itemStack));
     }
 
     public static ItemComponent createWithNbt(ItemStack itemStack) {
         return create(
-                itemStack.getItem(), itemStack.getItemDamage(),
+                itemStack.getItem(), getItemDamage(itemStack),
                 Optional.ofNullable(itemStack.stackTagCompound));
     }
 
     public static ItemComponent createWithNbt(ItemStack itemStack, NBTTagCompound nbt) {
-        return create(itemStack.getItem(), itemStack.getItemDamage(), Optional.of(nbt));
+        return create(itemStack.getItem(), getItemDamage(itemStack), Optional.of(nbt));
     }
 
     public static Optional<ItemComponent> create(Block block, int damage) {

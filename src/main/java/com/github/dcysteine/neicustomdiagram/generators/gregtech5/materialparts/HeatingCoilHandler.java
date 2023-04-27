@@ -48,7 +48,9 @@ class HeatingCoilHandler {
         for (ItemList item : HEATING_COILS) {
             ItemStack itemStack = item.get(1);
             long heat =
-                    GT_Block_Casings5.getCoilHeatFromDamage(itemStack.getItemDamage()).getHeat();
+                    GT_Block_Casings5
+                            .getCoilHeatFromDamage(ItemComponent.getItemDamage(itemStack))
+                            .getHeat();
 
             builder.put(heat, ItemComponent.create(itemStack));
         }
