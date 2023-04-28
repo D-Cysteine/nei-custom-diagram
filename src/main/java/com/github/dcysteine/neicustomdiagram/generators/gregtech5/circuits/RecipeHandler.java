@@ -34,7 +34,10 @@ class RecipeHandler {
     void initialize() {
         craftingTableOutputs = new HashSet<>();
         ((List<IRecipe>) CraftingManager.getInstance().getRecipeList()).stream()
-                .filter(recipe -> recipe.getRecipeOutput() != null)
+                .filter(
+                        recipe ->
+                                recipe.getRecipeOutput() != null
+                                        && recipe.getRecipeOutput().getItem() != null)
                 .forEach(
                         recipe -> craftingTableOutputs.add(
                                 ItemComponent.create(recipe.getRecipeOutput())));
