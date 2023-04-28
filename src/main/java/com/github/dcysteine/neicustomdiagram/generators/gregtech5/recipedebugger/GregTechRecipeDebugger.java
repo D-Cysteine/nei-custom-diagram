@@ -17,6 +17,7 @@ import gregtech.api.enums.ItemList;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.OrePrefixes;
 import gregtech.api.util.GT_Utility;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 
 import java.util.Arrays;
@@ -28,6 +29,9 @@ public final class GregTechRecipeDebugger implements DiagramGenerator {
     public static final ItemComponent ICON =
             ItemComponent.create(GT_Utility.getIntegratedCircuit(0));
 
+    // TODO if we need to add more views in the future, it'd probably be worth going through and
+    // refactoring the code to clean it up a bit. I want to move each view into a custom class, with
+    // each view class containing its own recipe checking code, as well as recipe map exclusions.
     public enum View {
         PROGRAMMED_CIRCUITS(
                 "-programmed-circuits",
@@ -63,6 +67,11 @@ public final class GregTechRecipeDebugger implements DiagramGenerator {
                 "-small-variant-recipes",
                 GregTechOreDictUtil.getComponent(OrePrefixes.dustTiny, Materials.Salt).get(),
                 "smallvariantrecipesbutton"),
+
+        BAD_CRAFTING_TABLE_RECIPES(
+                "-bad-crafting-table-recipes",
+                ItemComponent.create(Blocks.crafting_table, 0).get(),
+                "badcraftingtablerecipesbutton"),
         ;
 
         /** The suffix to append to the group ID, to get the custom behavior ID for this view. */

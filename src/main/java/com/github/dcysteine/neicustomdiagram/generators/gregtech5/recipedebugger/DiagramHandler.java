@@ -62,6 +62,9 @@ class DiagramHandler {
         diagramListMultimap.putAll(
                 GregTechRecipeDebugger.View.SMALL_VARIANT_RECIPES,
                 buildRecipeDiagrams(recipeHandler.smallVariantRecipes));
+        diagramListMultimap.putAll(
+                GregTechRecipeDebugger.View.BAD_CRAFTING_TABLE_RECIPES,
+                buildRecipeDiagrams(recipeHandler.badCraftingTableRecipes));
 
         // This must be last, as it reads counts from diagramListMultimap.
         menuDiagram = buildMenuDiagram();
