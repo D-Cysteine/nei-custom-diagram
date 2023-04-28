@@ -147,6 +147,9 @@ class RecipeHandler {
         FUSION_REACTOR(
                 GT_Recipe.GT_Recipe_Map.sFusionRecipes,
                 ItemList.FusionComputer_LuV, "fusionreactorlabel"),
+        COMPLEX_FUSION_REACTOR(
+                GT_Recipe.GT_Recipe_Map.sComplexFusionRecipes,
+                ItemList.FusionComputer_UV, "complexfusionreactorlabel"),
         CENTRIFUGE(
                 GT_Recipe.GT_Recipe_Map.sCentrifugeRecipes,
                 ItemList.Machine_HV_Centrifuge, "centrifugelabel"),
@@ -156,6 +159,13 @@ class RecipeHandler {
         ELECTRIC_BLAST_FURNACE(
                 GT_Recipe.GT_Recipe_Map.sBlastRecipes,
                 ItemList.Machine_Multi_BlastFurnace, "electricblastfurnacelabel"),
+        PLASMA_FORGE(
+                GT_Recipe.GT_Recipe_Map.sPlasmaForgeRecipes,
+                ItemList.Machine_Multi_PlasmaForge, "plasmaforgelabel"),
+        TRANSCENDENT_PLASMA_MIXER(
+                GT_Recipe.GT_Recipe_Map.sTranscendentPlasmaMixerRecipes,
+                ItemList.Machine_Multi_TranscendentPlasmaMixer, "transcendentplasmamixerlabel"),
+        // Fake Space Project
         BRICKED_BLAST_FURNACE(
                 GT_Recipe.GT_Recipe_Map.sPrimitiveBlastRecipes,
                 ItemList.Machine_Bricked_BlastFurnace, "brickedblastfurnacelabel"),
@@ -211,8 +221,16 @@ class RecipeHandler {
                 ItemList.Machine_HV_Extruder, "extruderlabel"),
         FORGE_HAMMER(
                 GT_Recipe.GT_Recipe_Map.sHammerRecipes,
-                ItemList.Machine_HV_Hammer, "forgehammerlabel");
+                ItemList.Machine_HV_Hammer, "forgehammerlabel"),
         // Amplifabricator, Mass Fabrication, fuels
+        // Multiblock Electrolyzer, Multiblock Centrifuge, Multiblock Mixer
+        NANO_FORGE(
+                GT_Recipe.GT_Recipe_Map.sNanoForge,
+                ItemList.NanoForge, "nanoforgelabel"),
+        PCB_FACTORY(
+                GT_Recipe.GT_Recipe_Map.sPCBFactory,
+                ItemList.PCBFactory, "pcbfactory"),
+        ;
 
         final GT_Recipe.GT_Recipe_Map recipeMap;
         final ItemList item;
