@@ -73,7 +73,7 @@ public enum NeiIntegration {
         @Override
         public boolean shouldShowTooltip(GuiContainer guiContainer) {
             return getDiagramGroup(guiContainer)
-                    .map(diagramGroup -> !diagramGroup.mouseInBounds())
+                    .map(diagramGroup -> !diagramGroup.mouseInDiagramBounds())
                     .orElse(true);
         }
     }

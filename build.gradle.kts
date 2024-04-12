@@ -1,21 +1,8 @@
-import net.minecraftforge.gradle.user.UserExtension
-
-buildscript {
-    repositories {
-        maven("https://maven.minecraftforge.net") { name = "Forge" }
-        maven("http://jenkins.usrv.eu:8081/nexus/content/groups/public/") { name = "GTNH Maven" }
-    }
-    dependencies {
-        classpath("net.minecraftforge.gradle:ForgeGradle:1.2.13")
-    }
-}
-
 plugins {
     idea
     java
+    id("com.gtnewhorizons.retrofuturagradle") version "1.3.35"
 }
-
-apply(plugin = "forge")
 
 idea {
     module {
@@ -38,34 +25,29 @@ group = "com.github.dcysteine.neicustomdiagram"
 version = neiCustomDiagramVersion
 
 val minecraftVersion: String by project
-val forgeVersion: String by project
-minecraft.version = "$minecraftVersion-$forgeVersion-$minecraftVersion"
-
-configure<UserExtension> {
-    replacements.putAll(
-        mapOf(
-            Pair("@version@", project.version)
-        )
-    )
-    runDir = "run"
+minecraft {
+    mcVersion.set(minecraftVersion)
 }
 
-val Project.minecraft: UserExtension
-    get() = extensions.getByName<UserExtension>("minecraft")
-
 repositories {
-    maven("https://maven.minecraftforge.net") {
-        name = "Forge"
-        metadataSources {
-            artifact()
-        }
-    }
-    maven("http://jenkins.usrv.eu:8081/nexus/content/groups/public/") {
+    maven("https://nexus.gtnewhorizons.com/repository/public/") {
         name = "GTNH Maven"
     }
+    maven("https://cursemaven.com") { name = "Curse Maven" }
+    /*
+     * This repo seems to be broken...
     maven("https://maven.ic2.player.to") {
         name = "IC2 Maven"
         metadataSources {
+            mavenPom()
+            artifact()
+        }
+    }
+     */
+    maven("https://maven2.ic2.player.to") {
+        name = "IC2 Maven"
+        metadataSources {
+            mavenPom()
             artifact()
         }
     }
@@ -78,37 +60,10 @@ dependencies {
     annotationProcessor("com.google.auto.value:auto-value:$autoValueVersion")
 
     val neiVersion: String by project
-    implementation("com.github.GTNewHorizons:NotEnoughItems:$neiVersion:dev")
+    implementation("com.github.GTNewHorizons:NotEnoughItems:$neiVersion:dev") {}
 
     val gregTech5Version: String by project
-    implementation("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev") {
-        isTransitive = false
-    }
-    // The following are compile-time dependencies of GT5.
-    val industrialCraft2Version: String by project
-    compileOnly("net.industrial-craft:industrialcraft-2:$industrialCraft2Version-experimental:api") {
-        isTransitive = false
-    }
-    val forestryVersion: String by project
-    compileOnly("com.github.GTNewHorizons:ForestryMC:$forestryVersion:api") {
-        isTransitive = false
-    }
-    val railcraftVersion: String by project
-    compileOnly("com.github.GTNewHorizons:Railcraft:$railcraftVersion:api") {
-        isTransitive = false
-    }
-    val buildCraftVersion: String by project
-    compileOnly("com.github.GTNewHorizons:BuildCraft:$buildCraftVersion:api") {
-        isTransitive = false
-    }
-    val enderIoVersion: String by project
-    compileOnly("com.github.GTNewHorizons:EnderIO:$enderIoVersion:api") {
-        isTransitive = false
-    }
-    val projectRedVersion: String by project
-    compileOnly("com.github.GTNewHorizons:ProjectRed:$projectRedVersion:dev") {
-        isTransitive = false
-    }
+    implementation("com.github.GTNewHorizons:GT5-Unofficial:$gregTech5Version:dev")
 
     val bartworksVersion: String by project
     implementation("com.github.GTNewHorizons:bartworks:$bartworksVersion:dev") {
@@ -147,25 +102,9 @@ tasks.withType<Jar> {
         expand(
             mapOf(
                 "version" to project.version,
-                "mcversion" to project.minecraft.version
+                "mcversion" to minecraftVersion,
             )
         )
     }
     archiveBaseName.set("NEICustomDiagram")
-}
-
-val sourcesJar by tasks.creating(Jar::class) {
-    from(sourceSets.main.get().allSource)
-    from("$projectDir/LICENSE.md")
-    archiveClassifier.set("sources")
-}
-
-val devJar by tasks.creating(Jar::class) {
-    from(sourceSets.main.get().output)
-    archiveClassifier.set("dev")
-}
-
-artifacts {
-    archives(sourcesJar)
-    archives(devJar)
 }

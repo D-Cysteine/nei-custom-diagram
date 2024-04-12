@@ -25,6 +25,7 @@ class LabelHandler {
         FURNACE(ItemList.Machine_HV_E_Furnace, "furnacelabel"),
         ELECTRIC_BLAST_FURNACE(ItemList.Machine_Multi_BlastFurnace, "electricblastfurnacelabel"),
         CHEMICAL_REACTOR(ItemList.Machine_HV_ChemicalReactor, "chemicalreactorlabel"),
+        MIXER(ItemList.Machine_HV_Mixer, "mixerlabel"),
         AUTOCLAVE(ItemList.Machine_HV_Autoclave, "autoclavelabel");
 
         final ItemList item;

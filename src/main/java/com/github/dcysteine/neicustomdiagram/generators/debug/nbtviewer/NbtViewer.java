@@ -79,7 +79,7 @@ public final class NbtViewer implements DiagramGenerator {
         String nbtText = NbtUtil.prettyPrintNbt(nbt.toString());
         Iterable<String> lines = Splitter.on('\n').split(nbtText);
         layoutBuilder.addAllLabels(
-                Text.multiLineBuilder(Grid.GRID.grid(-1, 1), Grid.Direction.SE)
+                Text.multiLineBuilder(Grid.GRID.edge(0, 1, Grid.Direction.W), Grid.Direction.SE)
                         .setSmall(ConfigOptions.NBT_VIEWER_SMALL_TEXT.get())
                         .addAllLines(lines)
                         .build());

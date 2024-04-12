@@ -203,7 +203,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     }
 
     protected Optional<Interactable> findHoveredInteractable(int recipe) {
-        if (!mouseInBounds()) {
+        if (!mouseInDiagramBounds()) {
             return Optional.empty();
         }
 
@@ -217,8 +217,8 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         return Optional.empty();
     }
 
-    public boolean mouseInBounds() {
-        return scrollManager.mouseInBounds();
+    public boolean mouseInDiagramBounds() {
+        return scrollManager.mouseInDiagramBounds();
     }
 
     public boolean interact(int recipe, Interactable.RecipeType recipeType) {
@@ -288,7 +288,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
     public boolean mouseScrolled(GuiRecipe<?> gui, int scroll, int recipe) {
         ScrollDirection direction = scroll > 0 ? ScrollDirection.UP : ScrollDirection.DOWN;
 
-        if (mouseInBounds() && NEIClientUtils.shiftKey()) {
+        if (mouseInDiagramBounds() && NEIClientUtils.shiftKey()) {
             diagramState.scroll(direction);
             return true;
         }
@@ -296,7 +296,7 @@ public class DiagramGroup implements ICraftingHandler, IUsageHandler {
         if (scrollManager.mouseScroll(direction)) {
             return true;
         } else {
-            return ConfigOptions.DISABLE_PAGE_SCROLL.get();
+            return mouseInDiagramBounds() && ConfigOptions.DISABLE_PAGE_SCROLL.get();
         }
     }
 

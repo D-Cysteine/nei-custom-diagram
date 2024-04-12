@@ -213,7 +213,19 @@ class DiagramBuilder {
                         LabelHandler.ItemLabel.ELECTRIC_BLAST_FURNACE,
                         LayoutHandler.AdditionalRecipeLabelPositions.ELECTRIC_BLAST_FURNACE,
                         RecipeHandler.RecipeMap.BLAST_FURNACE,
-                        Optional.of(rawOre)));
+                        // As of the time of this comment,
+                        // looks like there is exactly one crushed ore recipe: lead. Weird ¯\(°_o)/¯
+                        Optional.of(rawOre), crushedOreOptional));
+
+        // There's some redundancy here, in that we already show chemical bath recipes for
+        // sodium persulfate and mercury, and crushed ore.
+        // If it's an issue, we can add logic to filter those out here.
+        additionalRecipeOutputs.addAll(
+                addAdditionalRecipesInteractable(
+                        LabelHandler.ItemLabel.CHEMICAL_BATH,
+                        LayoutHandler.AdditionalRecipeLabelPositions.CHEMICAL_BATH,
+                        RecipeHandler.RecipeMap.CHEMICAL_BATH,
+                        crushedOreOptional, purifiedOreOptional));
 
         additionalRecipeOutputs.addAll(
                 addAdditionalRecipesInteractable(
@@ -221,6 +233,14 @@ class DiagramBuilder {
                         LayoutHandler.AdditionalRecipeLabelPositions.CHEMICAL_REACTOR,
                         RecipeHandler.RecipeMap.CHEMICAL_REACTOR,
                         crushedOreOptional, purifiedOreOptional));
+
+        additionalRecipeOutputs.addAll(
+                addAdditionalRecipesInteractable(
+                        LabelHandler.ItemLabel.MIXER,
+                        LayoutHandler.AdditionalRecipeLabelPositions.MIXER,
+                        RecipeHandler.RecipeMap.MIXER,
+                        crushedOreOptional, purifiedOreOptional,
+                        impureDustOptional, purifiedDustOptional));
 
         additionalRecipeOutputs.addAll(
                 addAdditionalRecipesInteractable(

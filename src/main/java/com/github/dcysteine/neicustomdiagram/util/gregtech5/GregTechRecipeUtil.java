@@ -9,6 +9,7 @@ import com.github.dcysteine.neicustomdiagram.api.diagram.tooltip.Tooltip;
 import com.github.dcysteine.neicustomdiagram.main.Lang;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
+import gregtech.api.recipe.RecipeMap;
 import gregtech.api.util.GT_OreDictUnificator;
 import gregtech.api.util.GT_Recipe;
 import net.minecraft.item.ItemStack;
@@ -28,24 +29,22 @@ public final class GregTechRecipeUtil {
 
     // TODO these findRecipe* methods are slow and inefficient, and also unused. Maybe delete them?
     /** Compares ignoring stack size. */
-    public static List<GT_Recipe> findRecipeByInput(
-            GT_Recipe.GT_Recipe_Map recipes, Component... inputs) {
+    public static List<GT_Recipe> findRecipeByInput(RecipeMap<?> recipes, Component... inputs) {
         return findRecipe(recipes, Arrays.asList(inputs), ImmutableList.of());
     }
 
     /** Compares ignoring stack size. */
-    public static List<GT_Recipe> findRecipeByOutput(
-            GT_Recipe.GT_Recipe_Map recipes, Component... outputs) {
+    public static List<GT_Recipe> findRecipeByOutput(RecipeMap<?> recipes, Component... outputs) {
         return findRecipe(recipes, ImmutableList.of(), Arrays.asList(outputs));
     }
 
     public static List<GT_Recipe> findRecipe(
-            GT_Recipe.GT_Recipe_Map recipes, Component input, Component output) {
+            RecipeMap<?> recipes, Component input, Component output) {
         return findRecipe(recipes, ImmutableList.of(input), ImmutableList.of(output));
     }
 
     public static List<GT_Recipe> findRecipe(
-            GT_Recipe.GT_Recipe_Map recipes,
+            RecipeMap<?> recipes,
             Collection<? extends Component> inputs, Collection<? extends Component> outputs) {
         List<FluidStack> inputFluids = new ArrayList<>();
         List<ItemStack> inputItems = new ArrayList<>();
@@ -76,7 +75,7 @@ public final class GregTechRecipeUtil {
         }
 
         List<GT_Recipe> foundRecipes = new ArrayList<>();
-        for (GT_Recipe recipe : recipes.mRecipeList) {
+        for (GT_Recipe recipe : recipes.getAllRecipes()) {
             if (recipeContainsItems(recipe.mInputs, inputItems)
                     && recipeContainsFluids(recipe.mFluidInputs, inputFluids)
                     && recipeContainsItems(recipe.mOutputs, outputItems)

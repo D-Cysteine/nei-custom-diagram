@@ -13,6 +13,7 @@ import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Multimaps;
 import com.google.common.collect.SetMultimap;
 import gregtech.api.enums.Materials;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.util.GT_OreDictUnificator;
 import gregtech.api.util.GT_Recipe;
 import gregtech.api.util.GT_Utility;
@@ -32,21 +33,22 @@ import java.util.stream.Collectors;
 /** Class that caches GregTech recipe data and stores it in a map, for fast lookup later. */
 class RecipeHandler {
     enum RecipeMap {
-        MACERATOR(GT_Recipe.GT_Recipe_Map.sMaceratorRecipes),
-        ORE_WASHING_PLANT(GT_Recipe.GT_Recipe_Map.sOreWasherRecipes),
-        THERMAL_CENTRIFUGE(GT_Recipe.GT_Recipe_Map.sThermalCentrifugeRecipes),
-        SIFTER(GT_Recipe.GT_Recipe_Map.sSifterRecipes),
-        CENTRIFUGE(GT_Recipe.GT_Recipe_Map.sCentrifugeRecipes),
+        MACERATOR(RecipeMaps.maceratorRecipes),
+        ORE_WASHING_PLANT(RecipeMaps.oreWasherRecipes),
+        THERMAL_CENTRIFUGE(RecipeMaps.thermalCentrifugeRecipes),
+        SIFTER(RecipeMaps.sifterRecipes),
+        CENTRIFUGE(RecipeMaps.centrifugeRecipes),
 
-        BLAST_FURNACE(GT_Recipe.GT_Recipe_Map.sBlastRecipes),
-        CHEMICAL_BATH(GT_Recipe.GT_Recipe_Map.sChemicalBathRecipes),
-        CHEMICAL_REACTOR(GT_Recipe.GT_Recipe_Map.sChemicalRecipes),
-        ELECTROMAGNETIC_SEPARATOR(GT_Recipe.GT_Recipe_Map.sElectroMagneticSeparatorRecipes),
-        AUTOCLAVE(GT_Recipe.GT_Recipe_Map.sAutoclaveRecipes);
+        BLAST_FURNACE(RecipeMaps.blastFurnaceRecipes),
+        CHEMICAL_BATH(RecipeMaps.chemicalBathRecipes),
+        CHEMICAL_REACTOR(RecipeMaps.chemicalReactorRecipes),
+        ELECTROMAGNETIC_SEPARATOR(RecipeMaps.electroMagneticSeparatorRecipes),
+        MIXER(RecipeMaps.mixerRecipes),
+        AUTOCLAVE(RecipeMaps.autoclaveRecipes);
 
-        final GT_Recipe.GT_Recipe_Map recipeMap;
+        final gregtech.api.recipe.RecipeMap<?> recipeMap;
 
-        RecipeMap(GT_Recipe.GT_Recipe_Map recipeMap) {
+        RecipeMap(gregtech.api.recipe.RecipeMap<?> recipeMap) {
             this.recipeMap = recipeMap;
         }
     }
@@ -138,7 +140,7 @@ class RecipeHandler {
                     MultimapBuilder.hashKeys().hashSetValues().build();
             recipeData.put(recipeMap, multimap);
 
-            for (GT_Recipe recipe : recipeMap.recipeMap.mRecipeList) {
+            for (GT_Recipe recipe : recipeMap.recipeMap.getAllRecipes()) {
                 ImmutableList<DisplayComponent> outputs =
                         ImmutableList.copyOf(GregTechRecipeUtil.buildComponentsFromOutputs(recipe));
 

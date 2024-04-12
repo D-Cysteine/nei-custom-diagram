@@ -51,8 +51,10 @@ class LayoutHandler {
     static final class AdditionalRecipeLabelPositions {
         static final Point FURNACE = Grid.GRID.grid(2, 0);
         static final Point ELECTRIC_BLAST_FURNACE = Grid.GRID.grid(4, 0);
-        static final Point CHEMICAL_REACTOR = Grid.GRID.grid(6, 0);
-        static final Point AUTOCLAVE = Grid.GRID.grid(8, 0);
+        static final Point CHEMICAL_BATH = Grid.GRID.grid(6, 0);
+        static final Point CHEMICAL_REACTOR = Grid.GRID.grid(8, 0);
+        static final Point MIXER = Grid.GRID.grid(10, 0);
+        static final Point AUTOCLAVE = Grid.GRID.grid(12, 0);
     }
 
     private final DiagramGroupInfo info;

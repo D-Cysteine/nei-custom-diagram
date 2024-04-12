@@ -16,7 +16,7 @@ import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SortedSetMultimap;
 import gregtech.api.enums.Materials;
 import gregtech.api.items.GT_MetaGenerated_Tool;
-import gregtech.api.util.GT_Recipe;
+import gregtech.api.recipe.RecipeMaps;
 import gregtech.common.items.GT_MetaGenerated_Tool_01;
 import gtPlusPlus.xmod.gregtech.common.items.MetaGeneratedGregtechTools;
 import net.minecraft.item.ItemStack;
@@ -156,7 +156,7 @@ class RecipeHandler {
         // First pass: find all tools with recipes, and group them by base NBT item stack.
         ((List<IRecipe>) CraftingManager.getInstance().getRecipeList())
                 .forEach(recipe -> addTool(recipe.getRecipeOutput()));
-        GT_Recipe.GT_Recipe_Map.sAssemblerRecipes.mRecipeList
+        RecipeMaps.assemblerRecipes.getAllRecipes()
                 .forEach(recipe -> addTool(recipe.getOutput(0)));
 
         // Second pass: iterate through and construct DisplayComponents for found tools.
