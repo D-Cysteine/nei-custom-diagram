@@ -42,13 +42,19 @@ repositories {
             mavenPom()
             artifact()
         }
+        content {
+            includeGroup("net.industrial-craft")
+        }
     }
      */
     maven("https://maven2.ic2.player.to") {
-        name = "IC2 Maven"
+        name = "IC2 Maven2"
         metadataSources {
             mavenPom()
             artifact()
+        }
+        content {
+            includeGroup("net.industrial-craft")
         }
     }
     //maven("https://gregtech.overminddl1.com/") { name = "GregTech" }  // GT6
