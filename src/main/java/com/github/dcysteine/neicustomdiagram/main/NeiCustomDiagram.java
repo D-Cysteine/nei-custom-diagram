@@ -1,5 +1,6 @@
 package com.github.dcysteine.neicustomdiagram.main;
 
+import com.github.dcysteine.neicustomdiagram.Tags;
 import com.github.dcysteine.neicustomdiagram.main.config.Config;
 import com.github.dcysteine.neicustomdiagram.main.config.ConfigGuiFactory;
 import com.github.dcysteine.neicustomdiagram.main.config.ConfigOptions;
@@ -25,7 +26,7 @@ import net.minecraftforge.common.MinecraftForge;
 public final class NeiCustomDiagram {
     public static final String MOD_ID = "neicustomdiagram";
     public static final String MOD_NAME = "NEI Custom Diagram";
-    public static final String MOD_VERSION = "@version@";
+    public static final String MOD_VERSION = Tags.VERSION;
     public static final String MOD_DEPENDENCIES =
             "required-after:NotEnoughItems;"
                     + "after:gregtech;"

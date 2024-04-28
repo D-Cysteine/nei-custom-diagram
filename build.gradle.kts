@@ -16,10 +16,6 @@ java {
     targetCompatibility = JavaVersion.VERSION_1_8
 }
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-}
-
 val neiCustomDiagramVersion: String by project
 group = "com.github.dcysteine.neicustomdiagram"
 version = neiCustomDiagramVersion
@@ -27,6 +23,8 @@ version = neiCustomDiagramVersion
 val minecraftVersion: String by project
 minecraft {
     mcVersion.set(minecraftVersion)
+
+    injectedTags.put("VERSION", project.version)
 }
 
 repositories {
@@ -102,6 +100,10 @@ dependencies {
     }
 }
 
+tasks.withType<JavaCompile> {
+    options.encoding = "UTF-8"
+}
+
 tasks.withType<Jar> {
     // Replace version in mcmod.info
     filesMatching("mcmod.info") {
@@ -113,4 +115,18 @@ tasks.withType<Jar> {
         )
     }
     archiveBaseName.set("NEICustomDiagram")
+}
+
+tasks.injectTags.configure {
+    outputClassName.set("${project.group}.Tags")
+}
+
+val sourcesJar by tasks.creating(Jar::class) {
+    from(sourceSets.main.get().allSource)
+    from("$projectDir/LICENSE.md")
+    archiveClassifier.set("sources")
+}
+
+artifacts {
+    archives(sourcesJar)
 }
